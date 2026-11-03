@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>ONION POS - Salon Sipariş Sistemi</title>
+  <title>ONION POS - Salon Sipariş & Hesap Sistemi</title>
   <style>
     :root {
       --red: #cc0000;
       --red-dark: #990000;
       --orange: #ee9900;
-      --green: #22aa22;
+      --green: #16a34a;
+      --blue: #2563eb;
       --bg-light: #dce6f2;
       --panel-bg: #eef3f9;
       --dark-cat: #18181b;
@@ -31,84 +32,67 @@
     .topBar {
       background: #f8fafc;
       border-bottom: 2px solid var(--border);
-      padding: 8px 14px;
+      padding: 8px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
       z-index: 50;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .logo {
       font-weight: 900;
-      font-size: 20px;
+      font-size: 19px;
       color: #334155;
-      letter-spacing: -0.5px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .logo span.dot {
-      width: 14px; height: 14px;
+      width: 13px; height: 13px;
       border-radius: 50%;
       border: 3px solid var(--red);
       display: inline-block;
     }
-    .topMeta {
+    .zoneTabs {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .zoneTabBtn {
+      background: #e2e8f0;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+      padding: 7px 12px;
+      border-radius: 6px;
       font-weight: 800;
       font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .badgeInfo {
-      background: #e2e8f0;
-      padding: 5px 10px;
-      border-radius: 6px;
-      color: #0f172a;
+    .zoneTabBtn.active {
+      background: var(--red);
+      color: #fff;
+      border-color: var(--red-dark);
+    }
+    .deptCountBadge {
+      background: var(--orange);
+      color: #000;
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 99px;
+      font-weight: 900;
     }
 
     /* VIEWS MANAGEMENT */
     .viewSec { display: none; flex: 1; flex-direction: column; }
     .viewSec.active { display: flex; }
 
-    /* 1. DEPARTMENTS VIEW (GİRİŞ / ASMA KAT / BAHÇE) */
-    .deptContainer {
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 900px;
-      width: 100%;
-      margin: 0 auto;
-    }
-    .deptBarBtn {
-      background: var(--red);
-      color: #fff;
-      border: none;
-      padding: 20px;
-      font-size: 18px;
-      font-weight: 800;
-      text-align: center;
-      cursor: pointer;
-      border-radius: 4px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
-    .deptBarBtn:active { background: var(--red-dark); }
-    .deptCountBadge {
-      background: var(--orange);
-      color: #000;
-      font-size: 12px;
-      padding: 2px 8px;
-      border-radius: 99px;
-      font-weight: 900;
-    }
-
-    /* 2. TABLES GRID VIEW */
+    /* TABLES GRID VIEW */
     .searchBarWrap {
       padding: 8px 12px;
       background: #e9eff6;
@@ -155,20 +139,7 @@
     }
     .tableBox.occupied .tName, .tableBox.occupied .tSub { color: #000; font-weight: 900; }
 
-    .bottomNavBar {
-      background: #dfd8d0;
-      border-top: 1px solid #bfb6ac;
-      padding: 12px;
-      text-align: center;
-      font-weight: 800;
-      font-size: 15px;
-      cursor: pointer;
-      color: #292524;
-      position: sticky;
-      bottom: 0;
-    }
-
-    /* 3. MENU & ORDERING VIEW */
+    /* MENU & ORDERING VIEW */
     .posMainSplit {
       display: grid;
       grid-template-columns: 200px 1fr;
@@ -255,7 +226,6 @@
       cursor: pointer;
     }
 
-    /* BOTTOM ORDER BAR IN MENU */
     .posBottomBar {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -282,10 +252,10 @@
       cursor: pointer;
     }
 
-    /* 4. ADİSYON (TICKET / CART) VIEW */
+    /* ADİSYON (TICKET / CART) VIEW */
     .adisyonLayout {
       display: grid;
-      grid-template-columns: 200px 1fr;
+      grid-template-columns: 210px 1fr;
       flex: 1;
     }
     .adisyonSidebar {
@@ -300,7 +270,7 @@
       background: #9fb1c4;
       border: 1px solid #8ba0b6;
       color: #1e293b;
-      padding: 14px 8px;
+      padding: 13px 8px;
       font-weight: 800;
       font-size: 13px;
       cursor: pointer;
@@ -308,6 +278,7 @@
       text-align: center;
     }
     .sideActionBtn.highlight { background: var(--orange); color: #000; border-color: #b87300; }
+    .sideActionBtn.payBtn { background: var(--blue); color: #fff; border-color: #1d4ed8; }
 
     .adisyonContent {
       background: #e5eef7;
@@ -360,16 +331,27 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .ticketFooterTotal {
+    .ticketFooterSummary {
       border-top: 2px solid #94a3b8;
-      padding-top: 10px;
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sumLine {
       display: flex;
       justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .sumLine.grand {
+      font-size: 17px;
       font-weight: 900;
-      font-size: 16px;
+      color: #0f172a;
     }
 
-    /* MODALS (OPTION PICKER, DETAILS, THERMAL RECEIPT) */
+    /* MODALS */
     .modalBackdrop {
       display: none;
       position: fixed;
@@ -378,18 +360,18 @@
       z-index: 100;
       justify-content: center;
       align-items: center;
-      padding: 14px;
+      padding: 12px;
     }
     .modalBackdrop.open { display: flex; }
     .modalCard {
       background: #fff;
       color: #0f172a;
       width: 100%;
-      max-width: 520px;
+      max-width: 560px;
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      max-height: 90vh;
+      max-height: 92vh;
       display: flex;
       flex-direction: column;
     }
@@ -402,24 +384,23 @@
       justify-content: space-between;
       align-items: center;
     }
-    .modalBody { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .modalBody { padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
     .optGroupTitle { font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 6px; text-transform: uppercase; }
     .optBtnsGrid { display: flex; flex-wrap: wrap; gap: 6px; }
     .optBtn {
       flex: 1;
-      min-width: 110px;
-      padding: 10px;
+      min-width: 90px;
+      padding: 9px;
       border: 2px solid #cbd5e1;
       background: #f8fafc;
       border-radius: 8px;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12.5px;
       cursor: pointer;
       text-align: center;
     }
     .optBtn.selected { border-color: var(--red); background: #fef2f2; color: var(--red); }
-    
-    /* Toggleable Ingredient Note Chips */
+
     .noteTagBtn {
       padding: 7px 10px;
       border: 1.5px solid #cbd5e1;
@@ -428,7 +409,6 @@
       font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
-      transition: 0.1s;
     }
     .noteTagBtn b { color: #b91c1c; }
     .noteTagBtn.activeTag {
@@ -437,7 +417,36 @@
       color: var(--red);
     }
 
-    /* THERMAL RECEIPT PREVIEW */
+    /* SPLIT BILL & DISCOUNT STYLES */
+    .splitBox {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .splitItemRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 6px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .splitItemRow:last-child { border-bottom: none; }
+    .splitHighlight {
+      background: #eff6ff;
+      border: 2px solid var(--blue);
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 900;
+      font-size: 15px;
+      color: #1e3a8a;
+    }
+
     .thermalPaper {
       background: #fffef8;
       font-family: 'Courier New', Courier, monospace;
@@ -454,69 +463,59 @@
       .productsGrid { grid-template-columns: repeat(2, 1fr); }
       .adisyonLayout { grid-template-columns: 1fr; }
       .adisyonSidebar { flex-direction: row; flex-wrap: wrap; }
-      .sideActionBtn { flex: 1; min-width: 100px; padding: 10px 6px; font-size: 12px; }
+      .sideActionBtn { flex: 1; min-width: 105px; padding: 10px 6px; font-size: 12px; }
     }
   </style>
 </head>
 <body>
 
-<!-- TOP HEADER -->
+<!-- TOP HEADER WITH DIRECT FLOOR TABS (NO "GİRİŞ" LOGIN CONFUSION) -->
 <div class="topBar">
-  <div class="logo">
-    <span class="dot"></span> ONION POS <small style="font-size:12px;color:#64748b;font-weight:700">SALON SİSTEMİ</small>
+  <div class="logo" onclick="openDepartment(currentDept)" style="cursor:pointer">
+    <span class="dot"></span> ONION POS
   </div>
-  <div class="topMeta">
-    <span class="badgeInfo" id="topZoneLabel">BÖLÜMLER</span>
-    <span class="badgeInfo" id="topTableLabel" style="background:#fde047;display:none">-</span>
+  <div class="zoneTabs">
+    <button class="zoneTabBtn active" id="tab_SALON" onclick="openDepartment('SALON')">
+      <span>SALON</span>
+      <span class="deptCountBadge" id="badge_SALON">0</span>
+    </button>
+    <button class="zoneTabBtn" id="tab_ASMA KAT" onclick="openDepartment('ASMA KAT')">
+      <span>ASMA KAT</span>
+      <span class="deptCountBadge" id="badge_ASMA KAT">0</span>
+    </button>
+    <button class="zoneTabBtn" id="tab_BAHÇE" onclick="openDepartment('BAHÇE')">
+      <span>BAHÇE</span>
+      <span class="deptCountBadge" id="badge_BAHÇE">0</span>
+    </button>
+    <span class="zoneTabBtn" id="topTableLabel" style="background:#fde047;color:#000;border-color:#ca8a04;display:none">-</span>
   </div>
 </div>
 
 <!-- ======================================================================
-     VIEW 1: DEPARTMANLAR (GİRİŞ / ASMA KAT / BAHÇE)
+     VIEW 1: TABLES GRID (DIRECT DEFAULT VIEW)
      ====================================================================== -->
-<section class="viewSec active" id="viewDepts">
-  <div class="deptContainer">
-    <button class="deptBarBtn" onclick="openDepartment('GİRİŞ')">
-      <span>GİRİŞ</span>
-      <span class="deptCountBadge" id="badge_GİRİŞ">0 Açık</span>
-    </button>
-    <button class="deptBarBtn" onclick="openDepartment('ASMA KAT')">
-      <span>ASMA KAT</span>
-      <span class="deptCountBadge" id="badge_ASMA KAT">0 Açık</span>
-    </button>
-    <button class="deptBarBtn" onclick="openDepartment('BAHÇE')">
-      <span>BAHÇE</span>
-      <span class="deptCountBadge" id="badge_BAHÇE">0 Açık</span>
-    </button>
-  </div>
-</section>
-
-<!-- ======================================================================
-     VIEW 2: TABLES GRID (MASA SEÇİMİ)
-     ====================================================================== -->
-<section class="viewSec" id="viewTables">
+<section class="viewSec active" id="viewTables">
   <div class="searchBarWrap">
-    <input type="text" id="tableSearchInput" placeholder="🔍 Masa Ara..." oninput="renderTablesGrid()" />
+    <input type="text" id="tableSearchInput" placeholder="🔍 Masa Ara (Örn: 4, A3, B1)..." oninput="renderTablesGrid()" />
     <button class="infoBtn" style="background:var(--red);padding:8px 12px;font-size:12px" onclick="document.getElementById('tableSearchInput').value='';renderTablesGrid()">C</button>
   </div>
   <div class="tablesGrid" id="tablesGrid"></div>
-  <div class="bottomNavBar" onclick="showView('viewDepts')">
-    🏠 Bölümler (GİRİŞ / ASMA KAT / BAHÇE)
-  </div>
 </section>
 
 <!-- ======================================================================
-     VIEW 3: ADİSYON (TABLE TICKET & ACTIONS)
+     VIEW 2: ADİSYON (TABLE TICKET, SPLIT BILL, DISCOUNT & ACTIONS)
      ====================================================================== -->
 <section class="viewSec" id="viewAdisyon">
   <div class="adisyonLayout">
     <div class="adisyonSidebar">
       <button class="sideActionBtn highlight" onclick="openMenuForCurrentTable()">➕ Ürün Ekle (Menü)</button>
+      <button class="sideActionBtn payBtn" onclick="openSplitAndPayModal()">💳 Ödeme & Hesap Böl</button>
+      <button class="sideActionBtn" onclick="openSplitAndPayModal()">🏷️ İndirim (%)</button>
       <button class="sideActionBtn" onclick="changeGuestCount()">👥 KİŞİ (<span id="lblGuestCount">2</span>)</button>
       <button class="sideActionBtn" onclick="openGeneralNoteModal()">📝 Adisyon Notu</button>
       <button class="sideActionBtn" onclick="openThermalPreview()">🧾 Hesap Yaz (Fiş)</button>
       <button class="sideActionBtn" onclick="changeTableNumber()">🔄 Masa Değiştir</button>
-      <button class="sideActionBtn" style="background:#ef4444;color:#fff" onclick="clearCurrentTable()">🗑️ Masayı Boşalt</button>
+      <button class="sideActionBtn" style="background:#ef4444;color:#fff" onclick="clearCurrentTable()">🗑️ Masayı Kapat/Boşalt</button>
     </div>
 
     <div class="adisyonContent">
@@ -534,10 +533,21 @@
       </div>
 
       <div>
-        <div class="ticketFooterTotal">
-          <span>Belge Toplamı:</span>
-          <span id="adisyonTotalAmount">₺0.00</span>
+        <div class="ticketFooterSummary">
+          <div class="sumLine" id="rowSubTotal" style="display:none">
+            <span>Ara Toplam (Subtotal):</span>
+            <span id="adisyonSubTotal">₺0.00</span>
+          </div>
+          <div class="sumLine" id="rowDiscount" style="display:none;color:#dc2626">
+            <span id="lblDiscountDesc">İndirim:</span>
+            <span id="adisyonDiscountAmount">-₺0.00</span>
+          </div>
+          <div class="sumLine grand">
+            <span>Ödenecek Toplam (Net Total):</span>
+            <span id="adisyonTotalAmount">₺0.00</span>
+          </div>
         </div>
+
         <div class="posBottomBar" style="margin-top:10px;grid-template-columns:1fr 1fr 1fr">
           <button class="barBtnGreen" onclick="sendWhatsAppText()">📲 WA Metin (Mutfak)</button>
           <button class="barBtnGreen" style="background:#0d9488" onclick="sendWhatsAppImage()">🖼️ WA Fiş Görsel</button>
@@ -549,7 +559,7 @@
 </section>
 
 <!-- ======================================================================
-     VIEW 4: POS MENU & PRODUCTS
+     VIEW 3: POS MENU & PRODUCTS
      ====================================================================== -->
 <section class="viewSec" id="viewMenu">
   <div class="searchBarWrap">
@@ -584,19 +594,16 @@
       <button class="infoBtn" onclick="closeOptionModal()">✕ Kapat</button>
     </div>
     <div class="modalBody">
-      <!-- Size / Portion / Flavor Variants -->
       <div id="variantSection" style="display:none">
         <div class="optGroupTitle">Porsiyon / Boyut / Tür (Size & Type)</div>
         <div class="optBtnsGrid" id="variantBtnsBox"></div>
       </div>
 
-      <!-- Specialized Drink Sub-Options (Turkish Coffee Sugar / Tea Strength) -->
       <div id="subOptionSection" style="display:none">
         <div class="optGroupTitle" id="subOptionTitle">Seçenek</div>
         <div class="optBtnsGrid" id="subOptionBtnsBox"></div>
       </div>
 
-      <!-- Dish-Specific Ingredient & Side Swap Notes -->
       <div id="quickNotesSection" style="display:none">
         <div class="optGroupTitle">Ürüne Özel Seçenekler & Yan Ürün Değişimi (Tap ➔ Writes Turkish)</div>
         <div class="optBtnsGrid" id="quickNotesBtnsBox"></div>
@@ -607,7 +614,7 @@
         <input type="text" id="customItemNoteInput" placeholder="Not seçin veya buraya yazın..." />
       </div>
 
-      <button class="deptBarBtn" style="padding:14px;font-size:15px" onclick="confirmAddItem()">
+      <button class="barBtnRed" style="padding:14px;font-size:15px;border-radius:8px;width:100%" onclick="confirmAddItem()">
         ✅ SİPARİŞE EKLE (ADD TO ORDER)
       </button>
     </div>
@@ -615,7 +622,75 @@
 </div>
 
 <!-- ======================================================================
-     MODAL 2: INGREDIENTS / DETAILS POPUP (ON DEMAND ONLY)
+     MODAL 2: SPLIT BILL (BY ITEMS OR EQUAL) & DISCOUNT CALCULATOR
+     ====================================================================== -->
+<div class="modalBackdrop" id="splitPayModal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <span>💳 Ödeme, İndirim & Hesap Böl (Split Bill)</span>
+      <button class="infoBtn" onclick="closeSplitAndPayModal()">✕ Kapat</button>
+    </div>
+    <div class="modalBody">
+
+      <!-- 1. DISCOUNT SECTION -->
+      <div class="splitBox">
+        <div class="optGroupTitle">1. İndirim Uygula (Discount)</div>
+        <div class="optBtnsGrid">
+          <button class="optBtn" id="discBtn_0" onclick="applyTableDiscount('percent', 0)">İndirimsiz (0%)</button>
+          <button class="optBtn" id="discBtn_10" onclick="applyTableDiscount('percent', 10)">%10</button>
+          <button class="optBtn" id="discBtn_15" onclick="applyTableDiscount('percent', 15)">%15</button>
+          <button class="optBtn" id="discBtn_20" onclick="applyTableDiscount('percent', 20)">%20</button>
+          <button class="optBtn" onclick="promptCustomDiscount()">Özel (% / ₺)</button>
+        </div>
+        <div style="margin-top:8px;display:flex;justify-content:space-between;font-size:13px;font-weight:800">
+          <span>Masa Net Toplam (After Discount):</span>
+          <span id="splitModalNetTotal" style="color:var(--green);font-size:15px">₺0.00</span>
+        </div>
+      </div>
+
+      <!-- 2. EQUAL SPLIT (EŞİT BÖLME: 2, 3, 4 KİŞİ) -->
+      <div class="splitBox">
+        <div class="optGroupTitle">2. Toplam Hesabı Kişi Sayısına Eşit Böl (Split Equally)</div>
+        <div class="optBtnsGrid">
+          <button class="optBtn" onclick="setEqualSplitCount(2)">÷ 2 Kişi</button>
+          <button class="optBtn" onclick="setEqualSplitCount(3)">÷ 3 Kişi</button>
+          <button class="optBtn" onclick="setEqualSplitCount(4)">÷ 4 Kişi</button>
+          <button class="optBtn" onclick="setEqualSplitCount(5)">÷ 5 Kişi</button>
+          <button class="optBtn" onclick="promptCustomSplitCount()">÷ Özel Kişi</button>
+        </div>
+        <div class="splitHighlight" style="margin-top:8px">
+          <span>Kişi Başı Düşen (<b id="lblEqualPeople">2</b> Kişi):</span>
+          <span id="lblEqualPerPerson">₺0.00 / Kişi</span>
+        </div>
+      </div>
+
+      <!-- 3. SPLIT BY SPECIFIC ITEMS (ALMAN USULÜ / PAY FOR WHAT YOU ORDERED) -->
+      <div class="splitBox">
+        <div class="optGroupTitle">3. Ürün Seçerek Öde (Pay by Specific Dishes Ordered)</div>
+        <div style="font-size:11.5px;color:#475569;margin-bottom:6px">
+          Müşterinin kendi yediği ürünleri <b>(+)</b> ile seçin. Ödeyen kişinin ürünlerini masadan düşebilirsiniz:
+        </div>
+        <div id="splitItemsContainer" style="max-height:210px;overflow-y:auto"></div>
+
+        <div class="splitHighlight" style="margin-top:8px;background:#fef2f2;border-color:var(--red);color:#991b1b">
+          <span>Seçilen Ürünler Toplamı:</span>
+          <span id="lblSelectedItemsTotal">₺0.00</span>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="barBtnGreen" style="flex:1;border-radius:6px;padding:11px;font-size:13px" onclick="payAndRemoveSelectedItems()">
+            ✅ Seçilenleri Tahsil Et (Masadan Düş)
+          </button>
+          <button class="optBtn" style="flex:0 0 auto" onclick="resetSelectedSplitItems()">Sıfırla</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================================
+     MODAL 3: INGREDIENTS / DETAILS POPUP
      ====================================================================== -->
 <div class="modalBackdrop" id="detailsModal">
   <div class="modalCard">
@@ -631,7 +706,7 @@
 </div>
 
 <!-- ======================================================================
-     MODAL 3: THERMAL RECEIPT PREVIEW
+     MODAL 4: THERMAL RECEIPT PREVIEW
      ====================================================================== -->
 <div class="modalBackdrop" id="thermalModal">
   <div class="modalCard">
@@ -665,16 +740,16 @@ function sSet(k, v) {
 }
 
 /* ============================================================================
-   EXACT DEPARTMENTS & TABLES
+   FLOOR ZONES & TABLES ("GİRİŞ" RENAMED TO "SALON")
    ============================================================================ */
 var DEPARTMENTS = {
-  "GİRİŞ": ["1", "1/2", "2", "2/2", "3", "3/2", "4", "4/2", "5", "5/2", "6", "7", "8", "8/2", "9", "10", "10/2"],
+  "SALON": ["1", "1/2", "2", "2/2", "3", "3/2", "4", "4/2", "5", "5/2", "6", "7", "8", "8/2", "9", "10", "10/2"],
   "ASMA KAT": ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A6/2"],
   "BAHÇE": ["B1", "B2", "B3", "B4", "B5", "B6", "B1/2", "B2/2", "B3/2", "B4/2", "B5/2", "B6/2"]
 };
 
 /* ============================================================================
-   DEFAULT NOTES FOR DRINKS (WITH EMPTY GLASS, NO GLASS, LEMON SLICES, ICE)
+   DEFAULT NOTES FOR DRINKS
    ============================================================================ */
 var DEFAULT_COLD_DRINK_NOTES = [
   { en: "With Empty Glass", tr: "Boş bardak ile" },
@@ -1623,17 +1698,17 @@ var POS_MENU = [
 ];
 
 /* ============================================================================
-   STATE MANAGEMENT (ALL TABLES SAVED AUTOMATICALLY)
+   STATE MANAGEMENT
    ============================================================================ */
-var STORAGE_TABLES_KEY = "onion_pos_tables_v3";
-var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v3";
+var STORAGE_TABLES_KEY = "onion_pos_tables_v4";
+var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v4";
 
 var tablesData = {};
 try {
   tablesData = JSON.parse(sGet(STORAGE_TABLES_KEY, "{}")) || {};
 } catch(e) { tablesData = {}; }
 
-var currentDept = "GİRİŞ";
+var currentDept = "SALON";
 var currentTable = null;
 var activeCatIdx = 0;
 
@@ -1641,6 +1716,10 @@ var pendingItem = null;
 var pendingCatType = "food";
 var selectedVariantIdx = 0;
 var selectedSubOpt = "";
+
+// Split Bill State
+var equalSplitCount = 2;
+var selectedSplitQtys = {}; // itemIndex -> selectedQty
 
 function saveAllTables() {
   sSet(STORAGE_TABLES_KEY, JSON.stringify(tablesData));
@@ -1666,10 +1745,38 @@ function nowFullDateStr() {
 }
 
 /* ============================================================================
+   CALCULATION HELPERS (SUBTOTAL, DISCOUNT, NET TOTAL)
+   ============================================================================ */
+function calcTableTotals(tObj) {
+  if (!tObj || !tObj.items) return { subTotal: 0, discountAmt: 0, netTotal: 0, discLabel: "" };
+  var sub = 0;
+  for (var i = 0; i < tObj.items.length; i++) {
+    sub += tObj.items[i].price * tObj.items[i].qty;
+  }
+  var dType = tObj.discountType || "percent";
+  var dVal = parseFloat(tObj.discountVal || 0);
+  var discAmt = 0;
+  var discLabel = "";
+
+  if (dVal > 0) {
+    if (dType === "percent") {
+      discAmt = sub * (dVal / 100);
+      discLabel = "İndirim (%" + dVal + "):";
+    } else {
+      discAmt = dVal;
+      discLabel = "İndirim (-₺" + dVal + "):";
+    }
+  }
+  if (discAmt > sub) discAmt = sub;
+  var net = sub - discAmt;
+  return { subTotal: sub, discountAmt: discAmt, netTotal: net, discLabel: discLabel };
+}
+
+/* ============================================================================
    NAVIGATION & VIEWS
    ============================================================================ */
 function showView(viewId) {
-  var views = ["viewDepts", "viewTables", "viewAdisyon", "viewMenu"];
+  var views = ["viewTables", "viewAdisyon", "viewMenu"];
   for (var i = 0; i < views.length; i++) {
     var el = document.getElementById(views[i]);
     if (views[i] === viewId) el.classList.add("active");
@@ -1679,7 +1786,7 @@ function showView(viewId) {
 }
 
 function updateDeptBadges() {
-  var depts = ["GİRİŞ", "ASMA KAT", "BAHÇE"];
+  var depts = ["SALON", "ASMA KAT", "BAHÇE"];
   for (var i = 0; i < depts.length; i++) {
     var d = depts[i];
     var list = DEPARTMENTS[d];
@@ -1691,13 +1798,17 @@ function updateDeptBadges() {
       }
     }
     var bEl = document.getElementById("badge_" + d);
-    if (bEl) bEl.textContent = openCount + " Açık";
+    if (bEl) bEl.textContent = openCount;
+    var tabEl = document.getElementById("tab_" + d);
+    if (tabEl) {
+      if (d === currentDept) tabEl.classList.add("active");
+      else tabEl.classList.remove("active");
+    }
   }
 }
 
 function openDepartment(deptName) {
   currentDept = deptName;
-  document.getElementById("topZoneLabel").textContent = deptName;
   document.getElementById("topTableLabel").style.display = "none";
   document.getElementById("tableSearchInput").value = "";
   renderTablesGrid();
@@ -1715,18 +1826,13 @@ function renderTablesGrid() {
       if (q && tName.toLowerCase().indexOf(q) === -1) return;
       var tObj = tablesData[tName];
       var hasOrder = tObj && tObj.items && tObj.items.length > 0;
-      var total = 0;
-      if (hasOrder) {
-        for (var k = 0; k < tObj.items.length; k++) {
-          total += tObj.items[k].price * tObj.items[k].qty;
-        }
-      }
+      var totals = calcTableTotals(tObj);
 
       var box = document.createElement("div");
       box.className = "tableBox" + (hasOrder ? " occupied" : "");
       box.innerHTML =
         '<div class="tName">' + tName + '</div>' +
-        (hasOrder ? '<div class="tSub">₺' + total + ' (' + tObj.items.length + ' kl)</div>' : '');
+        (hasOrder ? '<div class="tSub">₺' + totals.netTotal.toFixed(0) + ' (' + tObj.items.length + ' kl)</div>' : '');
 
       box.onclick = function() {
         selectTable(tName);
@@ -1746,13 +1852,14 @@ function selectTable(tName) {
       guests: 2,
       time: nowTimeStr(),
       generalNote: "",
+      discountType: "percent",
+      discountVal: 0,
       items: []
     };
   }
-  document.getElementById("topZoneLabel").textContent = currentDept;
   var tblLbl = document.getElementById("topTableLabel");
   tblLbl.textContent = "MASA: " + tName;
-  tblLbl.style.display = "inline-block";
+  tblLbl.style.display = "inline-flex";
 
   if (tablesData[tName].items.length === 0) {
     openMenuForCurrentTable();
@@ -1786,7 +1893,6 @@ function renderAdisyonView() {
   var listEl = document.getElementById("ticketItemsList");
   listEl.innerHTML = "";
 
-  var total = 0;
   if (tObj.items.length === 0) {
     listEl.innerHTML = '<div style="padding:20px;color:#64748b;font-weight:700;text-align:center">Bu masada henüz ürün yok. "➕ Ürün Ekle" butonuna basın.</div>';
   } else {
@@ -1794,7 +1900,6 @@ function renderAdisyonView() {
       (function(idx) {
         var it = tObj.items[idx];
         var lineTotal = it.price * it.qty;
-        total += lineTotal;
 
         var row = document.createElement("div");
         row.className = "ticketRow";
@@ -1815,7 +1920,18 @@ function renderAdisyonView() {
     }
   }
 
-  document.getElementById("adisyonTotalAmount").textContent = "₺" + total.toFixed(2);
+  var totals = calcTableTotals(tObj);
+  if (totals.discountAmt > 0) {
+    document.getElementById("rowSubTotal").style.display = "flex";
+    document.getElementById("rowDiscount").style.display = "flex";
+    document.getElementById("adisyonSubTotal").textContent = "₺" + totals.subTotal.toFixed(2);
+    document.getElementById("lblDiscountDesc").textContent = totals.discLabel;
+    document.getElementById("adisyonDiscountAmount").textContent = "-₺" + totals.discountAmt.toFixed(2);
+  } else {
+    document.getElementById("rowSubTotal").style.display = "none";
+    document.getElementById("rowDiscount").style.display = "none";
+  }
+  document.getElementById("adisyonTotalAmount").textContent = "₺" + totals.netTotal.toFixed(2);
 }
 
 function changeItemQty(idx, delta) {
@@ -1870,10 +1986,199 @@ function changeTableNumber() {
 }
 
 function clearCurrentTable() {
-  if (!confirm("Masa " + currentTable + " siparişi tamamen silinsin mi?")) return;
+  if (!confirm("Masa " + currentTable + " hesabı kapatılıp boşaltılsın mı?")) return;
   delete tablesData[currentTable];
   saveAllTables();
   openDepartment(currentDept);
+}
+
+/* ============================================================================
+   SPLIT BILL (BY SPECIFIC ITEMS OR EQUAL) & DISCOUNT LOGIC
+   ============================================================================ */
+function openSplitAndPayModal() {
+  var tObj = tablesData[currentTable];
+  if (!tObj || tObj.items.length === 0) {
+    alert("Masada henüz ürün yok!");
+    return;
+  }
+  equalSplitCount = tObj.guests > 1 ? tObj.guests : 2;
+  selectedSplitQtys = {};
+  renderSplitModalContent();
+  document.getElementById("splitPayModal").classList.add("open");
+}
+
+function closeSplitAndPayModal() {
+  document.getElementById("splitPayModal").classList.remove("open");
+  renderAdisyonView();
+}
+
+function applyTableDiscount(type, val) {
+  var tObj = tablesData[currentTable];
+  if (!tObj) return;
+  tObj.discountType = type;
+  tObj.discountVal = val;
+  saveAllTables();
+  renderSplitModalContent();
+  renderAdisyonView();
+}
+
+function promptCustomDiscount() {
+  var tObj = tablesData[currentTable];
+  if (!tObj) return;
+  var input = prompt("İndirim oranını (%) veya TL tutarını girin.\nÖrn: Yüzde 25 için '25%' yazın, 100 TL indirim için '100' yazın:", "10%");
+  if (!input) return;
+  input = input.trim();
+  if (input.indexOf("%") !== -1) {
+    var p = parseFloat(input.replace("%", "")) || 0;
+    applyTableDiscount("percent", p);
+  } else {
+    var amt = parseFloat(input) || 0;
+    // Ask if percent or amount if <= 50
+    if (amt > 0 && amt <= 50 && confirm("Girdiğiniz '" + amt + "' değeri YÜZDE (%" + amt + ") indirim mi?\n(Tamam = %" + amt + " İndirim | İptal = " + amt + " ₺ Sabit İndirim)")) {
+      applyTableDiscount("percent", amt);
+    } else {
+      applyTableDiscount("amount", amt);
+    }
+  }
+}
+
+function setEqualSplitCount(n) {
+  equalSplitCount = n;
+  renderSplitModalContent();
+}
+
+function promptCustomSplitCount() {
+  var c = prompt("Kaç kişiye eşit bölünsün?", equalSplitCount);
+  if (c !== null) {
+    var num = parseInt(c, 10);
+    if (num > 0) {
+      equalSplitCount = num;
+      renderSplitModalContent();
+    }
+  }
+}
+
+function adjustSplitItemQty(idx, delta) {
+  var tObj = tablesData[currentTable];
+  if (!tObj || !tObj.items[idx]) return;
+  var maxQty = tObj.items[idx].qty;
+  var cur = selectedSplitQtys[idx] || 0;
+  var next = cur + delta;
+  if (next < 0) next = 0;
+  if (next > maxQty) next = maxQty;
+  selectedSplitQtys[idx] = next;
+  renderSplitModalContent();
+}
+
+function resetSelectedSplitItems() {
+  selectedSplitQtys = {};
+  renderSplitModalContent();
+}
+
+function renderSplitModalContent() {
+  var tObj = tablesData[currentTable];
+  if (!tObj) return;
+
+  var totals = calcTableTotals(tObj);
+  document.getElementById("splitModalNetTotal").textContent = "₺" + totals.netTotal.toFixed(2);
+
+  // Highlight active discount button
+  var dBtns = [0, 10, 15, 20];
+  for (var b = 0; b < dBtns.length; b++) {
+    var el = document.getElementById("discBtn_" + dBtns[b]);
+    if (el) {
+      if (tObj.discountType === "percent" && Number(tObj.discountVal || 0) === dBtns[b]) {
+        el.classList.add("selected");
+      } else {
+        el.classList.remove("selected");
+      }
+    }
+  }
+
+  // Equal Split Calculation
+  document.getElementById("lblEqualPeople").textContent = equalSplitCount;
+  var perPerson = equalSplitCount > 0 ? (totals.netTotal / equalSplitCount) : totals.netTotal;
+  document.getElementById("lblEqualPerPerson").textContent = "₺" + perPerson.toFixed(2) + " / Kişi";
+
+  // Itemized Split List
+  var box = document.getElementById("splitItemsContainer");
+  box.innerHTML = "";
+  var selectedRawSum = 0;
+
+  for (var i = 0; i < tObj.items.length; i++) {
+    (function(idx) {
+      var it = tObj.items[idx];
+      var selQty = selectedSplitQtys[idx] || 0;
+      var lineSelSum = selQty * it.price;
+      selectedRawSum += lineSelSum;
+
+      var row = document.createElement("div");
+      row.className = "splitItemRow";
+      row.innerHTML =
+        '<div style="flex:1">' +
+          '<div>' + it.tr + ' <small style="color:#2563eb">(' + (it.optLabel || 'Normal') + ')</small></div>' +
+          '<div style="font-size:11.5px;color:#64748b">Birim: ₺' + it.price + ' • Masada: <b>' + it.qty + '</b> adet</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<button class="tQtyBtn" onclick="adjustSplitItemQty(' + idx + ', -1)">−</button>' +
+          '<span style="min-width:26px;text-align:center;font-weight:900;color:var(--red);font-size:15px">' + selQty + '</span>' +
+          '<button class="tQtyBtn" onclick="adjustSplitItemQty(' + idx + ', 1)">+</button>' +
+          '<span style="min-width:65px;text-align:right;font-weight:900">₺' + lineSelSum.toFixed(0) + '</span>' +
+        '</div>';
+      box.appendChild(row);
+    })(i);
+  }
+
+  // Apply proportional discount if table has percentage discount
+  var finalSelectedTotal = selectedRawSum;
+  if (tObj.discountType === "percent" && tObj.discountVal > 0) {
+    finalSelectedTotal = selectedRawSum * (1 - (tObj.discountVal / 100));
+  }
+  document.getElementById("lblSelectedItemsTotal").textContent = "₺" + finalSelectedTotal.toFixed(2);
+}
+
+function payAndRemoveSelectedItems() {
+  var tObj = tablesData[currentTable];
+  if (!tObj) return;
+
+  var anySelected = false;
+  for (var k in selectedSplitQtys) {
+    if (selectedSplitQtys[k] > 0) { anySelected = true; break; }
+  }
+  if (!anySelected) {
+    alert("Lütfen önce (+) butonu ile ödenecek ürünleri seçin!");
+    return;
+  }
+
+  var amtText = document.getElementById("lblSelectedItemsTotal").textContent;
+  if (!confirm("Seçilen ürünlerin ödemesi (" + amtText + ") alındı mı?\nBu ürünler masanın kalan hesabından düşülecek.")) {
+    return;
+  }
+
+  var remainingItems = [];
+  for (var i = 0; i < tObj.items.length; i++) {
+    var sel = selectedSplitQtys[i] || 0;
+    var remQty = tObj.items[i].qty - sel;
+    if (remQty > 0) {
+      tObj.items[i].qty = remQty;
+      remainingItems.push(tObj.items[i]);
+    }
+  }
+  tObj.items = remainingItems;
+  selectedSplitQtys = {};
+
+  if (tObj.items.length === 0) {
+    alert("Masadaki tüm ürünler ödendi! Masa kapatılıyor.");
+    delete tablesData[currentTable];
+    saveAllTables();
+    closeSplitAndPayModal();
+    openDepartment(currentDept);
+    return;
+  }
+
+  saveAllTables();
+  renderSplitModalContent();
+  renderAdisyonView();
 }
 
 /* ============================================================================
@@ -1981,7 +2286,6 @@ function openItemOptionModal(item, cType) {
 
   document.getElementById("optModalTitle").textContent = item.tr + " (" + item.en + ")";
 
-  // 1. Variants (Size / Portion / Flavor)
   var varSec = document.getElementById("variantSection");
   var varBox = document.getElementById("variantBtnsBox");
   varBox.innerHTML = "";
@@ -2007,7 +2311,6 @@ function openItemOptionModal(item, cType) {
     varSec.style.display = "none";
   }
 
-  // 2. Specialized SubOptions (Turkish Coffee: Sade/Orta/Şekerli, Tea: Açık/Normal/Demli)
   var subSec = document.getElementById("subOptionSection");
   var subBox = document.getElementById("subOptionBtnsBox");
   subBox.innerHTML = "";
@@ -2033,7 +2336,6 @@ function openItemOptionModal(item, cType) {
     subSec.style.display = "none";
   }
 
-  // 3. Dish-Specific Ingredient & Side Swap Notes
   var notesSec = document.getElementById("quickNotesSection");
   var notesBox = document.getElementById("quickNotesBtnsBox");
   notesBox.innerHTML = "";
@@ -2132,15 +2434,14 @@ function confirmAddItem() {
 function updateMenuBottomSummary() {
   var tObj = tablesData[currentTable];
   var count = 0;
-  var total = 0;
   if (tObj && tObj.items) {
     for (var i = 0; i < tObj.items.length; i++) {
       count += tObj.items[i].qty;
-      total += tObj.items[i].price * tObj.items[i].qty;
     }
   }
+  var totals = calcTableTotals(tObj);
   document.getElementById("menuCartCount").textContent = count;
-  document.getElementById("menuCartTotal").textContent = total + " ₺";
+  document.getElementById("menuCartTotal").textContent = totals.netTotal.toFixed(0) + " ₺";
 }
 
 /* ============================================================================
@@ -2150,7 +2451,7 @@ function openThermalPreview() {
   var tObj = tablesData[currentTable];
   if (!tObj || tObj.items.length === 0) { alert("Masada ürün yok!"); return; }
 
-  var total = 0;
+  var totals = calcTableTotals(tObj);
   var lines = [];
   lines.push("<div style='text-align:center;font-weight:900;font-size:16px'>....... ONION .......</div>");
   lines.push("Kisi Sayisi " + tObj.guests);
@@ -2162,7 +2463,6 @@ function openThermalPreview() {
   for (var i = 0; i < tObj.items.length; i++) {
     var it = tObj.items[i];
     var sub = it.price * it.qty;
-    total += sub;
     var optDot = (it.optLabel && it.optLabel !== "Normal") ? ("." + it.optLabel) : "";
     lines.push(
       "<div style='display:flex;justify-content:space-between;font-weight:700'>" +
@@ -2176,10 +2476,22 @@ function openThermalPreview() {
   }
 
   lines.push("================================");
+  if (totals.discountAmt > 0) {
+    lines.push(
+      "<div style='display:flex;justify-content:space-between;font-weight:700'>" +
+        "<span>Ara Toplam:</span><span>" + totals.subTotal.toFixed(2) + "</span>" +
+      "</div>"
+    );
+    lines.push(
+      "<div style='display:flex;justify-content:space-between;font-weight:700'>" +
+        "<span>" + totals.discLabel + "</span><span>-" + totals.discountAmt.toFixed(2) + "</span>" +
+      "</div>"
+    );
+  }
   lines.push(
     "<div style='display:flex;justify-content:space-between;font-weight:900;font-size:16px'>" +
       "<span>Toplam:</span>" +
-      "<span>" + total.toFixed(2) + "</span>" +
+      "<span>" + totals.netTotal.toFixed(2) + "</span>" +
     "</div>"
   );
   lines.push("================================");
@@ -2276,8 +2588,8 @@ function sendWhatsAppImage() {
   }, "image/png");
 }
 
-// Init
-updateDeptBadges();
+// Init directly on SALON tables
+openDepartment("SALON");
 </script>
 </body>
 </html>
