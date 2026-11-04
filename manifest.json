@@ -1,0 +1,15 @@
+{
+  "name": "Onion POS Salon Sistemi",
+  "short_name": "Onion POS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#dce6f2",
+  "theme_color": "#cc0000",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3176/3176342.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
