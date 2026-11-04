@@ -471,6 +471,14 @@
       .sideActionBtn { flex: 1; min-width: 105px; padding: 10px 6px; font-size: 12px; }
     }
   </style>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(function() { console.log('PWA Service Worker Registered'); })
+        .catch(function(err) { console.log('PWA Registration Failed', err); });
+    }
+  </script>
 </head>
 <body>
 
