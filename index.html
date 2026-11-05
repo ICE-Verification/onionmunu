@@ -60,19 +60,20 @@
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
+      align-items: center;
     }
     .zoneTabBtn {
       background: #e2e8f0;
       color: #1e293b;
       border: 1px solid #cbd5e1;
-      padding: 7px 12px;
+      padding: 7px 11px;
       border-radius: 6px;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12.5px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
     .zoneTabBtn.active {
       background: var(--red);
@@ -120,7 +121,7 @@
     .tableBox {
       background: #e3ecf5;
       border: 1px solid #b8c6d8;
-      min-height: 82px;
+      min-height: 84px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -130,9 +131,19 @@
       padding: 6px;
       user-select: none;
       transition: 0.1s;
+      position: relative;
     }
     .tableBox .tName { font-size: 16px; font-weight: 800; color: #334155; }
-    .tableBox .tSub { font-size: 11px; font-weight: 700; color: #475569; margin-top: 4px; }
+    .tableBox .tSub { font-size: 11px; font-weight: 700; color: #475569; margin-top: 3px; }
+    .tableBox .tTimerMini {
+      font-size: 10.5px;
+      font-weight: 900;
+      margin-top: 3px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.15);
+      color: #000;
+    }
     .tableBox.occupied {
       background: var(--orange);
       border-color: #c27800;
@@ -295,6 +306,21 @@
       font-size: 13px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .timerBadge {
+      background: #16a34a;
+      color: #fff;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .ticketSubBar {
       background: #94a3b8;
@@ -304,6 +330,7 @@
       font-weight: 800;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
     .ticketItemsList {
       flex: 1;
@@ -452,6 +479,41 @@
       color: #1e3a8a;
     }
 
+    /* PHRASES GUIDE STYLES */
+    .phraseCatTabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .pTabBtn {
+      background: #e2e8f0;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .pTabBtn.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: #0369a1;
+    }
+    .phraseCardItem {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid #0284c7;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    .phraseAr { font-size: 12px; font-weight: 800; color: #b45309; margin-bottom: 4px; direction: rtl; text-align: right; }
+    .phraseEn { font-size: 14px; font-weight: 900; color: #1e3a8a; margin-bottom: 3px; }
+    .phraseTr { font-size: 13px; font-weight: 700; color: #334155; }
+
     .thermalPaper {
       background: #fffef8;
       font-family: 'Courier New', Courier, monospace;
@@ -500,6 +562,9 @@
       <span>BAHÇE</span>
       <span class="deptCountBadge" id="badge_BAHÇE">0</span>
     </button>
+    <button class="zoneTabBtn" style="background:#0284c7;color:#fff;border-color:#0369a1" onclick="openPhrasesModal()">
+      📖 Cümleler (TR/EN)
+    </button>
     <span class="zoneTabBtn" id="topTableLabel" style="background:#fde047;color:#000;border-color:#ca8a04;display:none">-</span>
   </div>
 </div>
@@ -516,7 +581,7 @@
 </section>
 
 <!-- ======================================================================
-     VIEW 2: ADİSYON (TABLE TICKET, SPLIT BILL, DISCOUNT & ACTIONS)
+     VIEW 2: ADİSYON (TABLE TICKET, TIMER, SPLIT BILL, DISCOUNT & ACTIONS)
      ====================================================================== -->
 <section class="viewSec" id="viewAdisyon">
   <div class="adisyonLayout">
@@ -535,6 +600,7 @@
       <div>
         <div class="ticketHeaderBar">
           <span id="adisyonTableTitle">MASA: -</span>
+          <span class="timerBadge" id="tableTimerBadge" onclick="resetTableTimer()" title="Süreyi sıfırlamak için dokunun (Tap to reset timer)">⏱️ 00:00</span>
           <span id="adisyonNoTitle">Adisyon No: -</span>
         </div>
         <div class="ticketSubBar">
@@ -555,8 +621,12 @@
             <span id="lblDiscountDesc">İndirim:</span>
             <span id="adisyonDiscountAmount">-₺0.00</span>
           </div>
+          <div class="sumLine" id="rowPaidTotal" style="display:none;color:#16a34a">
+            <span>Ödenen Tutar (Paid):</span>
+            <span id="adisyonPaidAmount">₺0.00</span>
+          </div>
           <div class="sumLine grand">
-            <span>Ödenecek Toplam (Net Total):</span>
+            <span>Kalan Ödenecek (Remaining Net):</span>
             <span id="adisyonTotalAmount">₺0.00</span>
           </div>
         </div>
@@ -624,7 +694,7 @@
 
       <div>
         <div class="optGroupTitle">Ekstra Özel Not (Custom Note)</div>
-        <input type="text" id="customItemNoteInput" placeholder="Not seçin veya buraya yazın..." />
+        <input type="text" id="customItemNoteInput" placeholder="Not seçin veya buraya yazın..." style="width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px" />
       </div>
 
       <div style="display:flex;gap:8px">
@@ -661,14 +731,14 @@
           <button class="optBtn" onclick="promptCustomDiscount()">Özel (% / ₺)</button>
         </div>
         <div style="margin-top:8px;display:flex;justify-content:space-between;font-size:13px;font-weight:800">
-          <span>Masa Net Toplam (After Discount):</span>
+          <span>Masa Kalan Net Toplam (Remaining After Discount):</span>
           <span id="splitModalNetTotal" style="color:var(--green);font-size:15px">₺0.00</span>
         </div>
       </div>
 
       <!-- 2. EQUAL SPLIT -->
       <div class="splitBox">
-        <div class="optGroupTitle">2. Toplam Hesabı Kişi Sayısına Eşit Böl (Split Equally)</div>
+        <div class="optGroupTitle">2. Kalan Hesabı Kişi Sayısına Eşit Böl (Split Equally)</div>
         <div class="optBtnsGrid">
           <button class="optBtn" onclick="setEqualSplitCount(2)">÷ 2 Kişi</button>
           <button class="optBtn" onclick="setEqualSplitCount(3)">÷ 3 Kişi</button>
@@ -682,11 +752,11 @@
         </div>
       </div>
 
-      <!-- 3. PAY BY SPECIFIC ITEMS (FAVORITE: PAID VS REMAINING) -->
+      <!-- 3. PAY BY SPECIFIC ITEMS (PAID VS REMAINING) -->
       <div class="splitBox">
         <div class="optGroupTitle">3. Ürün Seçerek Öde (Mark as Paid / Pay by Items)</div>
         <div style="font-size:11.5px;color:#475569;margin-bottom:6px">
-          Ödeme yapan kişinin ürünlerini <b>(+)</b> ile seçin. <b>"Ödendi Olarak İşaretle"</b> butonuna basınca ürünler yeşilleşir ve bakiye düşer (silinmez!):
+          Ödeme yapan kişinin ürünlerini <b>(+)</b> ile seçin. <b>"Ödendi Olarak İşaretle"</b> butonuna basınca ürünler yeşilleşir ve kalan bakiye düşer (silinmez!):
         </div>
         <div id="splitItemsContainer" style="max-height:210px;overflow-y:auto"></div>
 
@@ -724,7 +794,24 @@
 </div>
 
 <!-- ======================================================================
-     MODAL 4: THERMAL RECEIPT PREVIEW (DIRECT WHATSAPP IMAGE SHARE)
+     MODAL 4: POLITE & NATURAL RESTAURANT PHRASES (TR / EN / AR)
+     ====================================================================== -->
+<div class="modalBackdrop" id="phrasesModal">
+  <div class="modalCard" style="max-width:640px">
+    <div class="modalHead">
+      <span>📖 Restoran İletişim Rehberi (English & Türkçe)</span>
+      <button class="infoBtn" onclick="document.getElementById('phrasesModal').classList.remove('open')">✕ Kapat</button>
+    </div>
+    <div class="modalBody">
+      <input type="text" id="phraseSearchInput" placeholder="🔍 ابحث بالعربية أو English أو Türkçe (مثل: طاولة، مشروبات، أطباق، حساب)..." oninput="renderPhrasesList()" style="width:100%;padding:9px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px" />
+      <div class="phraseCatTabs" id="phraseCatTabs"></div>
+      <div id="phrasesListBox" style="max-height:60vh;overflow-y:auto;padding-right:2px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================================
+     MODAL 5: THERMAL RECEIPT PREVIEW (DIRECT WHATSAPP IMAGE SHARE)
      ====================================================================== -->
 <div class="modalBackdrop" id="thermalModal">
   <div class="modalCard">
@@ -770,6 +857,244 @@ var DEPARTMENTS = {
 };
 
 /* ============================================================================
+   NATURAL & POLITE RESTAURANT PHRASES (ENGLISH / TURKISH / ARABIC)
+   Friendly, clear, and natural hospitality tone (not stiff or overly formal)
+   ============================================================================ */
+var PHRASE_CATEGORIES = [
+  "الكل (All)",
+  "الاستقبال والطاولات (Tables)",
+  "المشروبات (Drinks)",
+  "أخذ الطلب والمنيو (Menu & Order)",
+  "الخدمة والمتابعة (Service)",
+  "الحساب والوداع (Bill & Payment)"
+];
+
+var activePhraseCat = "الكل (All)";
+
+var RESTAURANT_PHRASES = [
+  // الاستقبال والطاولات
+  {
+    cat: "الاستقبال والطاولات (Tables)",
+    ar: "أهلاً وسهلاً! كم شخصاً أنتم؟",
+    en: "Welcome! How many of you are there today?",
+    tr: "Hoş geldiniz! Kaç kişisiniz?"
+  },
+  {
+    cat: "الاستقبال والطاولات (Tables)",
+    ar: "هل هذه الطاولة مناسبة لكم؟",
+    en: "Is this table good for you?",
+    tr: "Bu masa sizin için uygun mu?"
+  },
+  {
+    cat: "الاستقبال والطاولات (Tables)",
+    ar: "يمكنني أن ألصق (أضم) طاولة بأخرى من أجلكم إذا أحببتم.",
+    en: "I can put two tables together for you if you'd like.",
+    tr: "İsterseniz sizin için iki masayı birleştirebilirim."
+  },
+  {
+    cat: "الاستقبال والطاولات (Tables)",
+    ar: "تفضلوا بالجلوس أينما تحبون، الصالة والحديقة متاحتان.",
+    en: "Feel free to sit wherever you like—both inside and the garden are open.",
+    tr: "Dilediğiniz yere oturabilirsiniz, salon ve bahçe kısmımız açık."
+  },
+  {
+    cat: "الاستقبال والطاولات (Tables)",
+    ar: "هل تفضلون الجلوس في الداخل أم في الطابق العلوي أم في الحديقة؟",
+    en: "Would you prefer to sit inside, upstairs, or in the garden?",
+    tr: "İçeride mi, asma katta mı yoksa bahçede mi oturmak istersiniz?"
+  },
+
+  // المشروبات
+  {
+    cat: "المشروبات (Drinks)",
+    ar: "هل تودون أن أحضر المشروبات الآن أم مع الطعام؟",
+    en: "Would you like your drinks now, or with the meal?",
+    tr: "İçeceklerinizi şimdi mi getireyim, yoksa yemekle birlikte mi?"
+  },
+  {
+    cat: "المشروبات (Drinks)",
+    ar: "هل أفتح المشروب لك الآن؟",
+    en: "Shall I open your drink for you now?",
+    tr: "İçeceğinizi şimdi açayım mı?"
+  },
+  {
+    cat: "المشروبات (Drinks)",
+    ar: "هل تريد كأساً فارغة أو ثلجاً أو شرائح ليمون مع المشروب؟",
+    en: "Would you like a glass, ice, or some lemon slices with your drink?",
+    tr: "İçeceğinizin yanına bardak, buz veya limon dilimi ister misiniz?"
+  },
+  {
+    cat: "المشروبات (Drinks)",
+    ar: "هل تفضلون الماء بارداً أم بحرارة الغرفة؟",
+    en: "Would you like your water cold or room temperature?",
+    tr: "Suyunuz soğuk mu olsun, oda sıcaklığında mı?"
+  },
+  {
+    cat: "المشروبات (Drinks)",
+    ar: "كيف تحب قهوتك التركية؟ سادة، وسط، أم حلوة؟",
+    en: "How do you take your Turkish coffee? No sugar, medium, or sweet?",
+    tr: "Türk kahvenizi nasıl alırsınız? Sade, orta, şekerli?"
+  },
+  {
+    cat: "المشروبات (Drinks)",
+    ar: "كيف تفضل الشاي؟ فاتح، عادي، أم غامق (ثقيل)؟",
+    en: "How would you like your tea? Light, normal, or strong?",
+    tr: "Çayınız nasıl olsun? Açık, normal, yoksa demli mi?"
+  },
+
+  // أخذ الطلب والمنيو
+  {
+    cat: "أخذ الطلب والمنيو (Menu & Order)",
+    ar: "هل أنتم جاهزون للطلب أم تحتاجون لبعض الوقت؟",
+    en: "Are you ready to order, or do you need a few more minutes?",
+    tr: "Sipariş vermeye hazır mısınız, yoksa biraz daha zaman ister misiniz?"
+  },
+  {
+    cat: "أخذ الطلب والمنيو (Menu & Order)",
+    ar: "هل تحب أن تنزل جميع الأطباق معاً أم الشوربة والمقبلات أولاً؟",
+    en: "Would you like everything served together, or the soup and starters first?",
+    tr: "Her şey birlikte mi gelsin, yoksa çorba ve başlangıçlar önce mi gelsin?"
+  },
+  {
+    cat: "أخذ الطلب والمنيو (Menu & Order)",
+    ar: "البيتزا لدينا بحجمين: صغيرة (23 سم) ووسط (30 سم)، أي حجم تفضلون؟",
+    en: "Our pizzas come in two sizes: small (23 cm) and medium (30 cm). Which one would you like?",
+    tr: "Pizzalarımız küçük (23 cm) ve orta (30 cm) olarak iki boydur, hangisini tercih edersiniz?"
+  },
+  {
+    cat: "أخذ الطلب والمنيو (Menu & Order)",
+    ar: "هل تفضل البطاطا عادية أم ويدجز (قطاعات تفاح)؟ وبدون بهارات؟",
+    en: "Would you like regular fries or potato wedges? And with or without spices?",
+    tr: "Patatesiniz normal mi olsun elma dilim mi? Baharatlı mı baharatsız mı?"
+  },
+  {
+    cat: "أخذ الطلب والمنيو (Menu & Order)",
+    ar: "يُقدم مع هذا الطبق أرز وسلطة، هل تحب استبدال الأرز بالبطاطا المقلية؟",
+    en: "This dish comes with rice and salad. Would you like to swap the rice for fries?",
+    tr: "Bu tabakta pilav ve salata var, pilav yerine patates kızartması ister misiniz?"
+  },
+  {
+    cat: "أخذ الطلب والمنيو (Menu & Order)",
+    ar: "هذا الطبق حار قليلاً (فيه هالبينو)، هل تحب أن نجعله بدون حر؟",
+    en: "This dish is a bit spicy with jalapeños. Would you like it without the spice?",
+    tr: "Bu ürün biraz acılıdır (jalapeno var), acısız yapmamızı ister misiniz?"
+  },
+  {
+    cat: "أخذ الطلب والمنيو (Menu & Order)",
+    ar: "هل هناك أي مكون لا تفضلونه في الطبق (مثل البصل، الفطر، أو الجرجير)؟",
+    en: "Is there anything you'd like us to leave out, like onions, mushrooms, or arugula?",
+    tr: "İçinde istemediğiniz bir malzeme var mı? (Soğan, mantar veya roka gibi)"
+  },
+  {
+    cat: "أخذ الطلب والمنيو (Menu & Order)",
+    ar: "كيف تفضل درجة استواء اللحم؟ متوسط (ميديوم) أم مطبوخ جيداً (ويل دان)؟",
+    en: "How would you like your meat cooked? Medium or well done?",
+    tr: "Etiniz nasıl pişsin? Orta mı, iyi pişmiş mi?"
+  },
+
+  // الخدمة والمتابعة
+  {
+    cat: "الخدمة والمتابعة (Service)",
+    ar: "هل ترغبون في سحب الأطباق الفارغة؟",
+    en: "May I take your empty plates out of your way?",
+    tr: "Boş tabaklarınızı alabilir miyim?"
+  },
+  {
+    cat: "الخدمة والمتابعة (Service)",
+    ar: "كيف هو الطعام؟ هل كل شيء على ما يرام أو ينقصكم شيء؟",
+    en: "How is everything? Can I get you anything else?",
+    tr: "Yemekler nasıl, her şey yolunda mı? Bir isteğiniz var mı?"
+  },
+  {
+    cat: "الخدمة والمتابعة (Service)",
+    ar: "طلبكم في الفرن وسيكون جاهزاً خلال دقائق قليلة، أعتذر عن التأخير البسيط.",
+    en: "Your order is in the oven and will be ready in just a few minutes. Sorry for the wait!",
+    tr: "Siparişiniz fırında, birkaç dakika içinde hazır olacak. Beklettiğimiz için kusura bakmayın."
+  },
+  {
+    cat: "الخدمة والمتابعة (Service)",
+    ar: "هذا الشاي (أو الطبق) ضيافة من المطعم لكم، صحتين وعافية!",
+    en: "This is on the house for you. Enjoy!",
+    tr: "Bu çayımız (ürünümüz) size ikramımızdır, afiyet olsun!"
+  },
+
+  // الحساب والوداع
+  {
+    cat: "الحساب والوداع (Bill & Payment)",
+    ar: "هل ستدفعون الحساب معاً أم كل شخص على حدة؟",
+    en: "Would you like to pay together or separately?",
+    tr: "Hesabı birlikte mi ödeyeceksiniz, yoksa ayrı ayrı mı?"
+  },
+  {
+    cat: "الحساب والوداع (Bill & Payment)",
+    ar: "يمكننا تقسيم الفاتورة بالتساوي أو حسب الأطباق التي طلبها كل شخص.",
+    en: "We can split the bill equally, or by what each person ordered.",
+    tr: "Hesabı eşit bölebiliriz veya herkes kendi yediğini ödeyebilir."
+  },
+  {
+    cat: "الحساب والوداع (Bill & Payment)",
+    ar: "هل الدفع نقداً (كاش) أم بالبطاقة؟",
+    en: "Will you be paying by cash or card?",
+    tr: "Ödeme nakit mi olacak, kartla mı?"
+  },
+  {
+    cat: "الحساب والوداع (Bill & Payment)",
+    ar: "شكراً لزيارتكم، نتمنى رؤيتكم مرة أخرى! يومكم سعيد.",
+    en: "Thank you for coming! Hope to see you again soon. Have a great day!",
+    tr: "Teşekkür ederiz, yine bekleriz! İyi günler."
+  }
+];
+
+function openPhrasesModal() {
+  document.getElementById("phraseSearchInput").value = "";
+  renderPhraseTabs();
+  renderPhrasesList();
+  document.getElementById("phrasesModal").classList.add("open");
+}
+
+function renderPhraseTabs() {
+  var box = document.getElementById("phraseCatTabs");
+  box.innerHTML = "";
+  for (var i = 0; i < PHRASE_CATEGORIES.length; i++) {
+    (function(catName) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pTabBtn" + (catName === activePhraseCat ? " active" : "");
+      btn.textContent = catName;
+      btn.onclick = function() {
+        activePhraseCat = catName;
+        renderPhraseTabs();
+        renderPhrasesList();
+      };
+      box.appendChild(btn);
+    })(PHRASE_CATEGORIES[i]);
+  }
+}
+
+function renderPhrasesList() {
+  var box = document.getElementById("phrasesListBox");
+  box.innerHTML = "";
+  var q = (document.getElementById("phraseSearchInput").value || "").toLowerCase().trim();
+
+  for (var i = 0; i < RESTAURANT_PHRASES.length; i++) {
+    var p = RESTAURANT_PHRASES[i];
+    if (activePhraseCat !== "الكل (All)" && p.cat !== activePhraseCat && !q) continue;
+    if (q) {
+      var hay = (p.ar + " " + p.en + " " + p.tr + " " + p.cat).toLowerCase();
+      if (hay.indexOf(q) === -1) continue;
+    }
+
+    var div = document.createElement("div");
+    div.className = "phraseCardItem";
+    div.innerHTML =
+      '<div class="phraseAr">💡 ' + p.ar + '</div>' +
+      '<div class="phraseEn">🇬🇧 ' + p.en + '</div>' +
+      '<div class="phraseTr">🇹🇷 ' + p.tr + '</div>';
+    box.appendChild(div);
+  }
+}
+
+/* ============================================================================
    DEFAULT NOTES FOR DRINKS
    ============================================================================ */
 var DEFAULT_COLD_DRINK_NOTES = [
@@ -791,7 +1116,8 @@ var DEFAULT_HOT_COFFEE_NOTES = [
 ];
 
 /* ============================================================================
-   MENU DATA (SAME FULL RESTAURANT MENU)
+   100% FULL MENU DATA WITH ALL DISH-SPECIFIC INGREDIENTS, SPICE OPTIONS,
+   SIDE SWAPS, ROKA OPTIONS, EMPTY GLASS & LEMON SLICES
    ============================================================================ */
 var POS_MENU = [
   {
@@ -800,41 +1126,82 @@ var POS_MENU = [
       { id: "gunun_corbasi", tr: "GÜNÜN ÇORBASI", en: "Soup of the Day", price: 149,
         descTr: "servis personeline danışınız", descEn: "Ask the service staff for today's soup",
         variants: [{ label: "Tam (Full)", tr: "Tam", price: 149 }, { label: "Yarım (Half)", tr: "Yarım", price: 135 }],
-        customNotes: [{ en: "Serve First", tr: "Önce gelsin" }, { en: "No Spices", tr: "Üzeri baharatsız / sossuz" }, { en: "With Lemon", tr: "Limonlu" }, { en: "Extra Hot", tr: "Çok sıcak olsun" }, { en: "Extra Bread", tr: "Ekstra ekmek" }]
+        customNotes: [
+          { en: "Serve First", tr: "Önce gelsin" },
+          { en: "No Spices (Baharatsız)", tr: "Üzeri baharatsız / sossuz" },
+          { en: "With Lemon", tr: "Limonlu" },
+          { en: "Extra Hot", tr: "Çok sıcak olsun" },
+          { en: "Extra Bread", tr: "Ekstra ekmek" }
+        ]
       },
       { id: "aci_eksi_corba", tr: "ACI EKŞİ ÇORBA", en: "Hot & Sour Soup", price: 329,
         descTr: "kabak, havuç, beyaz lahana, tavuk göğüs, susam yağı, istiridye sosu, soya sosu, istiridye mantarı",
         descEn: "Zucchini, carrot, cabbage, chicken breast, sesame oil, oyster sauce, soy sauce, oyster mushroom",
         variants: [{ label: "Tam (Full)", tr: "Tam", price: 329 }, { label: "Yarım (Half)", tr: "Yarım", price: 299 }],
-        customNotes: [{ en: "Serve First", tr: "Önce gelsin" }, { en: "Less Spicy", tr: "Az acılı" }, { en: "No Mushroom", tr: "Mantarsız" }, { en: "No Chicken", tr: "Tavuksuz" }]
+        customNotes: [
+          { en: "Serve First", tr: "Önce gelsin" },
+          { en: "Less Spicy", tr: "Az acılı" },
+          { en: "No Mushroom", tr: "Mantarsız" },
+          { en: "No Chicken", tr: "Tavuksuz" }
+        ]
       },
       { id: "sarimsakli_ekmek", tr: "SARIMSAKLI EKMEK", en: "Garlic Bread", price: 138,
         descTr: "onion pizza hamurumuzun üzerinde sarımsak sos, mozarella ve parmesan ile",
         descEn: "On our pizza dough with garlic sauce, mozzarella & parmesan",
         variants: [{ label: "4 Dilim (4 pcs)", tr: "4 Dilim", price: 138 }, { label: "8 Dilim (8 pcs)", tr: "8 Dilim", price: 252 }],
-        customNotes: [{ en: "Light Garlic", tr: "Az sarımsaklı" }, { en: "No Spices/Herbs", tr: "Baharatsız" }, { en: "Extra Crispy", tr: "İyi kızarmış" }, { en: "No Parmesan", tr: "Parmesansız" }]
+        customNotes: [
+          { en: "Light Garlic", tr: "Az sarımsaklı" },
+          { en: "No Spices/Herbs", tr: "Baharatsız" },
+          { en: "Extra Crispy", tr: "İyi kızarmış" },
+          { en: "No Parmesan", tr: "Parmesansız" }
+        ]
       },
       { id: "patates_kizartmasi", tr: "PATATES KIZARTMASI", en: "French Fries", price: 173,
         descTr: "patatesinizi elma dilim olarak da tercih edebilirsiniz", descEn: "Available as regular fries or apple-slice wedges",
         variants: [{ label: "Normal (Regular)", tr: "Normal", price: 173 }, { label: "Elma Dilim (Wedges)", tr: "Elma Dilim", price: 173 }],
-        customNotes: [{ en: "No Spices (Baharatsız)", tr: "Baharatsız" }, { en: "No Salt (Tuzsuz)", tr: "Tuzsuz" }, { en: "Well Fried / Crispy", tr: "İyi kızarmış (Çıtır)" }, { en: "With Ketchup & Mayo", tr: "Ketçap ve mayonez ile" }]
+        customNotes: [
+          { en: "No Spices (Baharatsız)", tr: "Baharatsız" },
+          { en: "No Salt (Tuzsuz)", tr: "Tuzsuz" },
+          { en: "Well Fried / Crispy", tr: "İyi kızarmış (Çıtır)" },
+          { en: "With Ketchup & Mayo", tr: "Ketçap ve mayonez ile" }
+        ]
       },
       { id: "sogan_halkalari", tr: "SOĞAN HALKALARI", en: "Onion Rings", price: 253,
         descTr: "patates kızartması, jalapeno sos ile", descEn: "Served with french fries & jalapeño sauce",
-        customNotes: [{ en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "No Jalapeño Sauce", tr: "Jalapeno sossuz" }, { en: "Sauce on Side", tr: "Sos ayrı" }, { en: "Extra Crispy", tr: "İyi kızarmış" }]
+        customNotes: [
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "No Jalapeño Sauce", tr: "Jalapeno sossuz" },
+          { en: "Sauce on Side", tr: "Sos ayrı" },
+          { en: "Extra Crispy", tr: "İyi kızarmış" }
+        ]
       },
       { id: "citir_tavuk", tr: "ÇITIR TAVUK", en: "Crispy Chicken Bites", price: 324,
         descTr: "patates kızartması, ballı hardal sos ile", descEn: "Served with french fries & honey mustard sauce",
-        customNotes: [{ en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "No Salt on Fries", tr: "Patatesi tuzsuz" }, { en: "No Honey Mustard", tr: "Ballı hardal sossuz" }, { en: "Sauce on Side", tr: "Sos ayrı" }]
+        customNotes: [
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "No Salt on Fries", tr: "Patatesi tuzsuz" },
+          { en: "No Honey Mustard", tr: "Ballı hardal sossuz" },
+          { en: "Sauce on Side", tr: "Sos ayrı" }
+        ]
       },
       { id: "karisik_kizart", tr: "KARIŞIK KIZARTMA", en: "Mixed Fried Platter", price: 421,
         descTr: "soğan halkaları, çıtır tavuk parçaları, sosis, patates kızartması ile", descEn: "Onion rings, crispy chicken bites, sausages & fries",
-        customNotes: [{ en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "No Sausage", tr: "Sosissiz" }, { en: "No Onion Rings", tr: "Soğan halkasız" }, { en: "Sauces on Side", tr: "Soslar ayrı" }]
+        customNotes: [
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "No Sausage (Sosissiz)", tr: "Sosissiz" },
+          { en: "No Onion Rings", tr: "Soğan halkasız" },
+          { en: "Sauces on Side", tr: "Soslar ayrı" }
+        ]
       },
       { id: "lor_peynirli_kabak", tr: "LOR PEYNİRLİ KABAK", en: "Zucchini Strips w/ Lor", price: 379,
         descTr: "tereyağında sotelenmiş kabak, ceviz, taze ıspanak yaprakları, parmesan, lor peyniri, çörek otu ve kokteyl domates ile",
         descEn: "Butter-sautéed zucchini strips, walnuts, fresh spinach, parmesan, lor cheese & cherry tomatoes",
-        customNotes: [{ en: "No Walnuts", tr: "Cevizsiz" }, { en: "No Black Cumin", tr: "Çörek otsuz" }, { en: "No Tomatoes", tr: "Domatessiz" }, { en: "No Lor Cheese", tr: "Lor peynirsiz" }]
+        customNotes: [
+          { en: "No Walnuts (Cevizsiz)", tr: "Cevizsiz" },
+          { en: "No Black Cumin (Çörek Otsuz)", tr: "Çörek otsuz" },
+          { en: "No Tomatoes", tr: "Domatessiz" },
+          { en: "No Lor Cheese", tr: "Lor peynirsiz" }
+        ]
       }
     ]
   },
@@ -844,37 +1211,78 @@ var POS_MENU = [
       { id: "roka_salatasi", tr: "ROKA SALATASI", en: "Arugula Salad", price: 379,
         descTr: "roka, kokteyl domates, salatalık, havuç, kırmızı kapya, sarı california, zeytinyağlı balzamik sos, nar ekşisi, frenk sos",
         descEn: "Arugula, cherry tomatoes, cucumber, carrot, bell peppers, balsamic, pomegranate molasses",
-        customNotes: [{ en: "Dressing on Side", tr: "Sos ayrı" }, { en: "No Pomegranate Molasses", tr: "Nar ekşisiz" }, { en: "No Balsamic", tr: "Balzamik sossuz" }, { en: "No Peppers", tr: "Bibersiz" }]
+        customNotes: [
+          { en: "Dressing on Side", tr: "Sos ayrı" },
+          { en: "No Pomegranate Molasses", tr: "Nar ekşisiz" },
+          { en: "No Balsamic", tr: "Balzamik sossuz" },
+          { en: "No Peppers", tr: "Bibersiz" }
+        ]
       },
       { id: "kinoa_salatasi", tr: "KİNOA SALATASI", en: "Quinoa Salad", price: 395,
         descTr: "roka, akdeniz yeşilliği, kokteyl domates, kinoa, kırmızı kapya, sarı california, turp, pancar, salatalık, nar ekşisi, zeytinyağ limon sos",
-        descEn: "Arugula, Mediterranean greens, cherry tomatoes, quinoa, red & yellow peppers, radish, beetroot, cucumber, lemon-olive oil",
-        customNotes: [{ en: "Dressing on Side", tr: "Sos ayrı" }, { en: "No Arugula", tr: "Rokasız" }, { en: "No Beetroot", tr: "Pancarsız" }, { en: "No Radish", tr: "Turpsuz" }, { en: "No Pomegranate Molasses", tr: "Nar ekşisiz" }]
+        descEn: "Arugula, greens, cherry tomatoes, quinoa, peppers, radish, beetroot, cucumber, lemon-olive oil",
+        customNotes: [
+          { en: "Dressing on Side", tr: "Sos ayrı" },
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "No Beetroot (Pancarsız)", tr: "Pancarsız" },
+          { en: "No Radish (Turpsuz)", tr: "Turpsuz" },
+          { en: "No Pomegranate Molasses", tr: "Nar ekşisiz" }
+        ]
       },
       { id: "oniondan", tr: "ONİON'DAN", en: "Onion Special Salad", price: 621,
         descTr: "roka, akdeniz yeşilliği, kırmızı kapya, sarı california, labne, istiridye mantarı, kabak, kinoa, baby turp, zeytinyağ limon sos, frenk sos",
-        descEn: "Arugula, Mediterranean greens, red & yellow peppers, labneh cheese, oyster mushrooms, zucchini, quinoa, baby radish",
-        customNotes: [{ en: "Dressing on Side", tr: "Sos ayrı" }, { en: "No Arugula", tr: "Rokasız" }, { en: "No Mushroom", tr: "Mantarsız" }, { en: "No Labneh", tr: "Labnesiz" }, { en: "No Zucchini", tr: "Kabaksız" }]
+        descEn: "Arugula, greens, peppers, labneh, oyster mushrooms, zucchini, quinoa, baby radish",
+        customNotes: [
+          { en: "Dressing on Side", tr: "Sos ayrı" },
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "No Mushroom (Mantarsız)", tr: "Mantarsız" },
+          { en: "No Labneh", tr: "Labnesiz" },
+          { en: "No Zucchini", tr: "Kabaksız" }
+        ]
       },
       { id: "akdeniz_salatasi", tr: "AKDENİZ SALATASI", en: "Mediterranean Salad", price: 627,
         descTr: "akdeniz yeşilliği, göbek, kokteyl domates, salatalık, zeytin, mısır, taze mozarella, turp, çörekotu, zeytinyağ limon sos",
         descEn: "Mediterranean greens, lettuce, cherry tomatoes, cucumber, olives, corn, fresh mozzarella",
-        customNotes: [{ en: "Dressing on Side", tr: "Sos ayrı" }, { en: "No Olives", tr: "Zeytinsiz" }, { en: "No Corn", tr: "Mısırsız" }, { en: "No Black Cumin", tr: "Çörek otsuz" }]
+        customNotes: [
+          { en: "Dressing on Side", tr: "Sos ayrı" },
+          { en: "No Olives (Zeytinsiz)", tr: "Zeytinsiz" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" },
+          { en: "No Black Cumin", tr: "Çörek otsuz" }
+        ]
       },
       { id: "sezar_salata", tr: "SEZAR SALATA", en: "Caesar Salad", price: 567,
         descTr: "ızgara tavuk bonfile, göbek, kokteyl domates, kruton, parmesan, sezar sos, frenk sos",
-        descEn: "Grilled chicken breast fillet, iceberg lettuce, cherry tomatoes, croutons, parmesan & Caesar dressing",
-        customNotes: [{ en: "Sauce on Side", tr: "Sezar sos ayrı" }, { en: "No Croutons", tr: "Krutonsuz" }, { en: "No Parmesan", tr: "Parmesansız" }, { en: "No Tomatoes", tr: "Domatessiz" }]
+        descEn: "Grilled chicken breast, lettuce, cherry tomatoes, croutons, parmesan & Caesar dressing",
+        customNotes: [
+          { en: "Sauce on Side", tr: "Sezar sos ayrı" },
+          { en: "No Croutons", tr: "Krutonsuz" },
+          { en: "No Parmesan", tr: "Parmesansız" },
+          { en: "No Tomatoes", tr: "Domatessiz" }
+        ]
       },
       { id: "narli_bugday", tr: "NARLI BUĞDAY SALATASI", en: "Pomegranate Wheat Salad", price: 559,
         descTr: "akdeniz yeşilliği, roka, buğday, nar, kırmızı kapya, sarı california, kuru kayısı, kuru incir, portakal, turp, nane",
         descEn: "Greens, arugula, wheat, pomegranate, peppers, dried apricot & fig, orange, mint",
-        customNotes: [{ en: "Dressing on Side", tr: "Sos ayrı" }, { en: "No Arugula", tr: "Rokasız" }, { en: "No Dried Fruits", tr: "Kuru meyvesiz" }, { en: "No Mint", tr: "Nanesiz" }, { en: "No Pomegranate Molasses", tr: "Nar ekşisiz" }]
+        customNotes: [
+          { en: "Dressing on Side", tr: "Sos ayrı" },
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "No Dried Fruits", tr: "Kuru meyvesiz (Kayısı/İncir olmasın)" },
+          { en: "No Mint (Nanesiz)", tr: "Nanesiz" },
+          { en: "No Pomegranate Molasses", tr: "Nar ekşisiz" }
+        ]
       },
       { id: "ton_balikli_salata", tr: "TON BALIKLI SALATA", en: "Tuna Salad", price: 773,
         descTr: "göbek, roka, mısır, kapari, kırmızı soğan, kornişon turşu, dereotu, kokteyl domates, portakal suyu, zeytinyağ limon sos",
         descEn: "Lettuce, arugula, corn, capers, red onion, pickles, dill, cherry tomatoes & tuna",
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "No Red Onion", tr: "Kırmızı soğansız" }, { en: "No Pickles", tr: "Turşusuz" }, { en: "No Capers", tr: "Kaparisiz" }, { en: "No Corn", tr: "Mısırsız" }, { en: "No Dill", tr: "Dereotsuz" }, { en: "Dressing on Side", tr: "Sos ayrı" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "No Red Onion", tr: "Kırmızı soğansız" },
+          { en: "No Pickles (Turşusuz)", tr: "Turşusuz" },
+          { en: "No Capers (Kaparisiz)", tr: "Kaparisiz" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" },
+          { en: "No Dill (Dereotsuz)", tr: "Dereotsuz" },
+          { en: "Dressing on Side", tr: "Sos ayrı" }
+        ]
       }
     ]
   },
@@ -884,97 +1292,185 @@ var POS_MENU = [
       { id: "margherita", tr: "MARGHERİTA", en: "Margherita", price: 330,
         descTr: "pizza sosu, mozarella, roka ile", descEn: "Pizza sauce, mozzarella, arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 330 }, { label: "ORTA 30cm", tr: "ORTA", price: 420 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "Well Baked / Crispy", tr: "İyi pişmiş (Çıtır)" }, { en: "Light Cheese", tr: "Az peynirli" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "Well Baked / Crispy", tr: "İyi pişmiş (Çıtır)" },
+          { en: "Light Cheese", tr: "Az peynirli" }
+        ]
       },
       { id: "super_margherita", tr: "SÜPER MARGHERİTA", en: "Super Margherita", price: 379,
         descTr: "pizza sosu, taze mozarella, pesto sos ile", descEn: "Pizza sauce, fresh mozzarella, pesto sauce",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 379 }, { label: "ORTA 30cm", tr: "ORTA", price: 559 }],
-        customNotes: [{ en: "No Pesto Sauce", tr: "Pesto sossuz" }, { en: "Pesto on Side", tr: "Pesto sos ayrı" }, { en: "Well Baked", tr: "İyi pişmiş" }]
+        customNotes: [
+          { en: "No Pesto Sauce", tr: "Pesto sossuz" },
+          { en: "Pesto on Side", tr: "Pesto sos ayrı" },
+          { en: "Well Baked", tr: "İyi pişmiş" }
+        ]
       },
       { id: "mantar_pizza", tr: "MANTAR PİZZA", en: "Mushroom Pizza", price: 456,
         descTr: "pizza sosu, mozarella, kültür mantarı, istiridye mantarı, trüf yağı ile", descEn: "Pizza sauce, mozzarella, button & oyster mushrooms, truffle oil",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 456 }, { label: "ORTA 30cm", tr: "ORTA", price: 608 }],
-        customNotes: [{ en: "No Truffle Oil", tr: "Trüf yağsız" }, { en: "No Oyster Mushroom", tr: "İstiridye mantarsız" }, { en: "Well Baked", tr: "İyi pişmiş" }]
+        customNotes: [
+          { en: "No Truffle Oil", tr: "Trüf yağsız" },
+          { en: "No Oyster Mushroom", tr: "İstiridye mantarsız" },
+          { en: "Well Baked", tr: "İyi pişmiş" }
+        ]
       },
       { id: "dort_peynirli", tr: "DÖRT PEYNİRLİ PİZZA", en: "Four Cheese Pizza", price: 396,
         descTr: "ekşi krema sos, mozarella, danish blue cheese, parmesan, süzme peynir ve roka ile", descEn: "Sour cream sauce, mozzarella, blue cheese, parmesan, cottage cheese & arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 396 }, { label: "ORTA 30cm", tr: "ORTA", price: 686 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "No Blue Cheese", tr: "Blue cheese olmasın" }, { en: "Well Baked", tr: "İyi pişmiş" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "No Blue Cheese (Küflü Peynir)", tr: "Blue cheese (küflü peynir) olmasın" },
+          { en: "Well Baked", tr: "İyi pişmiş" }
+        ]
       },
       { id: "sezar_pizza", tr: "SEZAR PİZZA", en: "Caesar Pizza", price: 542,
         descTr: "pizza sosu, mozarella, tavuk bonfile, göbek ve sezar sos ile", descEn: "Pizza sauce, mozzarella, chicken fillet, lettuce & Caesar sauce",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 542 }, { label: "ORTA 30cm", tr: "ORTA", price: 816 }],
-        customNotes: [{ en: "No Lettuce", tr: "Göbek marulsuz" }, { en: "No Caesar Sauce", tr: "Sezar sossuz" }, { en: "Caesar Sauce on Side", tr: "Sezar sos ayrı" }]
+        customNotes: [
+          { en: "No Lettuce (Göbek Marulsuz)", tr: "Göbek marulsuz" },
+          { en: "No Caesar Sauce", tr: "Sezar sossuz" },
+          { en: "Caesar Sauce on Side", tr: "Sezar sos ayrı" }
+        ]
       },
       { id: "sucuk_pizza", tr: "SUCUK PİZZA", en: "Sujuk Pizza", price: 417,
         descTr: "pizza sosu, mozarella, dana sucuk, zeytin, mısır ile", descEn: "Pizza sauce, mozzarella, beef sujuk, olives & corn",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 417 }, { label: "ORTA 30cm", tr: "ORTA", price: 665 }],
-        customNotes: [{ en: "No Olives", tr: "Zeytinsiz" }, { en: "No Corn", tr: "Mısırsız" }, { en: "Well Baked", tr: "İyi pişmiş" }]
+        customNotes: [
+          { en: "No Olives (Zeytinsiz)", tr: "Zeytinsiz" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" },
+          { en: "Well Baked", tr: "İyi pişmiş" }
+        ]
       },
       { id: "vejeteryan_pizza", tr: "VEJETERYAN PİZZA", en: "Vegetarian Pizza", price: 379,
         descTr: "pizza sosu, mozarella, fırınlanmış kırmızı soğan, renkli biberler, mantar, mısır, zeytin ve roka ile", descEn: "Pizza sauce, mozzarella, roasted red onion, peppers, mushrooms, corn, olives & arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 379 }, { label: "ORTA 30cm", tr: "ORTA", price: 529 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "No Onion", tr: "Soğansız" }, { en: "No Olives", tr: "Zeytinsiz" }, { en: "No Corn", tr: "Mısırsız" }, { en: "No Mushroom", tr: "Mantarsız" }, { en: "No Peppers", tr: "Bibersiz" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "No Onion (Soğansız)", tr: "Soğansız" },
+          { en: "No Olives (Zeytinsiz)", tr: "Zeytinsiz" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" },
+          { en: "No Mushroom (Mantarsız)", tr: "Mantarsız" },
+          { en: "No Peppers (Bibersiz)", tr: "Bibersiz" }
+        ]
       },
       { id: "ispanakli_pizza", tr: "ISPANAKLI PİZZA", en: "Spinach Pizza", price: 377,
         descTr: "ekşi krema sos, mozarella, ıspanak, lor peyniri ve salamura kültür mantarı ile", descEn: "Sour cream sauce, mozzarella, spinach, lor cheese & mushrooms",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 377 }, { label: "ORTA 30cm", tr: "ORTA", price: 580 }],
-        customNotes: [{ en: "No Mushroom", tr: "Mantarsız" }, { en: "No Lor Cheese", tr: "Lor peynirsiz" }, { en: "Well Baked", tr: "İyi pişmiş" }]
+        customNotes: [
+          { en: "No Mushroom (Mantarsız)", tr: "Mantarsız" },
+          { en: "No Lor Cheese", tr: "Lor peynirsiz" },
+          { en: "Well Baked", tr: "İyi pişmiş" }
+        ]
       },
       { id: "bbq_tavuk_pizza", tr: "BARBEKÜ SOSLU TAVUK", en: "BBQ Chicken Pizza", price: 494,
         descTr: "barbekü sos, mozarella, tavuk bonfile, mısır, jalapeno, fırınlanmış kırmızı soğan ile", descEn: "BBQ sauce, mozzarella, chicken fillet, corn, jalapeño & roasted red onion",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 494 }, { label: "ORTA 30cm", tr: "ORTA", price: 776 }],
-        customNotes: [{ en: "No Jalapeño", tr: "Jalapenosuz (Acısız)" }, { en: "No Red Onion", tr: "Soğansız" }, { en: "No Corn", tr: "Mısırsız" }]
+        customNotes: [
+          { en: "No Jalapeño (Acısız)", tr: "Jalapenosuz (Acısız)" },
+          { en: "No Red Onion (Soğansız)", tr: "Soğansız" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" }
+        ]
       },
       { id: "teriyaki_pizza", tr: "TERİYAKİ PİZZA", en: "Teriyaki Chicken Pizza", price: 414,
         descTr: "pizza sosu, mozarella, tavuk bonfile, teriyaki sos ve roka ile", descEn: "Pizza sauce, mozzarella, chicken fillet, teriyaki sauce & arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 414 }, { label: "ORTA 30cm", tr: "ORTA", price: 666 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "Light Teriyaki Sauce", tr: "Az teriyaki soslu" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "Light Teriyaki Sauce", tr: "Az teriyaki soslu" }
+        ]
       },
       { id: "kabakli_pizza", tr: "KABAKLI PİZZA", en: "Zucchini Pizza", price: 379,
         descTr: "domates sos, mozarella, domates, kabak, lor peyniri ile", descEn: "Tomato sauce, mozzarella, tomatoes, zucchini & lor cheese",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 379 }, { label: "ORTA 30cm", tr: "ORTA", price: 499 }],
-        customNotes: [{ en: "No Lor Cheese", tr: "Lor peynirsiz" }, { en: "No Sliced Tomato", tr: "Dilim domatessiz" }]
+        customNotes: [
+          { en: "No Lor Cheese", tr: "Lor peynirsiz" },
+          { en: "No Sliced Tomato", tr: "Dilim domatessiz" }
+        ]
       },
       { id: "jambon_pizza", tr: "JAMBON PİZZA", en: "Beef Ham Pizza", price: 567,
         descTr: "pizza sosu, mozarella, dana jambon, karamelize soğan ve roka ile", descEn: "Pizza sauce, mozzarella, beef ham, caramelized onion & arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 567 }, { label: "ORTA 30cm", tr: "ORTA", price: 778 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "No Caramelized Onion", tr: "Karamelize soğansız" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "No Caramelized Onion", tr: "Karamelize soğansız" }
+        ]
       },
       { id: "sarkuteri_pizza", tr: "ŞARKÜTERİ PİZZA", en: "Charcuterie Pizza", price: 583,
         descTr: "pizza sosu, mozarella, dana sucuk, dana sosis, dana jambon, pastırma, mısır ve çarliston biber ile", descEn: "Pizza sauce, mozzarella, sujuk, sausage, ham, pastrami, corn & peppers",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 583 }, { label: "ORTA 30cm", tr: "ORTA", price: 935 }],
-        customNotes: [{ en: "No Corn", tr: "Mısırsız" }, { en: "No Peppers", tr: "Bibersiz" }, { en: "No Pastrami", tr: "Pastırmasız" }, { en: "No Sausage", tr: "Sosissiz" }, { en: "No Sujuk", tr: "Sucuksuz" }, { en: "No Ham", tr: "Jambonsuz" }]
+        customNotes: [
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" },
+          { en: "No Peppers (Bibersiz)", tr: "Bibersiz" },
+          { en: "No Pastrami (Pastırmasız)", tr: "Pastırmasız" },
+          { en: "No Sausage (Sosissiz)", tr: "Sosissiz" },
+          { en: "No Sujuk (Sucuksuz)", tr: "Sucuksuz" },
+          { en: "No Ham (Jambonsuz)", tr: "Jambonsuz" }
+        ]
       },
       { id: "karidesli_pizza", tr: "KARİDESLİ PİZZA", en: "Shrimp Pizza", price: 614,
         descTr: "pizza sosu, mozarella, kapari, karides ve roka ile", descEn: "Pizza sauce, mozzarella, capers, shrimp & arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 614 }, { label: "ORTA 30cm", tr: "ORTA", price: 863 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "No Capers", tr: "Kaparisiz" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "No Capers (Kaparisiz)", tr: "Kaparisiz" }
+        ]
       },
       { id: "fume_kaburga_pizza", tr: "FÜME KABURGA PİZZA", en: "Smoked Rib Pizza", price: 895,
         descTr: "pizza sosu, mozarella, füme kaburga, biber ve roka ile", descEn: "Pizza sauce, mozzarella, smoked beef ribs, peppers & arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 895 }, { label: "ORTA 30cm", tr: "ORTA", price: 1308 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "No Peppers", tr: "Bibersiz" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "No Peppers (Bibersiz)", tr: "Bibersiz" }
+        ]
       },
       { id: "ton_balikli_pizza", tr: "TON BALIKLI PİZZA", en: "Tuna Pizza", price: 505,
         descTr: "pizza sosu, mozarella, ton balığı, fırınlanmış kırmızı soğan, mısır ve roka ile", descEn: "Pizza sauce, mozzarella, tuna, roasted red onion, corn & arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 505 }, { label: "ORTA 30cm", tr: "ORTA", price: 732 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "No Red Onion", tr: "Kırmızı soğansız" }, { en: "No Corn", tr: "Mısırsız" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "No Red Onion (Soğansız)", tr: "Kırmızı soğansız" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" }
+        ]
       },
       { id: "sosis_pizza", tr: "SOSİS PİZZA", en: "Sausage Pizza", price: 548,
         descTr: "pizza sosu, mozarella, dana sosis, zeytin, mısır ile", descEn: "Pizza sauce, mozzarella, beef sausage, olives & corn",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 548 }, { label: "ORTA 30cm", tr: "ORTA", price: 762 }],
-        customNotes: [{ en: "No Olives", tr: "Zeytinsiz" }, { en: "No Corn", tr: "Mısırsız" }]
+        customNotes: [
+          { en: "No Olives (Zeytinsiz)", tr: "Zeytinsiz" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" }
+        ]
       },
       { id: "karisik_pizza", tr: "KARIŞIK PİZZA", en: "Mixed Supreme Pizza", price: 613,
         descTr: "pizza sosu, mozarella, dana sucuk, dana jambon, sosis, mantar, zeytin, mısır, biber ile", descEn: "Pizza sauce, mozzarella, sujuk, ham, sausage, mushrooms, olives, corn & peppers",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 613 }, { label: "ORTA 30cm", tr: "ORTA", price: 902 }],
-        customNotes: [{ en: "No Olives", tr: "Zeytinsiz" }, { en: "No Corn", tr: "Mısırsız" }, { en: "No Mushroom", tr: "Mantarsız" }, { en: "No Peppers", tr: "Bibersiz" }, { en: "No Sausage", tr: "Sosissiz" }, { en: "No Sujuk", tr: "Sucuksuz" }, { en: "No Ham", tr: "Jambonsuz" }]
+        customNotes: [
+          { en: "No Olives (Zeytinsiz)", tr: "Zeytinsiz" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" },
+          { en: "No Mushroom (Mantarsız)", tr: "Mantarsız" },
+          { en: "No Peppers (Bibersiz)", tr: "Bibersiz" },
+          { en: "No Sausage (Sosissiz)", tr: "Sosissiz" },
+          { en: "No Sujuk (Sucuksuz)", tr: "Sucuksuz" },
+          { en: "No Ham (Jambonsuz)", tr: "Jambonsuz" }
+        ]
       },
       { id: "pastirmali_pizza", tr: "PASTIRMALI PİZZA", en: "Pastrami Pizza", price: 758,
         descTr: "pizza sosu, mozarella, pastırma ve roka ile", descEn: "Pizza sauce, mozzarella, pastrami & arugula",
         variants: [{ label: "KÜÇÜK 23cm", tr: "KUCUK", price: 758 }, { label: "ORTA 30cm", tr: "ORTA", price: 1086 }],
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "Arugula on Side", tr: "Roka ayrı tabakta" }, { en: "Well Baked", tr: "İyi pişmiş" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "Arugula on Side (Roka Ayrı)", tr: "Roka ayrı tabakta" },
+          { en: "Well Baked", tr: "İyi pişmiş" }
+        ]
       }
     ]
   },
@@ -983,47 +1479,139 @@ var POS_MENU = [
     items: [
       { id: "hamburger", tr: "HAMBURGER", en: "Hamburger", price: 597,
         descTr: "100 gr onion burger köftesi, karamelize soğan, onion sos, patates kızartması, coleslaw salata", descEn: "100g patty, caramelized onion, Onion sauce, fries & coleslaw",
-        customNotes: [{ en: "No Caramelized Onion", tr: "Karamelize soğansız" }, { en: "No Onion Sauce", tr: "Onion sossuz" }, { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "No Coleslaw", tr: "Coleslawsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }, { en: "Swap Fries ➔ Salad", tr: "Patates yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Caramelized Onion", tr: "Karamelize soğansız" },
+          { en: "No Onion Sauce", tr: "Onion sossuz" },
+          { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "No Coleslaw", tr: "Coleslawsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" },
+          { en: "Swap Fries ➔ Green Salad", tr: "Patates yerine yeşillik salata" }
+        ]
       },
       { id: "cheeseburger", tr: "CHEESEBURGER", en: "Cheeseburger", price: 645,
         descTr: "100 gr onion burger köftesi, karamelize soğan, onion sos, kaşar ve cheddar peynir, patates kızartması, coleslaw", descEn: "100g patty, caramelized onion, kashar & cheddar cheese, fries & coleslaw",
-        customNotes: [{ en: "No Caramelized Onion", tr: "Karamelize soğansız" }, { en: "No Onion Sauce", tr: "Onion sossuz" }, { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "No Coleslaw", tr: "Coleslawsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }, { en: "Swap Fries ➔ Salad", tr: "Patates yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Caramelized Onion", tr: "Karamelize soğansız" },
+          { en: "No Onion Sauce", tr: "Onion sossuz" },
+          { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "No Coleslaw", tr: "Coleslawsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" },
+          { en: "Swap Fries ➔ Green Salad", tr: "Patates yerine yeşillik salata" }
+        ]
       },
       { id: "onion_burger", tr: "ONİON BURGER", en: "Onion Burger (Smoked Rib)", price: 881,
         descTr: "100 gr burger köftesi, ızgara soğan, sarımsak soslu domates, kaşar ve cheddar, füme kaburga, onion sos", descEn: "100g patty, grilled onion, garlic tomato, kashar & cheddar, smoked beef rib, Onion sauce, fries",
-        customNotes: [{ en: "No Grilled Onion", tr: "Izgara soğansız" }, { en: "No Garlic Tomato", tr: "Sarımsaklı domatessiz" }, { en: "No Onion Sauce", tr: "Onion sossuz" }, { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Grilled Onion", tr: "Izgara soğansız" },
+          { en: "No Garlic Tomato", tr: "Sarımsaklı domatessiz" },
+          { en: "No Onion Sauce", tr: "Onion sossuz" },
+          { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       },
       { id: "mantar_burger", tr: "MANTAR BURGER", en: "Mushroom Burger", price: 697,
         descTr: "100 gr onion burger köftesi, kültür ve istiridye mantar, demi glace sos, trüf yağı ve onion sos", descEn: "100g patty, mushrooms, demi-glace sauce, truffle oil, Onion sauce, fries",
-        customNotes: [{ en: "No Truffle Oil", tr: "Trüf yağsız" }, { en: "No Onion Sauce", tr: "Onion sossuz" }, { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Truffle Oil", tr: "Trüf yağsız" },
+          { en: "No Onion Sauce", tr: "Onion sossuz" },
+          { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       },
       { id: "mex_burger", tr: "MEX BURGER", en: "Spicy Mex Burger", price: 672,
         descTr: "100 gr onion burger köftesi, onion sos, karamelize soğan, cheddar peynir, jalapeno biber, jalapeno sos", descEn: "100g patty, cheddar, jalapeño peppers & sauce, caramelized onion, fries",
-        customNotes: [{ en: "No Caramelized Onion", tr: "Karamelize soğansız" }, { en: "Less Spicy", tr: "Jalapenosuz (Acısız)" }, { en: "No Onion Sauce", tr: "Onion sossuz" }, { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Caramelized Onion", tr: "Karamelize soğansız" },
+          { en: "Less Spicy (No Jalapeño)", tr: "Jalapenosuz (Az acılı)" },
+          { en: "No Onion Sauce", tr: "Onion sossuz" },
+          { en: "Well Done Patty", tr: "Köftesi iyi pişmiş" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       },
       { id: "steak_burger", tr: "STEAK BURGER", en: "Steak Burger", price: 854,
         descTr: "dana kontrfile, karamelize soğan, sarımsak soslu domates, onion burger sosu, kırmızı soğanlı kremalı istiridye mantar sos", descEn: "Beef sirloin strips, caramelized onion, garlic tomato, creamy oyster mushroom sauce, fries",
-        customNotes: [{ en: "Well Done Meat", tr: "Eti iyi pişmiş" }, { en: "Medium Cooked", tr: "Orta pişmiş" }, { en: "No Caramelized Onion", tr: "Karamelize soğansız" }, { en: "No Mushroom Sauce", tr: "Mantar sossuz" }, { en: "No Garlic Tomato", tr: "Sarımsaklı domatessiz" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "Well Done Meat", tr: "Eti iyi pişmiş" },
+          { en: "Medium Cooked", tr: "Orta pişmiş" },
+          { en: "No Caramelized Onion", tr: "Karamelize soğansız" },
+          { en: "No Mushroom Sauce", tr: "Mantar sossuz" },
+          { en: "No Garlic Tomato", tr: "Sarımsaklı domatessiz" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       },
       { id: "vejeteryan_burger", tr: "VEJETERYAN BURGER", en: "Vegetarian Burger", price: 478,
         descTr: "kinoa köftesi, onion sos, sarımsak soslu ızgara domates, ızgara soğan, pesto ve tahin sos", descEn: "Quinoa patty, grilled tomato & onion, pesto & tahini sauce, fries",
-        customNotes: [{ en: "No Grilled Onion", tr: "Izgara soğansız" }, { en: "No Garlic Tomato", tr: "Sarımsaklı domatessiz" }, { en: "No Tahini Sauce", tr: "Tahin sossuz" }, { en: "No Pesto Sauce", tr: "Pesto sossuz" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Grilled Onion", tr: "Izgara soğansız" },
+          { en: "No Garlic Tomato", tr: "Sarımsaklı domatessiz" },
+          { en: "No Tahini Sauce", tr: "Tahin sossuz" },
+          { en: "No Pesto Sauce", tr: "Pesto sossuz" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       },
       { id: "tavuk_burger", tr: "TAVUK BURGER", en: "Chicken Burger", price: 534,
         descTr: "panelenmiş çıtır tavuk göğüs, karamelize soğan, sarımsak soslu domates, onion burger sosu, cafe de paris sos", descEn: "Crispy breaded chicken breast, caramelized onion, garlic tomato, Café de Paris sauce, fries",
-        customNotes: [{ en: "No Caramelized Onion", tr: "Karamelize soğansız" }, { en: "No Garlic Tomato", tr: "Sarımsaklı domatessiz" }, { en: "No Café de Paris Sauce", tr: "Cafe de Paris sossuz" }, { en: "No Onion Sauce", tr: "Onion sossuz" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Caramelized Onion", tr: "Karamelize soğansız" },
+          { en: "No Garlic Tomato", tr: "Sarımsaklı domatessiz" },
+          { en: "No Café de Paris Sauce", tr: "Cafe de Paris sossuz" },
+          { en: "No Onion Sauce", tr: "Onion sossuz" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       },
       { id: "tavuklu_wrap", tr: "TAVUKLU WRAP", en: "Chicken Wrap", price: 459,
         descTr: "tavuk göğüs, renkli biberler, kırmızı soğan, soya sosu, kaşar peyniri, onion sos, patates kızartması", descEn: "Chicken breast, peppers, red onion, soy sauce, kashar cheese, fries",
-        customNotes: [{ en: "No Red Onion", tr: "Soğansız" }, { en: "No Peppers", tr: "Bibersiz" }, { en: "No Cheese", tr: "Kaşar peynirsiz" }, { en: "No Onion Sauce", tr: "Onion sossuz" }, { en: "No Soy Sauce", tr: "Soya sossuz" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Red Onion", tr: "Soğansız" },
+          { en: "No Peppers", tr: "Bibersiz" },
+          { en: "No Cheese", tr: "Kaşar peynirsiz" },
+          { en: "No Onion Sauce", tr: "Onion sossuz" },
+          { en: "No Soy Sauce", tr: "Soya sossuz" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       },
       { id: "kofteli_wrap", tr: "KÖFTELİ WRAP", en: "Meatball Wrap", price: 804,
         descTr: "ev yapımı ızgara köfte, akdeniz yeşilliği, kornişon turşu, domates, kaşar peyniri, onion sos", descEn: "Grilled meatballs, greens, pickles, tomato, kashar cheese, fries",
-        customNotes: [{ en: "No Pickles", tr: "Turşusuz" }, { en: "No Tomato", tr: "Domatessiz" }, { en: "No Cheese", tr: "Kaşar peynirsiz" }, { en: "No Onion Sauce", tr: "Onion sossuz" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Pickles (Turşu)", tr: "Turşusuz" },
+          { en: "No Tomato", tr: "Domatessiz" },
+          { en: "No Cheese", tr: "Kaşar peynirsiz" },
+          { en: "No Onion Sauce", tr: "Onion sossuz" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       },
       { id: "etli_wrap", tr: "ETLİ WRAP", en: "Beef Wrap", price: 784,
         descTr: "kontrfile, renkli biberler, kırmızı soğan, soya sosu, kaşar peyniri, onion sos, patates kızartması", descEn: "Beef sirloin, peppers, red onion, soy sauce, kashar cheese, fries",
-        customNotes: [{ en: "No Red Onion", tr: "Soğansız" }, { en: "No Peppers", tr: "Bibersiz" }, { en: "No Cheese", tr: "Kaşar peynirsiz" }, { en: "No Soy Sauce", tr: "Soya sossuz" }, { en: "Well Done Beef", tr: "Eti iyi pişmiş" }, { en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }]
+        customNotes: [
+          { en: "No Red Onion", tr: "Soğansız" },
+          { en: "No Peppers", tr: "Bibersiz" },
+          { en: "No Cheese", tr: "Kaşar peynirsiz" },
+          { en: "No Soy Sauce", tr: "Soya sossuz" },
+          { en: "Well Done Beef", tr: "Eti iyi pişmiş" },
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" }
+        ]
       }
     ]
   },
@@ -1032,43 +1620,107 @@ var POS_MENU = [
     items: [
       { id: "izgara_tavuk_pir", tr: "IZGARA TAVUK PİR", en: "Grilled Chicken Chop", price: 465,
         descTr: "210 gr taze baharatlar ile marine edilmiş ızgara tavuk but, basmati pirincinden tereyağlı pilav ve akdeniz yeşillikleri", descEn: "210g marinated grilled chicken thigh, basmati rice & greens",
-        customNotes: [{ en: "No Spices", tr: "Baharatsız" }, { en: "Well Cooked Chicken", tr: "Tavuğu iyi pişmiş" }, { en: "Swap Rice ➔ Fries", tr: "Pilav yerine patates kızartması" }, { en: "Swap Rice ➔ Extra Salad", tr: "Pilav yerine ekstra salata" }, { en: "Swap Salad ➔ Rice", tr: "Salata yerine pilav" }, { en: "Swap Salad ➔ Fries", tr: "Salata yerine patates" }]
+        customNotes: [
+          { en: "No Spices (Baharatsız)", tr: "Baharatsız" },
+          { en: "Well Cooked Chicken", tr: "Tavuğu iyi pişmiş" },
+          { en: "Swap Rice ➔ Fries", tr: "Pilav yerine patates kızartması" },
+          { en: "Swap Rice ➔ Extra Salad", tr: "Pilav yerine ekstra salata" },
+          { en: "Swap Salad ➔ Rice", tr: "Salata yerine pilav" },
+          { en: "Swap Salad ➔ Fries", tr: "Salata yerine patates" }
+        ]
       },
       { id: "ev_yapimi_kofte", tr: "EV YAPIMI IZGARA KÖFTE", en: "Grilled Meatballs", price: 690,
         descTr: "175 gr ev yapımı ızgara köfte, basmati pirincinden tereyağlı pilav, akdeniz yeşillikleri ve ızgara domates biber", descEn: "175g homemade meatballs, basmati rice, greens & grilled tomato/pepper",
-        customNotes: [{ en: "Well Done Meatballs", tr: "Köftesi iyi pişmiş" }, { en: "Swap Rice ➔ Fries", tr: "Pilav yerine patates kızartması" }, { en: "Swap Rice ➔ Extra Salad", tr: "Pilav yerine ekstra salata" }, { en: "Swap Salad ➔ Rice", tr: "Salata yerine pilav" }, { en: "Swap Salad ➔ Fries", tr: "Salata yerine patates" }, { en: "No Grilled Tomato/Pepper", tr: "Izgara domates/bibersiz" }]
+        customNotes: [
+          { en: "Well Done Meatballs", tr: "Köftesi iyi pişmiş" },
+          { en: "Swap Rice ➔ Fries", tr: "Pilav yerine patates kızartması" },
+          { en: "Swap Rice ➔ Extra Salad", tr: "Pilav yerine ekstra salata" },
+          { en: "Swap Salad ➔ Rice", tr: "Salata yerine pilav" },
+          { en: "Swap Salad ➔ Fries", tr: "Salata yerine patates" },
+          { en: "No Grilled Tomato/Pepper", tr: "Izgara domates/bibersiz" }
+        ]
       },
       { id: "tavuk_sinitzel", tr: "TAVUK ŞİNİTZEL", en: "Chicken Schnitzel", price: 490,
         descTr: "200 gr panelenmiş tavuk göğüs, özel baharatlı patates kızartması ve kırmızı lahana coleslaw ile", descEn: "200g breaded chicken breast, spiced fries & coleslaw",
-        customNotes: [{ en: "Fries No Spices", tr: "Patatesi baharatsız" }, { en: "No Coleslaw", tr: "Coleslawsız" }, { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" }, { en: "Swap Coleslaw ➔ Salad", tr: "Coleslaw yerine yeşillik salata" }, { en: "Swap Fries ➔ Rice", tr: "Patates yerine pilav" }, { en: "Swap Fries ➔ Salad", tr: "Patates yerine yeşillik salata" }, { en: "With Lemon", tr: "Limonlu" }]
+        customNotes: [
+          { en: "Fries No Spices (Patatesi Baharatsız)", tr: "Patatesi baharatsız" },
+          { en: "No Coleslaw", tr: "Coleslawsız" },
+          { en: "Swap Coleslaw ➔ Fries", tr: "Coleslaw yerine patates" },
+          { en: "Swap Coleslaw ➔ Green Salad", tr: "Coleslaw yerine yeşillik salata" },
+          { en: "Swap Fries ➔ Rice", tr: "Patates yerine pilav" },
+          { en: "Swap Fries ➔ Green Salad", tr: "Patates yerine yeşillik salata" },
+          { en: "With Lemon", tr: "Limonlu" }
+        ]
       },
       { id: "barbeku_tavuk_pir", tr: "BARBEKÜ TAVUK PİR", en: "BBQ Chicken Chop", price: 580,
         descTr: "210 gr marine edilmiş ızgara tavuk but, barbekü sos, fırınlanmış baby patates ve akdeniz yeşillikleri", descEn: "210g grilled chicken thigh, BBQ sauce, baked baby potatoes & greens",
-        customNotes: [{ en: "BBQ Sauce on Side", tr: "Barbekü sos ayrı" }, { en: "Swap Potatoes ➔ Rice", tr: "Baby patates yerine pilav" }, { en: "Swap Potatoes ➔ Fries", tr: "Baby patates yerine normal patates" }, { en: "Swap Salad ➔ Potatoes/Rice", tr: "Salata yerine patates/pilav" }, { en: "Well Cooked", tr: "İyi pişmiş" }]
+        customNotes: [
+          { en: "BBQ Sauce on Side", tr: "Barbekü sos ayrı" },
+          { en: "Swap Baby Potatoes ➔ Rice", tr: "Baby patates yerine pilav" },
+          { en: "Swap Baby Potatoes ➔ Regular Fries", tr: "Baby patates yerine normal patates" },
+          { en: "Swap Salad ➔ Potatoes/Rice", tr: "Salata yerine patates/pilav" },
+          { en: "Well Cooked", tr: "İyi pişmiş" }
+        ]
       },
       { id: "begendili_kofte", tr: "BEĞENDİLİ KÖFTE", en: "Meatballs on Eggplant Purée", price: 755,
         descTr: "175 gr ev yapımı ızgara köfte, frenk sos eşliğinde süzme yoğurt, patlıcan beğendi ve roka salatası", descEn: "175g grilled meatballs over roasted eggplant purée, yogurt & arugula",
-        customNotes: [{ en: "No Arugula", tr: "Rokasız" }, { en: "No Yogurt", tr: "Yoğurtsuz" }, { en: "No Herb Sauce", tr: "Frenk sossuz" }, { en: "Well Done Meatballs", tr: "Köftesi iyi pişmiş" }]
+        customNotes: [
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "No Yogurt", tr: "Yoğurtsuz" },
+          { en: "No Herb Sauce (Frenk)", tr: "Frenk sossuz" },
+          { en: "Well Done Meatballs", tr: "Köftesi iyi pişmiş" }
+        ]
       },
       { id: "mexicana_tavuk", tr: "MEXİCANA TAVUK", en: "Mexicana Chicken Chop", price: 589,
         descTr: "210 gr marine edilmiş ızgara tavuk but, jalapeno biberli domates salsa sos, pesto soslu patates püresi", descEn: "210g grilled chicken thigh, spicy jalapeño salsa, pesto mashed potatoes",
-        customNotes: [{ en: "Less Spicy", tr: "Jalapenosuz (Acısız)" }, { en: "Salsa on Side", tr: "Salsa sos ayrı" }, { en: "No Pesto on Mash", tr: "Püresi pesto sossuz" }, { en: "Swap Mash ➔ Rice/Fries", tr: "Püre yerine pilav / patates" }, { en: "Swap Salad ➔ Fries", tr: "Salata yerine patates" }]
+        customNotes: [
+          { en: "No Jalapeño (Not Spicy)", tr: "Jalapenosuz (Acısız)" },
+          { en: "Salsa on Side", tr: "Salsa sos ayrı" },
+          { en: "No Pesto on Mash", tr: "Püresi pesto sossuz" },
+          { en: "Swap Mashed Potato ➔ Rice/Fries", tr: "Püre yerine pilav / patates" },
+          { en: "Swap Salad ➔ Fries", tr: "Salata yerine patates" }
+        ]
       },
       { id: "mantar_soslu_tavuk", tr: "MANTAR SOSLU TAVUK", en: "Mushroom Chicken Chop", price: 659,
         descTr: "210 gr marine edilmiş ızgara tavuk but, kırmızı soğanlı kremalı istiridye mantar sos, fırınlanmış baby patates", descEn: "210g grilled chicken thigh, creamy oyster mushroom sauce, baby potatoes",
-        customNotes: [{ en: "No Red Onion in Sauce", tr: "Sosunda kırmızı soğan olmasın" }, { en: "Mushroom Sauce on Side", tr: "Mantar sosu ayrı" }, { en: "Swap Potatoes ➔ Rice", tr: "Baby patates yerine pilav" }, { en: "Swap Potatoes ➔ Fries", tr: "Baby patates yerine normal patates" }, { en: "Swap Salad ➔ Potatoes/Rice", tr: "Salata yerine patates/pilav" }]
+        customNotes: [
+          { en: "No Red Onion in Sauce", tr: "Sosunda kırmızı soğan olmasın" },
+          { en: "Mushroom Sauce on Side", tr: "Mantar sosu ayrı" },
+          { en: "Swap Baby Potatoes ➔ Rice", tr: "Baby patates yerine pilav" },
+          { en: "Swap Baby Potatoes ➔ Regular Fries", tr: "Baby patates yerine normal patates" },
+          { en: "Swap Salad ➔ Potatoes/Rice", tr: "Salata yerine patates/pilav" }
+        ]
       },
       { id: "cafe_paris_tavuk", tr: "CAFE de PARİS TAVUK", en: "Café de Paris Chicken", price: 595,
         descTr: "210 gr taze baharatlar ile marine edilmiş tavuk but, cafe de paris sos, basmati pilav ve yeşillik", descEn: "210g chicken thigh, Café de Paris sauce, basmati rice & greens",
-        customNotes: [{ en: "Sauce on Side", tr: "Cafe de Paris sos ayrı" }, { en: "Swap Rice ➔ Fries", tr: "Pilav yerine patates kızartması" }, { en: "Swap Rice ➔ Salad", tr: "Pilav yerine ekstra salata" }, { en: "Swap Salad ➔ Rice/Fries", tr: "Salata yerine pilav/patates" }, { en: "Well Cooked", tr: "İyi pişmiş" }]
+        customNotes: [
+          { en: "Sauce on Side", tr: "Cafe de Paris sos ayrı" },
+          { en: "Swap Rice ➔ Fries", tr: "Pilav yerine patates kızartması" },
+          { en: "Swap Rice ➔ Extra Salad", tr: "Pilav yerine ekstra salata" },
+          { en: "Swap Salad ➔ Rice/Fries", tr: "Salata yerine pilav/patates" },
+          { en: "Well Cooked", tr: "İyi pişmiş" }
+        ]
       },
       { id: "kofte_beyti", tr: "KÖFTE BEYTİ KEBABI", en: "Meatball Beyti Kebab", price: 690,
         descTr: "140 gr yufkaya sarılı maydanozlu beyti köfte, kremalı ıspanak sote, baby patates, domates sos, yoğurt", descEn: "140g wrapped meatballs, creamy spinach, baby potatoes, tomato sauce & yogurt",
-        customNotes: [{ en: "No Yogurt", tr: "Yoğurtsuz" }, { en: "No Spinach Sauté", tr: "Ispanak sotesiz" }, { en: "Swap Spinach ➔ Fries/Rice", tr: "Ispanak yerine patates/pilav" }, { en: "Light Tomato Sauce", tr: "Az domates soslu" }]
+        customNotes: [
+          { en: "No Yogurt", tr: "Yoğurtsuz" },
+          { en: "No Spinach Sauté", tr: "Ispanak sotesiz" },
+          { en: "Swap Spinach ➔ Fries/Rice", tr: "Ispanak yerine patates/pilav" },
+          { en: "Light Tomato Sauce", tr: "Az domates soslu" }
+        ]
       },
       { id: "cafe_paris_dana", tr: "CAFE de PARİS DANA KÜLBASTI", en: "Café de Paris Beef Cutlet", price: 1158,
         descTr: "150 gr marine edilmiş ızgara kontrfile, cafe de paris sos, fırınlanmış baby patates ve kremalı ıspanak sote", descEn: "150g grilled beef sirloin, Café de Paris sauce, baby potatoes & creamy spinach",
-        customNotes: [{ en: "Medium Cooked", tr: "Orta pişmiş" }, { en: "Well Done", tr: "İyi pişmiş" }, { en: "No Spices", tr: "Baharatsız" }, { en: "Sauce on Side", tr: "Cafe de Paris sos ayrı" }, { en: "No Spinach Sauté", tr: "Ispanak sotesiz" }, { en: "Swap Spinach ➔ Rice/Salad", tr: "Ispanak yerine pilav/salata" }, { en: "Swap Potatoes ➔ Rice/Fries", tr: "Baby patates yerine pilav/normal patates" }]
+        customNotes: [
+          { en: "Medium Cooked", tr: "Orta pişmiş" },
+          { en: "Well Done", tr: "İyi pişmiş" },
+          { en: "No Spices (Baharatsız)", tr: "Baharatsız" },
+          { en: "Sauce on Side", tr: "Cafe de Paris sos ayrı" },
+          { en: "No Spinach Sauté", tr: "Ispanak sotesiz" },
+          { en: "Swap Spinach ➔ Rice/Salad", tr: "Ispanak yerine pilav/salata" },
+          { en: "Swap Baby Potatoes ➔ Rice/Fries", tr: "Baby patates yerine pilav/normal patates" }
+        ]
       }
     ]
   },
@@ -1078,51 +1730,94 @@ var POS_MENU = [
       { id: "spagetti_pomodoro", tr: "SPAGETTİ POMODORO", en: "Spaghetti Pomodoro", price: 340,
         descTr: "220 gr haşlanmış spagetti makarnası, domates sos, parmesan peyniri", descEn: "220g spaghetti, tomato sauce & parmesan",
         variants: [{ label: "Spagetti", tr: "Normal", price: 340 }, { label: "Penne (Free)", tr: "Penne", price: 340 }, { label: "Fettuccine (+125₺)", tr: "Fettuccine", price: 465 }],
-        customNotes: [{ en: "No Parmesan", tr: "Parmesansız" }, { en: "No Spices", tr: "Baharatsız" }, { en: "Extra Tomato Sauce", tr: "Bol domates soslu" }]
+        customNotes: [
+          { en: "No Parmesan", tr: "Parmesansız" },
+          { en: "No Spices", tr: "Baharatsız" },
+          { en: "Extra Tomato Sauce", tr: "Bol domates soslu" }
+        ]
       },
       { id: "penne_arabiatta", tr: "PENNE ARABİATTA", en: "Penne Arrabbiata", price: 384,
         descTr: "220 gr haşlanmış penne makarnası, arabiatta sos, siyah zeytin, tane mısır, parmesan peyniri", descEn: "220g penne, spicy arrabbiata sauce, black olives, corn & parmesan",
         variants: [{ label: "Penne", tr: "Normal", price: 384 }, { label: "Spagetti (Free)", tr: "Spagetti", price: 384 }, { label: "Fettuccine (+125₺)", tr: "Fettuccine", price: 509 }],
-        customNotes: [{ en: "No Olives", tr: "Zeytinsiz" }, { en: "No Corn", tr: "Mısırsız" }, { en: "Less Spicy", tr: "Az acılı" }, { en: "Extra Spicy", tr: "Bol acılı" }, { en: "No Parmesan", tr: "Parmesansız" }]
+        customNotes: [
+          { en: "No Olives (Zeytinsiz)", tr: "Zeytinsiz" },
+          { en: "No Corn (Mısırsız)", tr: "Mısırsız" },
+          { en: "Less Spicy", tr: "Az acılı" },
+          { en: "Extra Spicy", tr: "Bol acılı" },
+          { en: "No Parmesan", tr: "Parmesansız" }
+        ]
       },
       { id: "fettuchine_tavuk", tr: "FETTUCHİNE TAVUK MANTAR", en: "Fettuccine Chicken Mushroom", price: 746,
         descTr: "220 gr haşlanmış fettuchine makarnası, 125 gr tavuk göğüs parçaları, krema, kültür mantarı, parmesan", descEn: "220g fettuccine, 125g chicken breast, cream, mushrooms & parmesan",
         variants: [{ label: "Fettuccine", tr: "Normal", price: 746 }, { label: "Penne (-125₺)", tr: "Penne", price: 621 }, { label: "Spagetti (-125₺)", tr: "Spagetti", price: 621 }],
-        customNotes: [{ en: "No Mushroom", tr: "Mantarsız" }, { en: "No Chicken", tr: "Tavuksuz" }, { en: "No Parmesan", tr: "Parmesansız" }, { en: "Light Cream", tr: "Az kremalı" }]
+        customNotes: [
+          { en: "No Mushroom (Mantarsız)", tr: "Mantarsız" },
+          { en: "No Chicken (Tavuksuz)", tr: "Tavuksuz" },
+          { en: "No Parmesan", tr: "Parmesansız" },
+          { en: "Light Cream", tr: "Az kremalı" }
+        ]
       },
       { id: "spagetti_bolonez", tr: "SPAGETTİ BOLONEZ", en: "Spaghetti Bolognese", price: 846,
         descTr: "220 gr haşlanmış spagetti makarnası, domates sos, bolonez sos, parmesan", descEn: "220g spaghetti, tomato & minced meat bolognese sauce, parmesan",
         variants: [{ label: "Spagetti", tr: "Normal", price: 846 }, { label: "Penne (Free)", tr: "Penne", price: 846 }, { label: "Fettuccine (+125₺)", tr: "Fettuccine", price: 971 }],
-        customNotes: [{ en: "No Parmesan", tr: "Parmesansız" }, { en: "Extra Bolognese Sauce", tr: "Bol soslu" }]
+        customNotes: [
+          { en: "No Parmesan", tr: "Parmesansız" },
+          { en: "Extra Bolognese Sauce", tr: "Bol soslu" }
+        ]
       },
       { id: "lazanya", tr: "LAZANYA", en: "Lasagna", price: 694,
         descTr: "ev yapımı taze makarna hamurumuzun arasında, bolonez sos, domates sos, mozarella, kaşar peynir, beşamel ve pesto sos", descEn: "Homemade fresh pasta layers with bolognese, mozzarella, béchamel & pesto",
-        customNotes: [{ en: "No Pesto Sauce", tr: "Pesto sossuz" }, { en: "Well Baked", tr: "İyi kızarmış / sıcak" }]
+        customNotes: [
+          { en: "No Pesto Sauce", tr: "Pesto sossuz" },
+          { en: "Well Baked", tr: "İyi kızarmış / sıcak" }
+        ]
       },
       { id: "fettuchine_alfredo", tr: "FETTUCHİNE ALFREDO", en: "Fettuccine Alfredo", price: 644,
         descTr: "220 gr haşlanmış fettuchine makarnası, yoğun tereyağ, krema, parmesan", descEn: "220g fettuccine, rich butter, cream & parmesan",
         variants: [{ label: "Fettuccine", tr: "Normal", price: 644 }, { label: "Penne (-125₺)", tr: "Penne", price: 519 }, { label: "Spagetti (-125₺)", tr: "Spagetti", price: 519 }],
-        customNotes: [{ en: "No Parmesan", tr: "Parmesansız" }, { en: "Light Butter/Cream", tr: "Az tereyağlı / az kremalı" }]
+        customNotes: [
+          { en: "No Parmesan", tr: "Parmesansız" },
+          { en: "Light Butter/Cream", tr: "Az tereyağlı / az kremalı" }
+        ]
       },
       { id: "spagetti_sebzeli", tr: "SPAGETTİ SEBZELİ", en: "Vegetable Spaghetti", price: 450,
         descTr: "220 gr spagetti, renkli biberler, kırmızı soğan, havuç, kabak, ıspanak, hafif acılı krema sos, parmesan, lor peyniri, roka", descEn: "220g spaghetti, mixed vegetables, mildly spicy cream sauce, parmesan, lor cheese & arugula",
         variants: [{ label: "Spagetti", tr: "Normal", price: 450 }, { label: "Penne (Free)", tr: "Penne", price: 450 }, { label: "Fettuccine (+125₺)", tr: "Fettuccine", price: 575 }],
-        customNotes: [{ en: "Not Spicy", tr: "Acısız (Normal krema soslu)" }, { en: "No Arugula", tr: "Rokasız" }, { en: "No Red Onion", tr: "Soğansız" }, { en: "No Peppers", tr: "Bibersiz" }, { en: "No Lor Cheese", tr: "Lor peynirsiz" }, { en: "No Parmesan", tr: "Parmesansız" }]
+        customNotes: [
+          { en: "Not Spicy (Acısız)", tr: "Acısız (Normal krema soslu)" },
+          { en: "No Arugula (Rokasız)", tr: "Rokasız" },
+          { en: "No Red Onion (Soğansız)", tr: "Soğansız" },
+          { en: "No Peppers (Bibersiz)", tr: "Bibersiz" },
+          { en: "No Lor Cheese", tr: "Lor peynirsiz" },
+          { en: "No Parmesan", tr: "Parmesansız" }
+        ]
       },
       { id: "penne_uc_peynirli", tr: "PENNE ÜÇ PEYNİRLİ", en: "Three-Cheese Penne", price: 649,
         descTr: "220 gr penne, süzme peynir içeren ekşi krema sos, danish blue cheese, parmesan peyniri, pesto sos", descEn: "220g penne, cottage cheese sour cream, blue cheese, parmesan & pesto",
         variants: [{ label: "Penne", tr: "Normal", price: 649 }, { label: "Spagetti (Free)", tr: "Spagetti", price: 649 }, { label: "Fettuccine (+125₺)", tr: "Fettuccine", price: 774 }],
-        customNotes: [{ en: "No Blue Cheese", tr: "Blue cheese olmasın" }, { en: "No Pesto Sauce", tr: "Pesto sossuz" }]
+        customNotes: [
+          { en: "No Blue Cheese (Küflü Peynir)", tr: "Blue cheese olmasın" },
+          { en: "No Pesto Sauce", tr: "Pesto sossuz" }
+        ]
       },
       { id: "penne_uc_mantarli", tr: "PENNE ÜÇ MANTARLI", en: "Three-Mushroom Penne", price: 505,
         descTr: "220 gr penne, krema, kültür mantarı, istiridye mantarı, kestane mantarı, trüf yağı, parmesan", descEn: "220g penne, cream, 3 types of mushrooms, truffle oil & parmesan",
         variants: [{ label: "Penne", tr: "Normal", price: 505 }, { label: "Spagetti (Free)", tr: "Spagetti", price: 505 }, { label: "Fettuccine (+125₺)", tr: "Fettuccine", price: 630 }],
-        customNotes: [{ en: "No Truffle Oil", tr: "Trüf yağsız" }, { en: "No Parmesan", tr: "Parmesansız" }]
+        customNotes: [
+          { en: "No Truffle Oil", tr: "Trüf yağsız" },
+          { en: "No Parmesan", tr: "Parmesansız" }
+        ]
       },
       { id: "spagetti_karides", tr: "SPAGETTİ KARİDES KALAMAR", en: "Spaghetti Shrimp & Calamari", price: 846,
         descTr: "220 gr spagetti, krema, bisk, karides, kalamar, kapari, kokteyl domates ve parmesan", descEn: "220g spaghetti, cream, bisque, shrimp, calamari, capers & cherry tomatoes",
         variants: [{ label: "Spagetti", tr: "Normal", price: 846 }, { label: "Penne (Free)", tr: "Penne", price: 846 }, { label: "Fettuccine (+125₺)", tr: "Fettuccine", price: 971 }],
-        customNotes: [{ en: "No Capers", tr: "Kaparisiz" }, { en: "No Calamari (Only Shrimp)", tr: "Kalamarsız (Sadece karides)" }, { en: "No Shrimp (Only Calamari)", tr: "Karidessiz (Sadece kalamar)" }, { en: "No Parmesan", tr: "Parmesansız" }, { en: "No Tomatoes", tr: "Domatessiz" }]
+        customNotes: [
+          { en: "No Capers (Kaparisiz)", tr: "Kaparisiz" },
+          { en: "No Calamari (Only Shrimp)", tr: "Kalamarsız (Sadece karides)" },
+          { en: "No Shrimp (Only Calamari)", tr: "Karidessiz (Sadece kalamar)" },
+          { en: "No Parmesan", tr: "Parmesansız" },
+          { en: "No Tomatoes", tr: "Domatessiz" }
+        ]
       }
     ]
   },
@@ -1131,19 +1826,35 @@ var POS_MENU = [
     items: [
       { id: "tiramisu", tr: "TİRAMİSU", en: "Tiramisu", price: 497,
         descTr: "orijinaline sadık kahvesi bir İtalyan klasiği", descEn: "Authentic Italian coffee-flavored tiramisu",
-        customNotes: [{ en: "Serve After Meal", tr: "Yemekten sonra" }, { en: "2 Spoons/Forks", tr: "Çift çatal/kaşık" }]
+        customNotes: [
+          { en: "Serve After Meal", tr: "Yemekten sonra" },
+          { en: "2 Spoons/Forks", tr: "Çift çatal/kaşık" }
+        ]
       },
       { id: "panna_cotta", tr: "PANNA COTTA", en: "Panna Cotta", price: 387,
         descTr: "frambuaz sos, nane aromalı pastacı kreması ve taze nane yaprakları ile", descEn: "With raspberry sauce, mint pastry cream & fresh mint",
-        customNotes: [{ en: "No Mint Cream/Leaves", tr: "Nanesiz" }, { en: "Light Raspberry Sauce", tr: "Az frambuaz soslu" }, { en: "2 Spoons", tr: "Çift kaşık" }]
+        customNotes: [
+          { en: "No Mint Cream/Leaves", tr: "Nanesiz" },
+          { en: "Light Raspberry Sauce", tr: "Az frambuaz soslu" },
+          { en: "2 Spoons", tr: "Çift kaşık" }
+        ]
       },
       { id: "sufle", tr: "SUFLE", en: "Chocolate Soufflé", price: 396,
         descTr: "çikolata soslu sufle yanında sade dondurma ile", descEn: "Warm chocolate soufflé served with vanilla ice cream",
-        customNotes: [{ en: "No Ice Cream", tr: "Dondurmasız" }, { en: "Ice Cream on Side", tr: "Dondurması ayrı tabakta" }, { en: "2 Spoons", tr: "Çift kaşık" }]
+        customNotes: [
+          { en: "No Ice Cream", tr: "Dondurmasız" },
+          { en: "Ice Cream on Side", tr: "Dondurması ayrı tabakta" },
+          { en: "2 Spoons", tr: "Çift kaşık" }
+        ]
       },
       { id: "cikolatali_calzone", tr: "ÇİKOLATALI CALZONE", en: "Chocolate Calzone", price: 295,
         descTr: "onion pizza hamurumuzun içerisinde kakaolu fındık kreması, muz, ceviz, pudra şekeri ve karamel sos ile", descEn: "Folded dough with chocolate hazelnut cream, banana, walnuts & caramel",
-        customNotes: [{ en: "No Walnuts", tr: "Cevizsiz" }, { en: "No Banana", tr: "Muzsuz" }, { en: "No Caramel Sauce", tr: "Karamel sossuz" }, { en: "No Powdered Sugar", tr: "Pudra şekersiz" }]
+        customNotes: [
+          { en: "No Walnuts (Cevizsiz)", tr: "Cevizsiz" },
+          { en: "No Banana (Muzsuz)", tr: "Muzsuz" },
+          { en: "No Caramel Sauce", tr: "Karamel sossuz" },
+          { en: "No Powdered Sugar", tr: "Pudra şekersiz" }
+        ]
       }
     ]
   },
@@ -1151,49 +1862,103 @@ var POS_MENU = [
     catTr: "SOĞUK İÇECEKLER", catEn: "Cold Drinks & Iced Coffee", type: "cold_drink",
     items: [
       { id: "su", tr: "SU", en: "Water (400 ml)", price: 40,
-        customNotes: [{ en: "With Empty Glass", tr: "Boş bardak ile" }, { en: "No Glass", tr: "Bardaksız" }, { en: "With Glass & Ice", tr: "Buzlu bardak ile" }, { en: "With Lemon Slices", tr: "Limon dilimli" }, { en: "Cold", tr: "Soğuk" }, { en: "Room Temp", tr: "Oda sıcaklığında" }]
+        customNotes: [
+          { en: "With Empty Glass", tr: "Boş bardak ile" },
+          { en: "No Glass", tr: "Bardaksız" },
+          { en: "With Glass & Ice", tr: "Buzlu bardak ile" },
+          { en: "With Lemon Slices", tr: "Limon dilimli" },
+          { en: "Cold", tr: "Soğuk" },
+          { en: "Room Temp (Not Cold)", tr: "Oda sıcaklığında (Soğuk olmasın)" }
+        ]
       },
       { id: "coca_cola", tr: "COCA COLA 300 ML", en: "Coca-Cola", price: 126,
-        customNotes: [{ en: "With Empty Glass", tr: "Boş bardak ile" }, { en: "With Glass & Ice", tr: "Buzlu bardak ile" }, { en: "No Glass", tr: "Bardaksız" }, { en: "With Lemon Slices", tr: "Limon dilimli" }, { en: "No Ice", tr: "Buzsuz" }, { en: "Room Temp", tr: "Soğuk olmasın" }]
+        customNotes: [
+          { en: "With Empty Glass", tr: "Boş bardak ile" },
+          { en: "With Glass & Ice", tr: "Buzlu bardak ile" },
+          { en: "No Glass (Can Only)", tr: "Bardaksız" },
+          { en: "With Lemon Slices (Limonlu)", tr: "Limon dilimli" },
+          { en: "No Ice", tr: "Buzsuz" },
+          { en: "Room Temp (Not Cold)", tr: "Soğuk olmasın" }
+        ]
       },
       { id: "fanta", tr: "FANTA 300 ML", en: "Fanta", price: 126 },
       { id: "sprite", tr: "SPRİTE 330 ML", en: "Sprite", price: 126,
-        customNotes: [{ en: "With Empty Glass", tr: "Boş bardak ile" }, { en: "With Glass & Ice", tr: "Buzlu bardak ile" }, { en: "No Glass", tr: "Bardaksız" }, { en: "With Lemon Slices", tr: "Limon dilimli" }, { en: "No Ice", tr: "Buzsuz" }]
+        customNotes: [
+          { en: "With Empty Glass", tr: "Boş bardak ile" },
+          { en: "With Glass & Ice", tr: "Buzlu bardak ile" },
+          { en: "No Glass (Can Only)", tr: "Bardaksız" },
+          { en: "With Lemon Slices (Limonlu)", tr: "Limon dilimli" },
+          { en: "No Ice", tr: "Buzsuz" }
+        ]
       },
       { id: "fuse_tea", tr: "FUSE TEA 330 ML", en: "Fuse Tea Iced Tea", price: 126,
         variants: [{ label: "Şeftali (Peach)", tr: "Şeftali", price: 126 }, { label: "Limon (Lemon)", tr: "Limon", price: 126 }] },
       { id: "cappy", tr: "CAPPY", en: "Cappy Juice", price: 126,
         variants: [{ label: "Vişne (Cherry)", tr: "Vişne", price: 126 }, { label: "Karışık (Mixed)", tr: "Karışık", price: 126 }] },
       { id: "ayran", tr: "AYRAN 280 ML", en: "Ayran Yogurt Drink", price: 60,
-        customNotes: [{ en: "With Empty Glass", tr: "Boş bardak ile" }, { en: "No Glass", tr: "Bardaksız" }, { en: "Serve Now", tr: "Hemen gelsin" }, { en: "With Meal", tr: "Yemekle gelsin" }]
+        customNotes: [
+          { en: "With Empty Glass", tr: "Boş bardak ile" },
+          { en: "No Glass", tr: "Bardaksız" },
+          { en: "Serve Now", tr: "Hemen gelsin" },
+          { en: "With Meal", tr: "Yemekle gelsin" }
+        ]
       },
       { id: "limonata", tr: "EV YAPIMI LİMONATA", en: "Homemade Lemonade", price: 105,
-        customNotes: [{ en: "No Ice", tr: "Buzsuz" }, { en: "Less Ice", tr: "Az buzlu" }, { en: "No Mint", tr: "Nanesiz" }, { en: "Extra Lemon Slices", tr: "Ekstra limon dilimli" }]
+        customNotes: [
+          { en: "No Ice", tr: "Buzsuz" },
+          { en: "Less Ice", tr: "Az buzlu" },
+          { en: "No Mint (Nanesiz)", tr: "Nanesiz" },
+          { en: "Extra Lemon Slices", tr: "Ekstra limon dilimli" }
+        ]
       },
       { id: "uludag_gazoz", tr: "ULUDAĞ GAZOZ", en: "Uludağ Gazoz", price: 116 },
       { id: "frutti_extra", tr: "FRUTTİ EXTRA", en: "Frutti Extra Sparkling", price: 60,
         variants: [{ label: "Mandalina (Mandarin)", tr: "Mandalina", price: 60 }, { label: "Yeşil Limon (Lime)", tr: "Yeşil Limon", price: 60 }, { label: "Orman Meyveleri (Berry)", tr: "Orman Meyveleri", price: 60 }] },
       { id: "gazoz_portakal", tr: "ULUDAĞ PORTAKAL", en: "Uludağ Orange Soda", price: 133 },
       { id: "uludag_soda", tr: "ULUDAĞ SODA", en: "Mineral Water", price: 55,
-        customNotes: [{ en: "With Lemon Slices", tr: "Limon dilimli" }, { en: "With Empty Glass", tr: "Boş bardak ile" }, { en: "With Glass & Ice", tr: "Buzlu bardak ile" }, { en: "No Glass", tr: "Bardaksız" }, { en: "No Ice", tr: "Buzsuz" }]
+        customNotes: [
+          { en: "With Lemon Slices (Limon Dilimli)", tr: "Limon dilimli" },
+          { en: "With Empty Glass", tr: "Boş bardak ile" },
+          { en: "With Glass & Ice", tr: "Buzlu bardak ile" },
+          { en: "No Glass (Bottle Only)", tr: "Bardaksız" },
+          { en: "No Ice", tr: "Buzsuz" }
+        ]
       },
       { id: "churchill", tr: "CHURCHİLL", en: "Churchill (Soda+Lemon+Salt)", price: 139,
-        customNotes: [{ en: "Less Salt", tr: "Az tuzlu" }, { en: "Extra Lemon", tr: "Bol limonlu" }, { en: "No Ice", tr: "Buzsuz" }]
+        customNotes: [
+          { en: "Less Salt", tr: "Az tuzlu" },
+          { en: "Extra Lemon", tr: "Bol limonlu" },
+          { en: "No Ice", tr: "Buzsuz" }
+        ]
       },
       { id: "ice_americano", tr: "İCE AMERİCANO", en: "Iced Americano", price: 138,
-        customNotes: [{ en: "Less Ice", tr: "Az buzlu" }, { en: "With Milk on Side", tr: "Yanında süt ile" }]
+        customNotes: [
+          { en: "Less Ice", tr: "Az buzlu" },
+          { en: "With Milk on Side", tr: "Yanında süt ile" }
+        ]
       },
       { id: "ice_latte", tr: "İCE LATTE", en: "Iced Latte", price: 186,
-        customNotes: [{ en: "Less Ice", tr: "Az buzlu" }, { en: "Extra Shot", tr: "Ekstra shot" }]
+        customNotes: [
+          { en: "Less Ice", tr: "Az buzlu" },
+          { en: "Extra Shot", tr: "Ekstra shot" }
+        ]
       },
       { id: "ice_karamel_latte", tr: "İCE KARAMEL LATTE", en: "Iced Caramel Latte", price: 270,
-        customNotes: [{ en: "Less Sweet", tr: "Az karamelli" }, { en: "Less Ice", tr: "Az buzlu" }]
+        customNotes: [
+          { en: "Less Sweet / Light Syrup", tr: "Az karamelli (Az şekerli)" },
+          { en: "Less Ice", tr: "Az buzlu" }
+        ]
       },
       { id: "ice_caffe_mocha", tr: "İCE CAFFE MOCHA", en: "Iced Caffè Mocha", price: 271,
-        customNotes: [{ en: "Less Ice", tr: "Az buzlu" }]
+        customNotes: [
+          { en: "Less Ice", tr: "Az buzlu" }
+        ]
       },
       { id: "espresso_soda", tr: "ESPRESSO SODA", en: "Espresso Soda", price: 225,
-        customNotes: [{ en: "Less Ice", tr: "Az buzlu" }, { en: "With Lemon Slice", tr: "Limon dilimli" }]
+        customNotes: [
+          { en: "Less Ice", tr: "Az buzlu" },
+          { en: "With Lemon Slice", tr: "Limon dilimli" }
+        ]
       }
     ]
   },
@@ -1203,37 +1968,62 @@ var POS_MENU = [
       { id: "cay", tr: "ÇAY", en: "Turkish Tea (Glass)", price: 56,
         subOptionTitle: "Çay Dem Oranı (Tea Strength):",
         subOptions: ["Normal", "Açık (Light)", "Demli (Dark/Strong)"],
-        customNotes: [{ en: "With Lemon Slices", tr: "Limon dilimli" }, { en: "Serve Now", tr: "Hemen gelsin" }, { en: "After Meal", tr: "Yemekten sonra" }]
+        customNotes: [
+          { en: "With Lemon Slices (Limon Dilimli)", tr: "Limon dilimli" },
+          { en: "Serve Now", tr: "Hemen gelsin" },
+          { en: "After Meal", tr: "Yemekten sonra" }
+        ]
       },
       { id: "fincan_cay", tr: "FİNCAN ÇAY", en: "Cup Tea (Mug)", price: 112,
         subOptionTitle: "Çay Dem Oranı (Tea Strength):",
         subOptions: ["Normal", "Açık (Light)", "Demli (Dark/Strong)"],
-        customNotes: [{ en: "With Lemon Slices", tr: "Limon dilimli" }, { en: "Serve Now", tr: "Hemen gelsin" }, { en: "After Meal", tr: "Yemekten sonra" }]
+        customNotes: [
+          { en: "With Lemon Slices (Limon Dilimli)", tr: "Limon dilimli" },
+          { en: "Serve Now", tr: "Hemen gelsin" },
+          { en: "After Meal", tr: "Yemekten sonra" }
+        ]
       },
       { id: "turk_kahvesi", tr: "TÜRK KAHVESİ", en: "Turkish Coffee", price: 165,
         variants: [{ label: "TEK (Single)", tr: "Tek", price: 165 }, { label: "DOUBLE", tr: "Double", price: 210 }],
         subOptionTitle: "Şeker Seçimi (Sugar Level):",
         subOptions: ["Sade (No Sugar)", "Orta (Medium)", "Şekerli (Sweet)"],
-        customNotes: [{ en: "Little Sugar", tr: "Az şekerli" }, { en: "With Water", tr: "Yanında su ile" }, { en: "Serve After Meal", tr: "Yemekten sonra" }]
+        customNotes: [
+          { en: "Little Sugar (Az Şekerli)", tr: "Az şekerli" },
+          { en: "With Water", tr: "Yanında su ile" },
+          { en: "Serve After Meal", tr: "Yemekten sonra" }
+        ]
       },
       { id: "espresso", tr: "ESPRESSO", en: "Espresso", price: 105,
         variants: [{ label: "TEK (Single)", tr: "Tek", price: 105 }, { label: "DOUBLE", tr: "Double", price: 138 }],
-        customNotes: [{ en: "Long (Lungo)", tr: "Long (Uzun çekim)" }, { en: "With Water", tr: "Yanında su ile" }]
+        customNotes: [
+          { en: "Long (Lungo)", tr: "Long (Uzun çekim)" },
+          { en: "With Water", tr: "Yanında su ile" }
+        ]
       },
       { id: "americano", tr: "AMERİCANO", en: "Americano", price: 138,
-        customNotes: [{ en: "With Hot Milk on Side", tr: "Yanında sıcak süt ile" }, { en: "With Cold Milk on Side", tr: "Yanında soğuk süt ile" }, { en: "Soft / Less Strong", tr: "Yumuşak içim" }]
+        customNotes: [
+          { en: "With Hot Milk on Side", tr: "Yanında sıcak süt ile" },
+          { en: "With Cold Milk on Side", tr: "Yanında soğuk süt ile" },
+          { en: "Soft / Less Strong", tr: "Yumuşak içim" }
+        ]
       },
       { id: "cappuccino", tr: "CAPPUCCİNO", en: "Cappuccino", price: 186 },
       { id: "latte_machiato", tr: "LATTE MACHİATO", en: "Latte Macchiato", price: 159 },
       { id: "caffe_latte", tr: "CAFFE LATTE", en: "Caffè Latte", price: 186 },
       { id: "caffe_mocha", tr: "CAFFE MOCHA", en: "Caffè Mocha", price: 190 },
       { id: "karamel_latte", tr: "KARAMEL CAFFE LATTE", en: "Caramel Latte", price: 187,
-        customNotes: [{ en: "Less Sweet", tr: "Az karamelli" }, { en: "Extra Hot", tr: "Çok sıcak" }]
+        customNotes: [
+          { en: "Less Sweet / Light Caramel", tr: "Az karamelli" },
+          { en: "Extra Hot", tr: "Çok sıcak" }
+        ]
       },
       { id: "flat_white", tr: "FLAT WHİTE", en: "Flat White", price: 173 },
       { id: "espresso_macchiato", tr: "ESPRESSO MACCHİATO", en: "Espresso Macchiato", price: 144 },
       { id: "sut_100ml", tr: "SÜT 100 ML", en: "Hot Milk 100ml", price: 27,
-        customNotes: [{ en: "Warm", tr: "Ilık olsun" }, { en: "Cold Milk", tr: "Soğuk süt olsun" }]
+        customNotes: [
+          { en: "Warm (Ilık)", tr: "Ilık olsun" },
+          { en: "Cold Milk", tr: "Soğuk süt olsun" }
+        ]
       }
     ]
   },
@@ -1242,7 +2032,8 @@ var POS_MENU = [
     items: [
       { id: "balli_hardal", tr: "BALLI HARDAL SOS", en: "Honey Mustard Sauce", price: 30, customNotes: [] },
       { id: "jalapeno_sos", tr: "JALAPENO SOS", en: "Jalapeño Sauce", price: 41, customNotes: [] },
-      { id: "dynamite_sos", tr: "DYNAMİTE SOS", en: "Dynamite Sauce", price: 19, descTr: "renkli biberler, sriracha, mayonez, taze kekik, hardal", descEn: "Peppers, sriracha, mayo, fresh thyme & mustard", customNotes: [] },
+      { id: "dynamite_sos", tr: "DYNAMİTE SOS", en: "Dynamite Sauce", price: 19,
+        descTr: "renkli biberler, sriracha, mayonez, taze kekik, hardal", descEn: "Peppers, sriracha, mayo, fresh thyme & mustard", customNotes: [] },
       { id: "ranch_sos", tr: "RANCH SOS", en: "Ranch Sauce", price: 17, customNotes: [] },
       { id: "pesto_sos", tr: "PESTO SOS", en: "Basil Pesto Sauce", price: 60, customNotes: [] },
       { id: "extra_cheddar", tr: "CHEDDAR PEYNİRİ EXTRA", en: "Extra Cheddar Cheese", price: 30, customNotes: [] },
@@ -1253,7 +2044,7 @@ var POS_MENU = [
 ];
 
 /* ============================================================================
-   STATE MANAGEMENT
+   STATE MANAGEMENT & LIVE TIMER
    ============================================================================ */
 var STORAGE_TABLES_KEY = "onion_pos_tables_v5";
 var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v5";
@@ -1298,16 +2089,62 @@ function nowFullDateStr() {
   return d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear() + "  Saat:" + nowTimeStr();
 }
 
+function formatElapsed(ts) {
+  if (!ts) return "00:00";
+  var diff = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+  var mins = Math.floor(diff / 60);
+  var secs = diff % 60;
+  var p = function(v) { return (v < 10 ? "0" : "") + v; };
+  return p(mins) + ":" + p(secs);
+}
+
+function resetTableTimer() {
+  if (!currentTable || !tablesData[currentTable]) return;
+  if (!confirm("Masa " + currentTable + " sipariş sayacı (süresi) sıfırlansın mı?")) return;
+  tablesData[currentTable].timestamp = Date.now();
+  saveAllTables();
+  updateLiveTimers();
+}
+
+function updateLiveTimers() {
+  // Update inside Adisyon View
+  if (currentTable && tablesData[currentTable]) {
+    var tObj = tablesData[currentTable];
+    if (!tObj.timestamp) tObj.timestamp = Date.now();
+    var badge = document.getElementById("tableTimerBadge");
+    if (badge) {
+      var diffMins = Math.floor((Date.now() - tObj.timestamp) / 60000);
+      badge.textContent = "⏱️ " + formatElapsed(tObj.timestamp);
+      if (diffMins >= 30) badge.style.background = "#dc2626"; // Red (30+ mins)
+      else if (diffMins >= 15) badge.style.background = "#d97706"; // Orange (15+ mins)
+      else badge.style.background = "#16a34a"; // Green (< 15 mins)
+    }
+  }
+  // Update mini timers on Tables Grid if visible
+  var miniEls = document.querySelectorAll("[data-timer-table]");
+  for (var i = 0; i < miniEls.length; i++) {
+    var el = miniEls[i];
+    var tKey = el.getAttribute("data-timer-table");
+    if (tablesData[tKey] && tablesData[tKey].timestamp) {
+      el.textContent = "⏱️ " + formatElapsed(tablesData[tKey].timestamp);
+    }
+  }
+}
+setInterval(updateLiveTimers, 1000);
+
 /* ============================================================================
-   CALCULATION HELPERS
+   CALCULATION HELPERS (PAID VS REMAINING + DISCOUNTS)
    ============================================================================ */
 function calcTableTotals(tObj) {
-  if (!tObj || !tObj.items) return { subTotal: 0, discountAmt: 0, netTotal: 0, discLabel: "" };
+  if (!tObj || !tObj.items) return { subTotal: 0, paidTotal: 0, discountAmt: 0, netTotal: 0, discLabel: "" };
   var sub = 0;
+  var paid = 0;
   for (var i = 0; i < tObj.items.length; i++) {
-    // Paid items do not count towards active remaining total
-    if (!tObj.items[i].isPaid) {
-      sub += tObj.items[i].price * tObj.items[i].qty;
+    var line = tObj.items[i].price * tObj.items[i].qty;
+    if (tObj.items[i].isPaid) {
+      paid += line;
+    } else {
+      sub += line;
     }
   }
   var dType = tObj.discountType || "percent";
@@ -1326,7 +2163,7 @@ function calcTableTotals(tObj) {
   }
   if (discAmt > sub) discAmt = sub;
   var net = sub - discAmt;
-  return { subTotal: sub, discountAmt: discAmt, netTotal: net, discLabel: discLabel };
+  return { subTotal: sub, paidTotal: paid, discountAmt: discAmt, netTotal: net, discLabel: discLabel };
 }
 
 /* ============================================================================
@@ -1351,11 +2188,7 @@ function updateDeptBadges() {
     for (var j = 0; j < list.length; j++) {
       var tKey = list[j];
       if (tablesData[tKey] && tablesData[tKey].items && tablesData[tKey].items.length > 0) {
-        var hasUnpaid = false;
-        for (var itx = 0; itx < tablesData[tKey].items.length; itx++) {
-          if (!tablesData[tKey].items[itx].isPaid) hasUnpaid = true;
-        }
-        if (hasUnpaid) openCount++;
+        openCount++;
       }
     }
     var bEl = document.getElementById("badge_" + d);
@@ -1390,10 +2223,11 @@ function renderTablesGrid() {
       var totals = calcTableTotals(tObj);
 
       var box = document.createElement("div");
-      box.className = "tableBox" + (hasOrder && totals.netTotal > 0 ? " occupied" : "");
+      box.className = "tableBox" + (hasOrder ? " occupied" : "");
       box.innerHTML =
         '<div class="tName">' + tName + '</div>' +
-        (hasOrder && totals.netTotal > 0 ? '<div class="tSub">₺' + totals.netTotal.toFixed(0) + '</div>' : '');
+        (hasOrder ? '<div class="tSub">₺' + totals.netTotal.toFixed(0) + ' (' + tObj.items.length + ' kl)</div>' : '') +
+        (hasOrder && tObj.timestamp ? '<div class="tTimerMini" data-timer-table="' + tName + '">⏱️ ' + formatElapsed(tObj.timestamp) + '</div>' : '');
 
       box.onclick = function() {
         selectTable(tName);
@@ -1412,17 +2246,21 @@ function selectTable(tName) {
       adisyonNo: nextAdisyonNo(),
       guests: 2,
       time: nowTimeStr(),
+      timestamp: Date.now(),
       generalNote: "",
       discountType: "percent",
       discountVal: 0,
       items: []
     };
+  } else if (!tablesData[tName].timestamp) {
+    tablesData[tName].timestamp = Date.now();
   }
   var tblLbl = document.getElementById("topTableLabel");
   tblLbl.textContent = "MASA: " + tName;
   tblLbl.style.display = "inline-flex";
 
   if (tablesData[tName].items.length === 0) {
+    tablesData[tName].timestamp = Date.now();
     openMenuForCurrentTable();
   } else {
     renderAdisyonView();
@@ -1440,8 +2278,10 @@ function renderAdisyonView() {
   document.getElementById("adisyonTableTitle").textContent = tObj.dept + " - MASA " + tObj.table;
   document.getElementById("adisyonNoTitle").textContent = "Adisyon No: " + tObj.adisyonNo;
   document.getElementById("adisyonMetaText").textContent = "Garson: Azzam • Kişi: " + tObj.guests;
-  document.getElementById("adisyonTimeText").textContent = tObj.time;
+  document.getElementById("adisyonTimeText").textContent = "Açılış: " + tObj.time;
   document.getElementById("lblGuestCount").textContent = tObj.guests;
+
+  updateLiveTimers();
 
   var gNoteEl = document.getElementById("adisyonGeneralNoteBox");
   if (tObj.generalNote) {
@@ -1464,18 +2304,20 @@ function renderAdisyonView() {
 
         var row = document.createElement("div");
         row.className = "ticketRow" + (it.isPaid ? " isPaid" : "");
-        
+
         var titleHtml = '<div class="tItemTitle">' + it.qty + ' X ' + it.tr + ' <span class="optSpan">' + (it.optLabel || 'Normal') + '</span>';
-        if (it.isPaid) titleHtml += ' <b style="color:#15803d">(ÖDENDİ ✅)</b>';
+        if (it.isPaid) titleHtml += ' <b style="color:#15803d;text-decoration:none;display:inline-block">(ÖDENDİ ✅)</b>';
         if (it.isIkram) titleHtml += ' <b style="color:#b45309">(İKRAM 🎁)</b>';
         titleHtml += '</div>';
         if (it.note) titleHtml += '<div class="tItemNote">↳ Not: ' + it.note + '</div>';
 
         var actionHtml = '';
         if (it.isPaid) {
-          actionHtml = '<button class="tQtyBtn" style="width:auto;padding:0 8px;font-size:11px;color:#15803d;background:#dcfce7" onclick="undoItemPaid(' + idx + ')" title="Ödemeyi Geri Al">↩️ Geri Al</button>';
+          actionHtml =
+            '<span style="font-weight:800;font-size:13px;color:#15803d">₺' + lineTotal.toFixed(2) + '</span>' +
+            '<button class="tQtyBtn" style="width:auto;padding:0 8px;font-size:11px;color:#15803d;background:#dcfce7;border-color:#16a34a" onclick="undoItemPaid(' + idx + ')" title="Ödemeyi Geri Al">↩️ Geri Al</button>';
         } else {
-          actionHtml = 
+          actionHtml =
             '<span style="font-weight:900;font-size:14px">₺' + lineTotal.toFixed(2) + '</span>' +
             '<div class="tQtyCtrl">' +
               '<button class="tQtyBtn" onclick="changeItemQty(' + idx + ', -1)">−</button>' +
@@ -1483,7 +2325,7 @@ function renderAdisyonView() {
             '</div>';
         }
 
-        row.innerHTML = '<div>' + titleHtml + '</div><div style="display:flex;align-items:center;gap:12px">' + actionHtml + '</div>';
+        row.innerHTML = '<div>' + titleHtml + '</div><div style="display:flex;align-items:center;gap:10px">' + actionHtml + '</div>';
         listEl.appendChild(row);
       })(i);
     }
@@ -1500,12 +2342,23 @@ function renderAdisyonView() {
     document.getElementById("rowSubTotal").style.display = "none";
     document.getElementById("rowDiscount").style.display = "none";
   }
+
+  if (totals.paidTotal > 0) {
+    document.getElementById("rowPaidTotal").style.display = "flex";
+    document.getElementById("adisyonPaidAmount").textContent = "₺" + totals.paidTotal.toFixed(2);
+  } else {
+    document.getElementById("rowPaidTotal").style.display = "none";
+  }
+
   document.getElementById("adisyonTotalAmount").textContent = "₺" + totals.netTotal.toFixed(2);
 }
 
 function changeItemQty(idx, delta) {
   var tObj = tablesData[currentTable];
   if (!tObj || !tObj.items[idx]) return;
+  if (delta < 0 && tObj.items[idx].qty === 1) {
+    if (!confirm('"' + tObj.items[idx].tr + '" ürününü masadan silmek istiyor musunuz?')) return;
+  }
   tObj.items[idx].qty += delta;
   if (tObj.items[idx].qty <= 0) {
     tObj.items.splice(idx, 1);
@@ -1564,624 +2417,4 @@ function changeTableNumber() {
 
 function clearCurrentTable() {
   if (!confirm("Masa " + currentTable + " hesabı kapatılıp boşaltılsın mı?")) return;
-  delete tablesData[currentTable];
-  saveAllTables();
-  openDepartment(currentDept);
-}
-
-/* ============================================================================
-   SPLIT BILL (PAID VS REMAINING) & DISCOUNT LOGIC
-   ============================================================================ */
-function openSplitAndPayModal() {
-  var tObj = tablesData[currentTable];
-  if (!tObj || tObj.items.length === 0) {
-    alert("Masada henüz ürün yok!");
-    return;
-  }
-  equalSplitCount = tObj.guests > 1 ? tObj.guests : 2;
-  selectedSplitQtys = {};
-  renderSplitModalContent();
-  document.getElementById("splitPayModal").classList.add("open");
-}
-
-function closeSplitAndPayModal() {
-  document.getElementById("splitPayModal").classList.remove("open");
-  renderAdisyonView();
-}
-
-function applyTableDiscount(type, val) {
-  var tObj = tablesData[currentTable];
-  if (!tObj) return;
-  tObj.discountType = type;
-  tObj.discountVal = val;
-  saveAllTables();
-  renderSplitModalContent();
-  renderAdisyonView();
-}
-
-function promptCustomDiscount() {
-  var tObj = tablesData[currentTable];
-  if (!tObj) return;
-  var input = prompt("İndirim oranını (%) veya TL tutarını girin:\nÖrn: Yüzde 25 için '25%' yazın, 100 TL için '100' yazın:", "10%");
-  if (!input) return;
-  input = input.trim();
-  if (input.indexOf("%") !== -1) {
-    var p = parseFloat(input.replace("%", "")) || 0;
-    applyTableDiscount("percent", p);
-  } else {
-    var amt = parseFloat(input) || 0;
-    if (amt > 0 && amt <= 50 && confirm("Girdiğiniz '" + amt + "' değeri YÜZDE (%" + amt + ") indirim mi?\n(Tamam = %" + amt + " İndirim | İptal = " + amt + " ₺ Sabit İndirim)")) {
-      applyTableDiscount("percent", amt);
-    } else {
-      applyTableDiscount("amount", amt);
-    }
-  }
-}
-
-function setEqualSplitCount(n) {
-  equalSplitCount = n;
-  renderSplitModalContent();
-}
-
-function promptCustomSplitCount() {
-  var c = prompt("Kaç kişiye eşit bölünsün?", equalSplitCount);
-  if (c !== null) {
-    var num = parseInt(c, 10);
-    if (num > 0) {
-      equalSplitCount = num;
-      renderSplitModalContent();
-    }
-  }
-}
-
-function adjustSplitItemQty(idx, delta) {
-  var tObj = tablesData[currentTable];
-  if (!tObj || !tObj.items[idx]) return;
-  if (tObj.items[idx].isPaid) return; // Already paid items cannot be selected again
-  var maxQty = tObj.items[idx].qty;
-  var cur = selectedSplitQtys[idx] || 0;
-  var next = cur + delta;
-  if (next < 0) next = 0;
-  if (next > maxQty) next = maxQty;
-  selectedSplitQtys[idx] = next;
-  renderSplitModalContent();
-}
-
-function resetSelectedSplitItems() {
-  selectedSplitQtys = {};
-  renderSplitModalContent();
-}
-
-function renderSplitModalContent() {
-  var tObj = tablesData[currentTable];
-  if (!tObj) return;
-
-  var totals = calcTableTotals(tObj);
-  document.getElementById("splitModalNetTotal").textContent = "₺" + totals.netTotal.toFixed(2);
-
-  var dBtns = [0, 10, 15, 20];
-  for (var b = 0; b < dBtns.length; b++) {
-    var el = document.getElementById("discBtn_" + dBtns[b]);
-    if (el) {
-      if (tObj.discountType === "percent" && Number(tObj.discountVal || 0) === dBtns[b]) {
-        el.classList.add("selected");
-      } else {
-        el.classList.remove("selected");
-      }
-    }
-  }
-
-  document.getElementById("lblEqualPeople").textContent = equalSplitCount;
-  var perPerson = equalSplitCount > 0 ? (totals.netTotal / equalSplitCount) : totals.netTotal;
-  document.getElementById("lblEqualPerPerson").textContent = "₺" + perPerson.toFixed(2) + " / Kişi";
-
-  var box = document.getElementById("splitItemsContainer");
-  box.innerHTML = "";
-  var selectedRawSum = 0;
-
-  for (var i = 0; i < tObj.items.length; i++) {
-    (function(idx) {
-      var it = tObj.items[idx];
-      if (it.isPaid) return; // Skip paid items in split selection
-
-      var selQty = selectedSplitQtys[idx] || 0;
-      var lineSelSum = selQty * it.price;
-      selectedRawSum += lineSelSum;
-
-      var row = document.createElement("div");
-      row.className = "splitItemRow";
-      row.innerHTML =
-        '<div style="flex:1">' +
-          '<div>' + it.tr + ' <small style="color:#2563eb">(' + (it.optLabel || 'Normal') + ')</small></div>' +
-          '<div style="font-size:11.5px;color:#64748b">Birim: ₺' + it.price + ' • Kalan: <b>' + it.qty + '</b> adet</div>' +
-        '</div>' +
-        '<div style="display:flex;align-items:center;gap:8px">' +
-          '<button class="tQtyBtn" onclick="adjustSplitItemQty(' + idx + ', -1)">−</button>' +
-          '<span style="min-width:26px;text-align:center;font-weight:900;color:var(--red);font-size:15px">' + selQty + '</span>' +
-          '<button class="tQtyBtn" onclick="adjustSplitItemQty(' + idx + ', 1)">+</button>' +
-          '<span style="min-width:65px;text-align:right;font-weight:900">₺' + lineSelSum.toFixed(0) + '</span>' +
-        '</div>';
-      box.appendChild(row);
-    })(i);
-  }
-
-  var finalSelectedTotal = selectedRawSum;
-  if (tObj.discountType === "percent" && tObj.discountVal > 0) {
-    finalSelectedTotal = selectedRawSum * (1 - (tObj.discountVal / 100));
-  }
-  document.getElementById("lblSelectedItemsTotal").textContent = "₺" + finalSelectedTotal.toFixed(2);
-}
-
-function markSelectedItemsAsPaid() {
-  var tObj = tablesData[currentTable];
-  if (!tObj) return;
-
-  var anySelected = false;
-  for (var k in selectedSplitQtys) {
-    if (selectedSplitQtys[k] > 0) { anySelected = true; break; }
-  }
-  if (!anySelected) {
-    alert("Lütfen önce (+) butonu ile ödeme yapılacak ürünleri seçin!");
-    return;
-  }
-
-  var amtText = document.getElementById("lblSelectedItemsTotal").textContent;
-  if (!confirm("Seçilen ürünlerin ödemesi (" + amtText + ") alındı mı?\nBu ürünler yeşil olarak işaretlenecek ve fişte 'Ödenen' olarak görünecek.")) {
-    return;
-  }
-
-  // Split items into paid part vs remaining part without deleting history
-  var newItemsList = [];
-  for (var i = 0; i < tObj.items.length; i++) {
-    var it = tObj.items[i];
-    if (it.isPaid) {
-      newItemsList.push(it);
-      continue;
-    }
-    var sel = selectedSplitQtys[i] || 0;
-    if (sel > 0) {
-      if (sel < it.qty) {
-        // Leave remainder as unpaid
-        var remIt = JSON.parse(JSON.stringify(it));
-        remIt.qty = it.qty - sel;
-        newItemsList.push(remIt);
-      }
-      // Add paid portion
-      var paidIt = JSON.parse(JSON.stringify(it));
-      paidIt.qty = sel;
-      paidIt.isPaid = true;
-      newItemsList.push(paidIt);
-    } else {
-      newItemsList.push(it);
-    }
-  }
-
-  tObj.items = newItemsList;
-  selectedSplitQtys = {};
-  saveAllTables();
-  renderSplitModalContent();
-  renderAdisyonView();
-}
-
-/* ============================================================================
-   POS MENU & PRODUCT SELECTION
-   ============================================================================ */
-function openMenuForCurrentTable() {
-  renderPosCategories();
-  renderProductsGrid();
-  updateMenuBottomSummary();
-  showView("viewMenu");
-}
-
-function renderPosCategories() {
-  var col = document.getElementById("posCatsCol");
-  col.innerHTML = "";
-  for (var i = 0; i < POS_MENU.length; i++) {
-    (function(idx) {
-      var cat = POS_MENU[idx];
-      var btn = document.createElement("button");
-      btn.className = "catPosBtn" + (idx === activeCatIdx ? " active" : "");
-      btn.innerHTML = cat.catTr + "<small>" + cat.catEn + "</small>";
-      btn.onclick = function() {
-        activeCatIdx = idx;
-        document.getElementById("prodSearchInput").value = "";
-        renderPosCategories();
-        renderProductsGrid();
-      };
-      col.appendChild(btn);
-    })(i);
-  }
-}
-
-function renderProductsGrid() {
-  var grid = document.getElementById("posProductsGrid");
-  grid.innerHTML = "";
-  var q = (document.getElementById("prodSearchInput").value || "").toLowerCase().trim();
-
-  var list = [];
-  if (q) {
-    for (var c = 0; c < POS_MENU.length; c++) {
-      for (var j = 0; j < POS_MENU[c].items.length; j++) {
-        var it = POS_MENU[c].items[j];
-        var hay = (it.tr + " " + it.en + " " + (it.descTr || "") + " " + (it.descEn || "")).toLowerCase();
-        if (hay.indexOf(q) !== -1) {
-          list.push({ item: it, type: POS_MENU[c].type });
-        }
-      }
-    }
-  } else {
-    var activeCat = POS_MENU[activeCatIdx];
-    for (var k = 0; k < activeCat.items.length; k++) {
-      list.push({ item: activeCat.items[k], type: activeCat.type });
-    }
-  }
-
-  for (var m = 0; m < list.length; m++) {
-    (function(entry) {
-      var item = entry.item;
-      var cType = entry.type;
-
-      var box = document.createElement("div");
-      box.className = "prodBox";
-
-      var hasDesc = !!(item.descTr || item.descEn);
-      box.innerHTML =
-        '<div>' +
-          '<div class="prodTitleTr">' + item.tr + '</div>' +
-          '<div class="prodTitleEn">' + item.en + '</div>' +
-        '</div>' +
-        '<div class="prodBottom">' +
-          '<span class="prodPrice">[' + item.price.toFixed(1) + ']</span>' +
-          (hasDesc ? '<button type="button" class="infoBtn" title="İçindekiler / Ingredients">ℹ️ Detay</button>' : '') +
-        '</div>';
-
-      box.onclick = function(e) {
-        if (e.target && e.target.classList.contains("infoBtn")) {
-          e.stopPropagation();
-          showItemDetails(item);
-          return;
-        }
-        openItemOptionModal(item, cType);
-      };
-
-      grid.appendChild(box);
-    })(list[m]);
-  }
-}
-
-function showItemDetails(item) {
-  document.getElementById("detModalTitle").textContent = item.en + " / " + item.tr;
-  document.getElementById("detModalEn").textContent = "🇬🇧 Ingredients: " + (item.descEn || "-");
-  document.getElementById("detModalTr").textContent = "🇹🇷 İçindekiler: " + (item.descTr || "-");
-  document.getElementById("detailsModal").classList.add("open");
-}
-
-/* ============================================================================
-   DISH-SPECIFIC INGREDIENT MODAL (WITH İKRAM SUPPORT)
-   ============================================================================ */
-function openItemOptionModal(item, cType) {
-  pendingItem = item;
-  pendingCatType = cType;
-  selectedVariantIdx = 0;
-  selectedSubOpt = (item.subOptions && item.subOptions.length > 0) ? item.subOptions[0] : "";
-  document.getElementById("customItemNoteInput").value = "";
-
-  document.getElementById("optModalTitle").textContent = item.tr + " (" + item.en + ")";
-
-  var varSec = document.getElementById("variantSection");
-  var varBox = document.getElementById("variantBtnsBox");
-  varBox.innerHTML = "";
-  if (item.variants && item.variants.length > 0) {
-    varSec.style.display = "block";
-    for (var i = 0; i < item.variants.length; i++) {
-      (function(vIdx) {
-        var v = item.variants[vIdx];
-        var b = document.createElement("button");
-        b.type = "button";
-        b.className = "optBtn" + (vIdx === selectedVariantIdx ? " selected" : "");
-        b.innerHTML = v.label + "<br><small>₺" + v.price + "</small>";
-        b.onclick = function() {
-          selectedVariantIdx = vIdx;
-          var all = varBox.querySelectorAll(".optBtn");
-          for (var x = 0; x < all.length; x++) all[x].classList.remove("selected");
-          b.classList.add("selected");
-        };
-        varBox.appendChild(b);
-      })(i);
-    }
-  } else {
-    varSec.style.display = "none";
-  }
-
-  var subSec = document.getElementById("subOptionSection");
-  var subBox = document.getElementById("subOptionBtnsBox");
-  subBox.innerHTML = "";
-  if (item.subOptions && item.subOptions.length > 0) {
-    subSec.style.display = "block";
-    document.getElementById("subOptionTitle").textContent = item.subOptionTitle || "Seçenek";
-    for (var s = 0; s < item.subOptions.length; s++) {
-      (function(sVal) {
-        var sb = document.createElement("button");
-        sb.type = "button";
-        sb.className = "optBtn" + (sVal === selectedSubOpt ? " selected" : "");
-        sb.textContent = sVal;
-        sb.onclick = function() {
-          selectedSubOpt = sVal;
-          var allS = subBox.querySelectorAll(".optBtn");
-          for (var y = 0; y < allS.length; y++) allS[y].classList.remove("selected");
-          sb.classList.add("selected");
-        };
-        subBox.appendChild(sb);
-      })(item.subOptions[s]);
-    }
-  } else {
-    subSec.style.display = "none";
-  }
-
-  var notesSec = document.getElementById("quickNotesSection");
-  var notesBox = document.getElementById("quickNotesBtnsBox");
-  notesBox.innerHTML = "";
-
-  var dishNotes = [];
-  if (item.customNotes !== undefined) {
-    dishNotes = item.customNotes;
-  } else if (cType === "cold_drink") {
-    dishNotes = DEFAULT_COLD_DRINK_NOTES;
-  } else if (cType === "hot_drink") {
-    dishNotes = DEFAULT_HOT_COFFEE_NOTES;
-  }
-
-  if (dishNotes && dishNotes.length > 0) {
-    notesSec.style.display = "block";
-    for (var n = 0; n < dishNotes.length; n++) {
-      (function(noteObj) {
-        var nb = document.createElement("button");
-        nb.type = "button";
-        nb.className = "noteTagBtn";
-        nb.innerHTML = "<b>" + noteObj.en + "</b> (" + noteObj.tr + ")";
-        nb.onclick = function() {
-          var inp = document.getElementById("customItemNoteInput");
-          var cur = inp.value.trim();
-          var parts = cur ? cur.split(", ") : [];
-          var existingIdx = parts.indexOf(noteObj.tr);
-          if (existingIdx !== -1) {
-            parts.splice(existingIdx, 1);
-            nb.classList.remove("activeTag");
-          } else {
-            parts.push(noteObj.tr);
-            nb.classList.add("activeTag");
-          }
-          inp.value = parts.join(", ");
-        };
-        notesBox.appendChild(nb);
-      })(dishNotes[n]);
-    }
-  } else {
-    notesSec.style.display = "none";
-  }
-
-  document.getElementById("itemOptionModal").classList.add("open");
-}
-
-function closeOptionModal() {
-  document.getElementById("itemOptionModal").classList.remove("open");
-}
-
-function confirmAddItem(isIkram) {
-  if (!pendingItem || !currentTable) return;
-  var tObj = tablesData[currentTable];
-
-  var unitPrice = isIkram ? 0 : pendingItem.price;
-  var optParts = [];
-
-  if (pendingItem.variants && pendingItem.variants[selectedVariantIdx]) {
-    if (!isIkram) unitPrice = pendingItem.variants[selectedVariantIdx].price;
-    optParts.push(pendingItem.variants[selectedVariantIdx].tr);
-  }
-  if (selectedSubOpt) {
-    var cleanSub = selectedSubOpt.split("(")[0].trim();
-    optParts.push(cleanSub);
-  }
-
-  var finalOptLabel = optParts.length > 0 ? optParts.join(" - ") : "Normal";
-  var noteVal = document.getElementById("customItemNoteInput").value.trim();
-  if (isIkram) {
-    noteVal = noteVal ? (noteVal + " (İKRAM)") : "İKRAM (Ücretsiz)";
-  }
-
-  var merged = false;
-  for (var i = 0; i < tObj.items.length; i++) {
-    var ex = tObj.items[i];
-    if (ex.id === pendingItem.id && ex.optLabel === finalOptLabel && ex.note === noteVal && !!ex.isIkram === !!isIkram && !ex.isPaid) {
-      ex.qty += 1;
-      merged = true;
-      break;
-    }
-  }
-
-  if (!merged) {
-    tObj.items.push({
-      id: pendingItem.id,
-      tr: pendingItem.tr,
-      en: pendingItem.en,
-      optLabel: finalOptLabel,
-      price: unitPrice,
-      qty: 1,
-      note: noteVal,
-      isIkram: !!isIkram,
-      isPaid: false
-    });
-  }
-
-  saveAllTables();
-  updateMenuBottomSummary();
-  closeOptionModal();
-}
-
-function updateMenuBottomSummary() {
-  var tObj = tablesData[currentTable];
-  var count = 0;
-  if (tObj && tObj.items) {
-    for (var i = 0; i < tObj.items.length; i++) {
-      if (!tObj.items[i].isPaid) count += tObj.items[i].qty;
-    }
-  }
-  var totals = calcTableTotals(tObj);
-  document.getElementById("menuCartCount").textContent = count;
-  document.getElementById("menuCartTotal").textContent = totals.netTotal.toFixed(0) + " ₺";
-}
-
-/* ============================================================================
-   THERMAL RECEIPT PREVIEW & DIRECT WHATSAPP IMAGE SHARE
-   ============================================================================ */
-function openThermalPreview() {
-  var tObj = tablesData[currentTable];
-  if (!tObj || tObj.items.length === 0) { alert("Masada ürün yok!"); return; }
-
-  var totals = calcTableTotals(tObj);
-  var lines = [];
-  lines.push("<div style='text-align:center;font-weight:900;font-size:16px'>....... ONION .......</div>");
-  lines.push("Kisi Sayisi " + tObj.guests);
-  lines.push("Tarih:" + nowFullDateStr());
-  lines.push("Masa No:" + tObj.table);
-  lines.push("Adisyon No:" + tObj.adisyonNo);
-  lines.push("--------------------------------");
-
-  for (var i = 0; i < tObj.items.length; i++) {
-    var it = tObj.items[i];
-    var sub = it.price * it.qty;
-    var optDot = (it.optLabel && it.optLabel !== "Normal") ? ("." + it.optLabel) : "";
-    var paidMark = it.isPaid ? " (ODENDI)" : (it.isIkram ? " (IKRAM)" : "");
-    lines.push(
-      "<div style='display:flex;justify-content:space-between;font-weight:700'>" +
-        "<span>- " + it.qty + " " + it.tr + optDot + paidMark + "</span>" +
-        "<span>" + sub.toFixed(2) + "</span>" +
-      "</div>"
-    );
-    if (it.note) {
-      lines.push("<div style='font-size:11px;padding-left:14px'>* Not: " + it.note + "</div>");
-    }
-  }
-
-  lines.push("================================");
-  if (totals.discountAmt > 0) {
-    lines.push(
-      "<div style='display:flex;justify-content:space-between;font-weight:700'>" +
-        "<span>Ara Toplam:</span><span>" + totals.subTotal.toFixed(2) + "</span>" +
-      "</div>"
-    );
-    lines.push(
-      "<div style='display:flex;justify-content:space-between;font-weight:700'>" +
-        "<span>" + totals.discLabel + "</span><span>-" + totals.discountAmt.toFixed(2) + "</span>" +
-      "</div>"
-    );
-  }
-  lines.push(
-    "<div style='display:flex;justify-content:space-between;font-weight:900;font-size:16px'>" +
-      "<span>Toplam:</span>" +
-      "<span>" + totals.netTotal.toFixed(2) + "</span>" +
-    "</div>"
-  );
-  lines.push("================================");
-
-  document.getElementById("thermalPaperContent").innerHTML = lines.join("<br>");
-  document.getElementById("thermalModal").classList.add("open");
-}
-
-function sendWhatsAppText() {
-  var tObj = tablesData[currentTable];
-  if (!tObj || tObj.items.length === 0) { alert("Önce ürün ekleyin!"); return; }
-
-  var lines = [];
-  lines.push("SİPARİŞ FİŞİ (ONION)");
-  lines.push("BÖLÜM: " + tObj.dept + " | MASA: " + tObj.table);
-  lines.push("ADİSYON NO: " + tObj.adisyonNo + " | KİŞİ: " + tObj.guests);
-  lines.push("SAAT: " + nowTimeStr() + " | GARSON: Azzam");
-  lines.push("------------------------------");
-
-  for (var i = 0; i < tObj.items.length; i++) {
-    var it = tObj.items[i];
-    var optStr = (it.optLabel && it.optLabel !== "Normal") ? (" (" + it.optLabel + ")") : "";
-    var ikramStr = it.isIkram ? " [İKRAM]" : "";
-    lines.push("- " + it.qty + " x " + it.tr + optStr + ikramStr);
-    if (it.note) lines.push("   ↳ Not: " + it.note);
-  }
-  lines.push("------------------------------");
-  if (tObj.generalNote) lines.push("GENEL NOT: " + tObj.generalNote);
-
-  window.open("https://wa.me/?text=" + encodeURIComponent(lines.join("\n")), "_blank");
-}
-
-function sendWhatsAppImage() {
-  var tObj = tablesData[currentTable];
-  if (!tObj || tObj.items.length === 0) { alert("Önce ürün ekleyin!"); return; }
-
-  var canvas = document.getElementById("receiptCanvas");
-  var ctx = canvas.getContext("2d");
-
-  ctx.fillStyle = "#fffef8";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "#000000";
-  ctx.font = "bold 34px monospace";
-  ctx.fillText("========== ONION ==========", 70, 70);
-
-  ctx.font = "bold 24px monospace";
-  ctx.fillText("Bolum: " + tObj.dept + "   Masa No: " + tObj.table, 50, 130);
-  ctx.fillText("Kisi Sayisi: " + tObj.guests + "   Garson: Azzam", 50, 168);
-  ctx.fillText("Tarih: " + nowFullDateStr(), 50, 206);
-  ctx.fillText("Adisyon No: " + tObj.adisyonNo, 50, 244);
-  ctx.fillText("------------------------------------", 50, 285);
-
-  var y = 335;
-  ctx.font = "bold 26px monospace";
-  for (var i = 0; i < tObj.items.length; i++) {
-    var it = tObj.items[i];
-    var optDot = (it.optLabel && it.optLabel !== "Normal") ? ("." + it.optLabel) : "";
-    var mark = it.isPaid ? " (ODENDI)" : (it.isIkram ? " (IKRAM)" : "");
-    ctx.fillStyle = "#000";
-    ctx.fillText("- " + it.qty + " " + it.tr + optDot + mark, 50, y);
-    y += 38;
-    if (it.note) {
-      ctx.fillStyle = "#b45309";
-      ctx.font = "bold 22px monospace";
-      ctx.fillText("   ↳ Not: " + it.note, 50, y);
-      ctx.font = "bold 26px monospace";
-      y += 34;
-    }
-  }
-
-  ctx.fillStyle = "#000";
-  ctx.fillText("====================================", 50, y + 20);
-  if (tObj.generalNote) {
-    ctx.fillText("NOT: " + tObj.generalNote, 50, y + 65);
-  }
-
-  canvas.toBlob(function(blob) {
-    if (!blob) return;
-    var file = new File([blob], "masa_" + tObj.table + ".png", { type: "image/png" });
-    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
-      navigator.share({
-        title: "Masa " + tObj.table,
-        text: "Masa " + tObj.table + " Sipariş Fişi",
-        files: [file]
-      }).catch(function() {});
-    } else {
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement("a");
-      a.href = url;
-      a.download = "masa_" + tObj.table + ".png";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      // Directly trigger WhatsApp with the image or prompt user
-      window.open("https://wa.me/?text=" + encodeURIComponent("Masa " + tObj.table + " adisyon fişi oluşturuldu."), "_blank");
-    }
-  }, "image/png");
-}
-
-// Init directly on SALON tables
-openDepartment("SALON");
-</script>
-</body>
-</html>
+  delete
