@@ -3,18 +3,45 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="theme-color" content="#6b1426" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>ONION POS - Salon Sipariş & Hesap Sistemi</title>
-  <link rel="manifest" href="manifest.json">
+  <title>ONION POS - Bordo V12</title>
+  <script>
+    // مسح أي كاش قديم من المتصفح تلقائياً فور فتح الصفحة لضمان ظهور التعديلات الجديدة
+    (function() {
+      var VER = "onion_v12_bordo";
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          for (var i = 0; i < regs.length; i++) regs[i].unregister();
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (var i = 0; i < names.length; i++) caches.delete(names[i]);
+        });
+      }
+      try {
+        if (localStorage.getItem("app_ver_check") !== VER) {
+          localStorage.setItem("app_ver_check", VER);
+          if (location.search.indexOf("v=12") === -1) {
+            location.replace(location.pathname + "?v=12");
+          }
+        }
+      } catch(e) {}
+    })();
+  </script>
   <style>
     :root {
-      --red: #6b1426;
-      --red-dark: #4a0d1a;
+      --red: #6b1426;       /* خمري / أحمر غامق أساسي */
+      --red-dark: #450a17;  /* خمري داكن */
+      --red-light: #fdf2f4; /* خلفية خمرية فاتحة */
       --orange: #ee9900;
-      --green: #16a34a;
-      --blue: #2563eb;
+      --green: #15803d;
+      --blue: #1d4ed8;
       --bg-light: #dce6f2;
       --dark-cat: #18181b;
       --border: #b8c6d8;
@@ -22,63 +49,81 @@
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
-    .topBar { background: #f8fafc; border-bottom: 2px solid var(--border); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; gap: 8px; flex-wrap: wrap; }
-    .logo { font-weight: 900; font-size: 19px; color: var(--red); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+    /* الشريط العلوي */
+    .topBar { background: #f8fafc; border-bottom: 3px solid var(--red); padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; gap: 6px; flex-wrap: wrap; }
+    .logo { font-weight: 900; font-size: 18px; color: var(--red); display: flex; align-items: center; gap: 6px; cursor: pointer; }
     .logo span.dot { width: 13px; height: 13px; border-radius: 50%; border: 3px solid var(--red); display: inline-block; }
-    .zoneTabs { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-    .zoneTabBtn { background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; padding: 7px 11px; border-radius: 6px; font-weight: 800; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    .zoneTabs { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+    .zoneTabBtn { background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; padding: 7px 10px; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
     .zoneTabBtn.active { background: var(--red); color: #fff; border-color: var(--red-dark); }
     .deptCountBadge { background: var(--orange); color: #000; font-size: 11px; padding: 1px 6px; border-radius: 99px; font-weight: 900; }
+
     .viewSec { display: none; flex: 1; flex-direction: column; }
     .viewSec.active { display: flex; }
+
+    /* شبكة الطاولات */
     .searchBarWrap { padding: 8px 12px; background: #e9eff6; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
     .searchBarWrap input { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline: none; }
     .tablesGrid { padding: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; flex: 1; align-content: start; }
-    .tableBox { background: #e3ecf5; border: 1px solid #b8c6d8; min-height: 84px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; border-radius: 6px; padding: 6px; user-select: none; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .tableBox { background: #e3ecf5; border: 1.5px solid #b8c6d8; min-height: 84px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; border-radius: 6px; padding: 6px; user-select: none; }
     .tableBox .tName { font-size: 17px; font-weight: 900; color: #1e293b; }
     .tableBox .tSub { font-size: 11.5px; font-weight: 800; color: #475569; margin-top: 3px; }
-    .tableBox .tTimer { font-size: 11px; font-weight: 900; color: var(--red); background: rgba(255,255,255,0.7); padding: 1px 6px; border-radius: 4px; margin-top: 3px; }
-    .tableBox.occupied { background: var(--orange); border-color: #c27800; }
+    .tableBox .tTimer { font-size: 11px; font-weight: 900; color: var(--red); background: rgba(255,255,255,0.8); padding: 1px 6px; border-radius: 4px; margin-top: 3px; }
+    .tableBox.occupied { background: var(--orange); border-color: #b45309; }
     .tableBox.occupied .tName, .tableBox.occupied .tSub { color: #000; font-weight: 900; }
-    .posMainSplit { display: grid; grid-template-columns: 200px 1fr; flex: 1; overflow: hidden; }
+
+    /* شاشة المنيو الخمرية */
+    .posMainSplit { display: grid; grid-template-columns: 185px 1fr; flex: 1; overflow: hidden; }
     .catsCol { background: #d0dbe8; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 3px; padding: 4px; overflow-y: auto; }
-    .catPosBtn { background: var(--dark-cat); color: #fff; border: none; padding: 13px 8px; font-size: 12px; font-weight: 800; text-align: center; cursor: pointer; border-radius: 3px; line-height: 1.2; }
-    .catPosBtn small { display: block; font-size: 10px; color: #cbd5e1; font-weight: 600; margin-top: 2px; }
+    .catPosBtn { background: var(--dark-cat); color: #fff; border: none; padding: 12px 6px; font-size: 11.5px; font-weight: 800; text-align: center; cursor: pointer; border-radius: 4px; line-height: 1.2; }
+    .catPosBtn small { display: block; font-size: 9.5px; color: #cbd5e1; font-weight: 600; margin-top: 2px; }
     .catPosBtn.active { background: var(--red); color: #fff; }
     .productsCol { display: flex; flex-direction: column; background: var(--bg-light); overflow-y: auto; }
     .productsGrid { padding: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-content: start; }
-    .prodBox { background: var(--red); color: #fff; min-height: 92px; border-radius: 5px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); }
+    .prodBox { background: var(--red); color: #fff; min-height: 90px; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.12); }
     .prodBox:active { background: var(--red-dark); }
     .prodTitleTr { font-size: 12.5px; font-weight: 900; line-height: 1.2; }
     .prodTitleEn { font-size: 11px; font-weight: 600; color: #fde047; margin-top: 2px; line-height: 1.15; }
     .prodBottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
     .prodPrice { font-size: 12px; font-weight: 900; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
     .infoBtn { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; padding: 2px 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; }
+
     .posBottomBar { display: grid; grid-template-columns: 1fr 1fr; position: sticky; bottom: 0; z-index: 40; }
-    .barBtnGreen { background: var(--green); color: #fff; border: none; padding: 14px; font-size: 14px; font-weight: 900; cursor: pointer; }
-    .barBtnRed { background: var(--red); color: #fff; border: none; padding: 14px; font-size: 14px; font-weight: 900; cursor: pointer; }
-    .adisyonLayout { display: grid; grid-template-columns: 210px 1fr; flex: 1; }
+    .barBtnGreen { background: var(--green); color: #fff; border: none; padding: 13px; font-size: 13.5px; font-weight: 900; cursor: pointer; }
+    .barBtnRed { background: var(--red); color: #fff; border: none; padding: 13px; font-size: 13.5px; font-weight: 900; cursor: pointer; }
+
+    /* شاشة الأديسون (الفاتورة والطلبات المرتبة بالوقت) */
+    .adisyonLayout { display: grid; grid-template-columns: 200px 1fr; flex: 1; }
     .adisyonSidebar { background: #b8c6d4; padding: 6px; display: flex; flex-direction: column; gap: 6px; border-right: 1px solid var(--border); }
-    .sideActionBtn { background: #9fb1c4; border: 1px solid #8ba0b6; color: #1e293b; padding: 13px 8px; font-weight: 800; font-size: 13px; cursor: pointer; border-radius: 4px; text-align: center; }
+    .sideActionBtn { background: #9fb1c4; border: 1px solid #8ba0b6; color: #1e293b; padding: 12px 8px; font-weight: 800; font-size: 12.5px; cursor: pointer; border-radius: 4px; text-align: center; }
     .sideActionBtn.highlight { background: var(--orange); color: #000; border-color: #b87300; }
-    .sideActionBtn.payBtn { background: var(--blue); color: #fff; border-color: #1d4ed8; }
-    .adisyonContent { background: #e5eef7; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
-    .ticketHeaderBar { background: #0f172a; color: #fff; padding: 6px 12px; font-weight: 800; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
-    .ticketSubBar { background: #94a3b8; color: #0f172a; padding: 6px 12px; font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+    .sideActionBtn.payBtn { background: var(--blue); color: #fff; border-color: #1e40af; }
+    .adisyonContent { background: #e5eef7; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+    .ticketHeaderBar { background: var(--red-dark); color: #fff; padding: 7px 12px; font-weight: 800; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; border-radius: 4px 4px 0 0; }
+    .ticketSubBar { background: #cbd5e1; color: #0f172a; padding: 6px 12px; font-size: 12px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
     .ticketItemsList { flex: 1; overflow-y: auto; margin-top: 8px; }
-    .ticketRow { background: #f1f5f9; border-bottom: 1px solid #cbd5e1; padding: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .ticketRow.isPaid { background: #dcfce7; border-color: #86efac; }
-    .tItemTitle { font-weight: 800; font-size: 13.5px; color: #0f172a; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .ticketRow { background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid var(--red); border-radius: 6px; padding: 9px 10px; margin-bottom: 6px; display: flex; flex-direction: column; gap: 6px; }
+    .ticketRow.isPaid { background: #dcfce7; border-color: #86efac; border-left-color: var(--green); }
+    .ticketRowTop { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .tItemTitle { font-weight: 900; font-size: 13.5px; color: #0f172a; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .ticketRow.isPaid .tItemTitle { color: #166534; text-decoration: line-through; }
-    .tItemTitle span.optSpan { color: #2563eb; font-weight: 700; }
-    .timeTag { background: #e2e8f0; color: #475569; font-size: 11px; font-weight: 800; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1; }
-    .tItemNote { font-size: 11.5px; color: #b45309; font-weight: 800; margin-top: 3px; }
+    .tItemTitle span.optSpan { color: var(--blue); font-weight: 800; }
+    .timeTag { background: var(--red); color: #fff; font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 4px; }
+    .tItemNote { font-size: 12px; color: #b45309; font-weight: 800; background: #fef3c7; padding: 3px 8px; border-radius: 4px; display: inline-block; }
     .tQtyCtrl { display: flex; align-items: center; gap: 5px; }
     .tQtyBtn { width: 28px; height: 28px; border: 1px solid #94a3b8; background: #fff; font-weight: 900; border-radius: 4px; cursor: pointer; }
-    .editItemBtn { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; padding: 4px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+    .editItemBtn { background: var(--red-light); color: var(--red); border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+    /* أزرار سريعة لتعديل الملاحظات مباشرة تحت الطبق بعد أخذ الطلب */
+    .inlineQuickBar { display: flex; gap: 4px; flex-wrap: wrap; padding-top: 4px; border-top: 1px dashed #cbd5e1; }
+    .inlineChip { background: #fff; border: 1px solid #cbd5e1; color: #334155; font-size: 10.5px; font-weight: 800; padding: 3px 7px; border-radius: 4px; cursor: pointer; }
+    .inlineChip.on { background: var(--red); color: #fff; border-color: var(--red-dark); }
+
     .ticketFooterSummary { border-top: 2px solid #94a3b8; padding-top: 8px; display: flex; flex-direction: column; gap: 4px; }
     .sumLine { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #334155; }
-    .sumLine.grand { font-size: 17px; font-weight: 900; color: #0f172a; }
+    .sumLine.grand { font-size: 17px; font-weight: 900; color: var(--red); }
+
+    /* النوافذ المنبثقة */
     .modalBackdrop { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.65); z-index: 100; justify-content: center; align-items: center; padding: 12px; }
     .modalBackdrop.open { display: flex; }
     .modalCard { background: #fff; color: #0f172a; width: 100%; max-width: 580px; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-height: 92vh; display: flex; flex-direction: column; }
@@ -87,14 +132,15 @@
     .optGroupTitle { font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 6px; text-transform: uppercase; }
     .optBtnsGrid { display: flex; flex-wrap: wrap; gap: 6px; }
     .optBtn { flex: 1; min-width: 90px; padding: 9px; border: 2px solid #cbd5e1; background: #f8fafc; border-radius: 8px; font-weight: 800; font-size: 12.5px; cursor: pointer; text-align: center; }
-    .optBtn.selected { border-color: var(--red); background: #fdf2f4; color: var(--red); }
+    .optBtn.selected { border-color: var(--red); background: var(--red-light); color: var(--red); }
     .noteTagBtn { padding: 7px 10px; border: 1.5px solid #cbd5e1; background: #f8fafc; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; }
     .noteTagBtn b { color: var(--red); }
-    .noteTagBtn.activeTag { background: #fdf2f4; border-color: var(--red); color: var(--red); }
+    .noteTagBtn.activeTag { background: var(--red-light); border-color: var(--red); color: var(--red); }
+
     .splitBox { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; }
     .splitItemRow { display: flex; justify-content: space-between; align-items: center; padding: 8px 6px; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 700; }
-    .splitItemRow:last-child { border-bottom: none; }
     .splitHighlight { background: #eff6ff; border: 2px solid var(--blue); border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 15px; color: #1e3a8a; }
+
     .phraseCatTabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
     .phraseCatBtn { background: #e2e8f0; border: 1px solid #cbd5e1; border-radius: 99px; padding: 6px 12px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; color: #1e293b; }
     .phraseCatBtn.active { background: var(--red); color: #fff; border-color: var(--red-dark); }
@@ -102,10 +148,12 @@
     .phraseAr { font-size: 12px; font-weight: 800; color: #b45309; margin-bottom: 4px; direction: rtl; text-align: right; }
     .phraseTr { font-size: 14px; font-weight: 900; color: #0f172a; margin-bottom: 3px; }
     .phraseEn { font-size: 13.5px; font-weight: 800; color: #2563eb; }
+
     .logCard { background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid var(--green); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
     .logHead { display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 13.5px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 6px; }
     .logItems { font-size: 12.5px; color: #334155; line-height: 1.45; }
     .thermalPaper { background: #fffef8; font-family: 'Courier New', Courier, monospace; padding: 18px; border: 1px dashed #94a3b8; color: #000; font-size: 13px; line-height: 1.4; }
+
     @media (max-width: 700px) {
       .tablesGrid { grid-template-columns: repeat(3, 1fr); }
       .posMainSplit { grid-template-columns: 115px 1fr; }
@@ -132,8 +180,8 @@
     <button class="zoneTabBtn" id="tab_BAHÇE" type="button" onclick="openDepartment('BAHÇE')">
       <span>BAHÇE</span><span class="deptCountBadge" id="badge_BAHÇE">0</span>
     </button>
-    <button class="zoneTabBtn" type="button" style="background:#0f766e;color:#fff;border-color:#115e59" onclick="openDailyLogModal()">
-      📋 Günlük Kayıt ( <span id="dailyLogCountBadge">0</span> )
+    <button class="zoneTabBtn" type="button" style="background:var(--red);color:#fff;border-color:var(--red-dark)" onclick="openDailyLogModal()">
+      📋 Günlük Kayıt (<span id="dailyLogCountBadge">0</span>)
     </button>
     <button class="zoneTabBtn" type="button" style="background:#0284c7;color:#fff;border-color:#0369a1" onclick="openPhrasesModal()">
       📖 Cümleler
@@ -142,7 +190,7 @@
   </div>
 </div>
 
-<!-- VIEW 1: TABLES GRID (PRE-POPULATED WITH SALON TABLES SO IT NEVER SHOWS BLANK) -->
+<!-- VIEW 1: TABLES GRID -->
 <section class="viewSec active" id="viewTables">
   <div class="searchBarWrap">
     <input type="text" id="tableSearchInput" placeholder="🔍 Masa Ara (Örn: 4, A3, B1)..." oninput="renderTablesGrid()" />
@@ -180,13 +228,13 @@
       <button class="sideActionBtn" type="button" onclick="openGeneralNoteModal()">📝 Adisyon Notu</button>
       <button class="sideActionBtn" type="button" onclick="openThermalPreview()">🧾 Hesap Yaz (Fiş)</button>
       <button class="sideActionBtn" type="button" onclick="changeTableNumber()">🔄 Masa Değiştir</button>
-      <button class="sideActionBtn" type="button" style="background:var(--red);color:#fff" onclick="clearCurrentTable()">🗑️ Masayı Kapat/Boşalt</button>
+      <button class="sideActionBtn" type="button" style="background:var(--red);color:#fff" onclick="clearCurrentTable()">🗑️ Masayı Kapat (Kaydet)</button>
     </div>
     <div class="adisyonContent">
       <div>
         <div class="ticketHeaderBar">
           <span id="adisyonTableTitle">MASA: -</span>
-          <span id="tableTimerBadge" style="background:var(--red);color:#fff;padding:3px 9px;border-radius:4px;font-size:12px;font-weight:900">⏱️ 00:00</span>
+          <span id="tableTimerBadge" style="background:#16a34a;color:#fff;padding:3px 9px;border-radius:4px;font-size:12px;font-weight:900">⏱️ 00:00</span>
           <span id="adisyonNoTitle">Adisyon No: -</span>
         </div>
         <div class="ticketSubBar">
@@ -194,8 +242,8 @@
           <span id="adisyonTimeText">--:--</span>
         </div>
         <div id="adisyonGeneralNoteBox" style="background:#fef3c7;color:#92400e;padding:6px 10px;font-size:12px;font-weight:800;display:none"></div>
-        <div style="font-size:11px;color:#475569;padding:4px 6px;font-weight:700;background:#e2e8f0;margin-top:4px;border-radius:4px">
-          🕒 Siparişler eskiden yeniye sıralanır. Sonradan not eklemek için <b>"✏️ Not/Düzenle"</b> butonuna basın.
+        <div style="font-size:11px;color:var(--red);padding:5px 8px;font-weight:800;background:var(--red-light);margin-top:4px;border-radius:4px;border:1px solid var(--red)">
+          🕒 Siparişler saatine göre (eskiden yeniye) sıralanır. Sipariş sonrasında bile alttaki hızlı butonlarla veya <b>"✏️ Not/Düzenle"</b> ile not ekleyebilirsiniz.
         </div>
         <div class="ticketItemsList" id="ticketItemsList"></div>
       </div>
@@ -244,7 +292,7 @@
       <div id="quickNotesSection" style="display:none"><div class="optGroupTitle">Ürüne Özel Seçenekler (Tap ➔ Writes Turkish)</div><div class="optBtnsGrid" id="quickNotesBtnsBox"></div></div>
       <div><div class="optGroupTitle">Ekstra Özel Not</div><input type="text" id="customItemNoteInput" placeholder="Not seçin veya buraya yazın..." style="width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:6px" /></div>
       <div style="display:flex;gap:8px">
-        <button class="barBtnGreen" id="btnConfirmModalMain" type="button" style="flex:1;border-radius:8px;padding:14px;font-size:15px" onclick="confirmAddItem(false)">✅ SİPARİŞE EKLE</button>
+        <button class="barBtnRed" id="btnConfirmModalMain" type="button" style="flex:1;border-radius:8px;padding:14px;font-size:15px" onclick="confirmAddItem(false)">✅ SİPARİŞE EKLE</button>
         <button class="optBtn" type="button" style="background:#d97706;color:#fff;border-color:#b45309;flex:0 0 auto" onclick="confirmAddItem(true)">🎁 İKRAM (0 ₺)</button>
       </div>
     </div>
@@ -284,7 +332,7 @@
       <div class="splitBox">
         <div class="optGroupTitle">3. Ürün Seçerek Öde (Pay by Items)</div>
         <div id="splitItemsContainer" style="max-height:200px;overflow-y:auto"></div>
-        <div class="splitHighlight" style="margin-top:8px;background:#fdf2f4;border-color:var(--red);color:var(--red)">
+        <div class="splitHighlight" style="margin-top:8px;background:var(--red-light);border-color:var(--red);color:var(--red)">
           <span>Seçilen Ödeme Tutarı:</span><span id="lblSelectedItemsTotal">₺0.00</span>
         </div>
         <div style="display:flex;gap:8px;margin-top:8px">
@@ -318,7 +366,7 @@
 
 <div class="modalBackdrop" id="dailyLogModal">
   <div class="modalCard" style="max-width:660px">
-    <div class="modalHead"><span>📋 Günlük Sipariş & Masa Kayıtları</span><button class="infoBtn" type="button" onclick="document.getElementById('dailyLogModal').classList.remove('open')">✕ Kapat</button></div>
+    <div class="modalHead"><span>📋 Günlük Sipariş & Masa Kayıtları (Arşiv)</span><button class="infoBtn" type="button" onclick="document.getElementById('dailyLogModal').classList.remove('open')">✕ Kapat</button></div>
     <div class="modalBody" style="max-height:82vh">
       <div style="display:flex;justify-content:space-between;align-items:center;background:#f1f5f9;padding:10px;border-radius:8px;flex-wrap:wrap;gap:8px">
         <div style="font-weight:900;font-size:14px">Bugün Toplam Ciro: <span id="dailyTotalRevenue" style="color:var(--green);font-size:16px">₺0.00</span></div>
@@ -342,13 +390,6 @@
 <canvas id="receiptCanvas" width="720" height="1350" style="display:none"></canvas>
 
 <script>
-// Unregister broken service workers so updates never get stuck
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(regs) {
-    for (var i = 0; i < regs.length; i++) regs[i].unregister();
-  }).catch(function() {});
-}
-
 var memStorage = {};
 function sGet(k, defVal) { try { var v = localStorage.getItem(k); return v !== null ? v : defVal; } catch(e) { return memStorage[k] !== undefined ? memStorage[k] : defVal; } }
 function sSet(k, v) { try { localStorage.setItem(k, v); } catch(e) { memStorage[k] = v; } }
@@ -359,9 +400,9 @@ var DEPARTMENTS = {
   "BAHÇE": ["B1", "B2", "B3", "B4", "B5", "B6", "B1/2", "B2/2", "B3/2", "B4/2", "B5/2", "B6/2"]
 };
 
-var STORAGE_TABLES_KEY = "onion_pos_tables_v10";
-var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v10";
-var STORAGE_DAILY_LOG  = "onion_pos_daily_log_v10";
+var STORAGE_TABLES_KEY = "onion_pos_tables_v12";
+var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v12";
+var STORAGE_DAILY_LOG  = "onion_pos_daily_log_v12";
 
 var tablesData = {}; try { tablesData = JSON.parse(sGet(STORAGE_TABLES_KEY, "{}")) || {}; } catch(e) { tablesData = {}; }
 var dailyLog = []; try { dailyLog = JSON.parse(sGet(STORAGE_DAILY_LOG, "[]")) || []; } catch(e) { dailyLog = []; }
@@ -720,10 +761,26 @@ function selectTable(tName) {
   }
 }
 
+function toggleInlineQuickNote(itemIdx, trNoteText) {
+  var tObj = tablesData[currentTable];
+  if (!tObj || !tObj.items[itemIdx]) return;
+  var it = tObj.items[itemIdx];
+  var cur = (it.note || "").trim();
+  var parts = cur ? cur.split(", ") : [];
+  var pos = parts.indexOf(trNoteText);
+  if (pos !== -1) parts.splice(pos, 1);
+  else parts.push(trNoteText);
+  it.note = parts.join(", ");
+  saveAllTables();
+  renderAdisyonView();
+}
+
 function renderAdisyonView() {
   var tObj = tablesData[currentTable];
   if (!tObj) return;
+  // ترتيب الطلبات من الأقدم إلى الأحدث حسب وقت الإضافة
   tObj.items.sort(function(a, b) { return (a.addedTimestamp || 0) - (b.addedTimestamp || 0); });
+
   document.getElementById("adisyonTableTitle").textContent = tObj.dept + " - MASA " + tObj.table;
   document.getElementById("adisyonNoTitle").textContent = "Adisyon No: " + tObj.adisyonNo;
   document.getElementById("adisyonMetaText").textContent = "Garson: Azzam • Kişi: " + tObj.guests;
@@ -755,7 +812,26 @@ function renderAdisyonView() {
           ? '<button class="tQtyBtn" type="button" style="width:auto;padding:0 8px;font-size:11px;color:#15803d;background:#dcfce7" onclick="undoItemPaid(' + idx + ')">↩️ Geri Al</button>'
           : '<button class="editItemBtn" type="button" onclick="editExistingCartItem(' + idx + ')">✏️ Not/Düzenle</button><span style="font-weight:900;font-size:14px">₺' + lineTotal.toFixed(0) + '</span><div class="tQtyCtrl"><button class="tQtyBtn" type="button" onclick="changeItemQty(' + idx + ', -1)">−</button><button class="tQtyBtn" type="button" onclick="changeItemQty(' + idx + ', 1)">+</button></div>';
 
-        row.innerHTML = '<div style="flex:1;min-width:180px">' + titleHtml + '</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' + actionHtml + '</div>';
+        var topWrap = '<div class="ticketRowTop"><div style="flex:1;min-width:180px">' + titleHtml + '</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' + actionHtml + '</div></div>';
+
+        // أزرار سريعة مباشرة تحت كل طبق لإضافة ملاحظات بعد أخذ الطلب بلمسة واحدة
+        var inlineBar = '';
+        if (!it.isPaid) {
+          var foundDef = findMenuItemById(it.id);
+          var quickList = (foundDef && foundDef.item.customNotes && foundDef.item.customNotes.length > 0)
+            ? foundDef.item.customNotes
+            : [N_NO_ONION, N_NO_GPEP, N_NO_SPICE];
+          var curParts = it.note ? it.note.split(", ") : [];
+          var chipsHtml = '';
+          for (var q = 0; q < Math.min(quickList.length, 5); q++) {
+            var qn = quickList[q];
+            var isOn = curParts.indexOf(qn.tr) !== -1;
+            chipsHtml += '<button type="button" class="inlineChip' + (isOn ? ' on' : '') + '" onclick="toggleInlineQuickNote(' + idx + ', \'' + qn.tr.replace(/'/g, "\\'") + '\')">+ ' + qn.tr + '</button>';
+          }
+          inlineBar = '<div class="inlineQuickBar">' + chipsHtml + '</div>';
+        }
+
+        row.innerHTML = topWrap + inlineBar;
         listEl.appendChild(row);
       })(i);
     }
@@ -838,7 +914,7 @@ function archiveTableToDailyLog(tObj) {
 function clearCurrentTable() {
   var tObj = tablesData[currentTable]; if (!tObj) return;
   var hasItems = tObj.items && tObj.items.length > 0;
-  if (!confirm(hasItems ? ("Masa " + currentTable + " kapatılıp Günlük Kayıt'a eklensin mi?") : ("Masa " + currentTable + " boşaltılsın mı?"))) return;
+  if (!confirm(hasItems ? ("Masa " + currentTable + " kapatılıp Günlük Kayıt'a (Arşive) eklensin mi?") : ("Masa " + currentTable + " boşaltılsın mı?"))) return;
   if (hasItems) archiveTableToDailyLog(tObj);
   delete tablesData[currentTable];
   saveAllTables();
@@ -1173,9 +1249,6 @@ function sendWhatsAppImage() {
   }, "image/png");
 }
 
-window.addEventListener("DOMContentLoaded", function() {
-  openDepartment("SALON");
-});
 openDepartment("SALON");
 </script>
 </body>
