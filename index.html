@@ -9,11 +9,11 @@
   <meta name="theme-color" content="#6b1426" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>ONION POS - Bordo V12</title>
+  <title>ONION POS - Bordo V13</title>
   <script>
-    // مسح أي كاش قديم من المتصفح تلقائياً فور فتح الصفحة لضمان ظهور التعديلات الجديدة
+    // مسح أي كاش قديم تلقائياً لضمان عمل التعديلات الجديدة فوراً
     (function() {
-      var VER = "onion_v12_bordo";
+      var VER = "onion_v13_instant";
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(regs) {
           for (var i = 0; i < regs.length; i++) regs[i].unregister();
@@ -27,8 +27,8 @@
       try {
         if (localStorage.getItem("app_ver_check") !== VER) {
           localStorage.setItem("app_ver_check", VER);
-          if (location.search.indexOf("v=12") === -1) {
-            location.replace(location.pathname + "?v=12");
+          if (location.search.indexOf("v=13") === -1) {
+            location.replace(location.pathname + "?v=13");
           }
         }
       } catch(e) {}
@@ -82,7 +82,7 @@
     .productsCol { display: flex; flex-direction: column; background: var(--bg-light); overflow-y: auto; }
     .productsGrid { padding: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-content: start; }
     .prodBox { background: var(--red); color: #fff; min-height: 90px; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.12); }
-    .prodBox:active { background: var(--red-dark); }
+    .prodBox:active { background: var(--red-dark); transform: scale(0.98); }
     .prodTitleTr { font-size: 12.5px; font-weight: 900; line-height: 1.2; }
     .prodTitleEn { font-size: 11px; font-weight: 600; color: #fde047; margin-top: 2px; line-height: 1.15; }
     .prodBottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
@@ -114,8 +114,13 @@
     .tQtyCtrl { display: flex; align-items: center; gap: 5px; }
     .tQtyBtn { width: 28px; height: 28px; border: 1px solid #94a3b8; background: #fff; font-weight: 900; border-radius: 4px; cursor: pointer; }
     .editItemBtn { background: var(--red-light); color: var(--red); border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
-    /* أزرار سريعة لتعديل الملاحظات مباشرة تحت الطبق بعد أخذ الطلب */
-    .inlineQuickBar { display: flex; gap: 4px; flex-wrap: wrap; padding-top: 4px; border-top: 1px dashed #cbd5e1; }
+
+    /* أزرار الخيارات والملاحظات السريعة داخل الفاتورة مباشرة */
+    .inlineQuickBar { display: flex; gap: 4px; flex-wrap: wrap; padding-top: 5px; border-top: 1px dashed #cbd5e1; align-items: center; }
+    .inlineVarChip { background: #eff6ff; border: 1.5px solid #93c5fd; color: #1e40af; font-size: 11px; font-weight: 900; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
+    .inlineVarChip.on { background: var(--blue); color: #fff; border-color: #1e3a8a; }
+    .inlineSubChip { background: #fefce8; border: 1.5px solid #fde047; color: #854d0e; font-size: 11px; font-weight: 900; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
+    .inlineSubChip.on { background: #d97706; color: #fff; border-color: #b45309; }
     .inlineChip { background: #fff; border: 1px solid #cbd5e1; color: #334155; font-size: 10.5px; font-weight: 800; padding: 3px 7px; border-radius: 4px; cursor: pointer; }
     .inlineChip.on { background: var(--red); color: #fff; border-color: var(--red-dark); }
 
@@ -243,7 +248,7 @@
         </div>
         <div id="adisyonGeneralNoteBox" style="background:#fef3c7;color:#92400e;padding:6px 10px;font-size:12px;font-weight:800;display:none"></div>
         <div style="font-size:11px;color:var(--red);padding:5px 8px;font-weight:800;background:var(--red-light);margin-top:4px;border-radius:4px;border:1px solid var(--red)">
-          🕒 Siparişler saatine göre (eskiden yeniye) sıralanır. Sipariş sonrasında bile alttaki hızlı butonlarla veya <b>"✏️ Not/Düzenle"</b> ile not ekleyebilirsiniz.
+          ⚡ Ürün eklendi! Aşağıdaki mavi/kırmızı hızlı butonlardan boyut, çeşit (Zero/Normal, Sade/Portakal) veya notları (Soğansız vb.) anında değiştirebilirsiniz.
         </div>
         <div class="ticketItemsList" id="ticketItemsList"></div>
       </div>
@@ -292,7 +297,7 @@
       <div id="quickNotesSection" style="display:none"><div class="optGroupTitle">Ürüne Özel Seçenekler (Tap ➔ Writes Turkish)</div><div class="optBtnsGrid" id="quickNotesBtnsBox"></div></div>
       <div><div class="optGroupTitle">Ekstra Özel Not</div><input type="text" id="customItemNoteInput" placeholder="Not seçin veya buraya yazın..." style="width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:6px" /></div>
       <div style="display:flex;gap:8px">
-        <button class="barBtnRed" id="btnConfirmModalMain" type="button" style="flex:1;border-radius:8px;padding:14px;font-size:15px" onclick="confirmAddItem(false)">✅ SİPARİŞE EKLE</button>
+        <button class="barBtnRed" id="btnConfirmModalMain" type="button" style="flex:1;border-radius:8px;padding:14px;font-size:15px" onclick="confirmAddItem(false)">💾 KAYDET (SAVE)</button>
         <button class="optBtn" type="button" style="background:#d97706;color:#fff;border-color:#b45309;flex:0 0 auto" onclick="confirmAddItem(true)">🎁 İKRAM (0 ₺)</button>
       </div>
     </div>
@@ -400,9 +405,9 @@ var DEPARTMENTS = {
   "BAHÇE": ["B1", "B2", "B3", "B4", "B5", "B6", "B1/2", "B2/2", "B3/2", "B4/2", "B5/2", "B6/2"]
 };
 
-var STORAGE_TABLES_KEY = "onion_pos_tables_v12";
-var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v12";
-var STORAGE_DAILY_LOG  = "onion_pos_daily_log_v12";
+var STORAGE_TABLES_KEY = "onion_pos_tables_v13";
+var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v13";
+var STORAGE_DAILY_LOG  = "onion_pos_daily_log_v13";
 
 var tablesData = {}; try { tablesData = JSON.parse(sGet(STORAGE_TABLES_KEY, "{}")) || {}; } catch(e) { tablesData = {}; }
 var dailyLog = []; try { dailyLog = JSON.parse(sGet(STORAGE_DAILY_LOG, "[]")) || []; } catch(e) { dailyLog = []; }
@@ -559,16 +564,17 @@ var POS_MENU = [
     catTr: "SOĞUK İÇECEKLER", catEn: "Cold Drinks", type: "cold_drink",
     items: [
       { id: "su", tr: "SU", en: "Water (400 ml)", price: 40 },
-      { id: "coca_cola", tr: "COCA COLA 300 ML", en: "Coca-Cola", price: 126 },
+      { id: "coca_cola", tr: "COCA COLA 300 ML", en: "Coca-Cola (Normal / Zero)", price: 126,
+        variants: [{ label: "Normal (Coke)", tr: "Normal", price: 126 }, { label: "Zero (Şekersiz)", tr: "Zero", price: 126 }] },
       { id: "fanta", tr: "FANTA 300 ML", en: "Fanta", price: 126 },
       { id: "sprite", tr: "SPRİTE 330 ML", en: "Sprite", price: 126 },
       { id: "fuse_tea", tr: "FUSE TEA 330 ML", en: "Fuse Tea", price: 126, variants: [{ label: "Şeftali", tr: "Şeftali", price: 126 }, { label: "Limon", tr: "Limon", price: 126 }] },
       { id: "cappy", tr: "CAPPY", en: "Cappy Juice", price: 126, variants: [{ label: "Vişne", tr: "Vişne", price: 126 }, { label: "Karışık", tr: "Karışık", price: 126 }] },
       { id: "ayran", tr: "AYRAN 280 ML", en: "Ayran", price: 60 },
       { id: "limonata", tr: "EV YAPIMI LİMONATA", en: "Lemonade", price: 105, customNotes: [{ en: "No Ice", tr: "Buzsuz" }, { en: "Extra Lemon Slices", tr: "Ekstra limon dilimli" }] },
-      { id: "uludag_gazoz", tr: "ULUDAĞ GAZOZ", en: "Uludağ Gazoz", price: 116 },
+      { id: "uludag_gazoz", tr: "ULUDAĞ GAZOZ", en: "Uludağ Gazoz (Sade / Portakal)", price: 116,
+        variants: [{ label: "Sade (Plain)", tr: "Sade", price: 116 }, { label: "Portakal (Orange)", tr: "Portakal", price: 133 }] },
       { id: "frutti_extra", tr: "FRUTTİ EXTRA", en: "Frutti Extra", price: 60, variants: [{ label: "Mandalina", tr: "Mandalina", price: 60 }, { label: "Yeşil Limon", tr: "Yeşil Limon", price: 60 }, { label: "Orman Meyveleri", tr: "Orman Meyveleri", price: 60 }] },
-      { id: "gazoz_portakal", tr: "ULUDAĞ PORTAKAL", en: "Orange Soda", price: 133 },
       { id: "uludag_soda", tr: "ULUDAĞ SODA", en: "Mineral Water", price: 55 },
       { id: "churchill", tr: "CHURCHİLL", en: "Churchill", price: 139, customNotes: [{ en: "Less Salt", tr: "Az tuzlu" }] },
       { id: "ice_americano", tr: "İCE AMERİCANO", en: "Iced Americano", price: 138 },
@@ -761,6 +767,94 @@ function selectTable(tName) {
   }
 }
 
+/* ============================================================================
+   1-TAP INSTANT ADD FROM MENU -> DIRECTLY TO ADİSYON (BILL)
+   ============================================================================ */
+function instantAddAndGoToBill(item) {
+  if (!currentTable) return;
+  var tObj = tablesData[currentTable];
+
+  var defaultPrice = item.price;
+  var optParts = [];
+
+  if (item.variants && item.variants.length > 0) {
+    defaultPrice = item.variants[0].price;
+    optParts.push(item.variants[0].tr);
+  }
+  if (item.subOptions && item.subOptions.length > 0) {
+    optParts.push(item.subOptions[0].split("(")[0].trim());
+  }
+
+  var finalOptLabel = optParts.length > 0 ? optParts.join(" - ") : "Normal";
+  var curMin = nowTimeStr();
+
+  var merged = false;
+  for (var i = 0; i < tObj.items.length; i++) {
+    var ex = tObj.items[i];
+    if (ex.id === item.id && ex.optLabel === finalOptLabel && !ex.note && !ex.isIkram && !ex.isPaid && ex.orderTime === curMin) {
+      ex.qty += 1;
+      merged = true;
+      break;
+    }
+  }
+
+  if (!merged) {
+    tObj.items.push({
+      id: item.id,
+      tr: item.tr,
+      en: item.en,
+      optLabel: finalOptLabel,
+      price: defaultPrice,
+      qty: 1,
+      note: "",
+      isIkram: false,
+      isPaid: false,
+      orderTime: curMin,
+      addedTimestamp: Date.now()
+    });
+  }
+
+  saveAllTables();
+  updateMenuBottomSummary();
+  renderAdisyonView();
+  showView("viewAdisyon");
+}
+
+function setInlineVariant(itemIdx, varIdx) {
+  var tObj = tablesData[currentTable];
+  if (!tObj || !tObj.items[itemIdx]) return;
+  var cartIt = tObj.items[itemIdx];
+  var found = findMenuItemById(cartIt.id);
+  if (!found || !found.item.variants || !found.item.variants[varIdx]) return;
+
+  var v = found.item.variants[varIdx];
+  if (!cartIt.isIkram) cartIt.price = v.price;
+
+  var parts = (cartIt.optLabel || "").split(" - ");
+  parts[0] = v.tr;
+  cartIt.optLabel = parts.join(" - ");
+  saveAllTables();
+  renderAdisyonView();
+}
+
+function setInlineSubOption(itemIdx, subStr) {
+  var tObj = tablesData[currentTable];
+  if (!tObj || !tObj.items[itemIdx]) return;
+  var cartIt = tObj.items[itemIdx];
+  var found = findMenuItemById(cartIt.id);
+  var cleanSub = subStr.split("(")[0].trim();
+
+  if (found && found.item.variants && found.item.variants.length > 0) {
+    var parts = (cartIt.optLabel || "").split(" - ");
+    var firstPart = parts[0] || found.item.variants[0].tr;
+    cartIt.optLabel = firstPart + " - " + cleanSub;
+  } else {
+    cartIt.optLabel = cleanSub;
+  }
+  saveAllTables();
+  renderAdisyonView();
+}
+
 function toggleInlineQuickNote(itemIdx, trNoteText) {
   var tObj = tablesData[currentTable];
   if (!tObj || !tObj.items[itemIdx]) return;
@@ -814,21 +908,53 @@ function renderAdisyonView() {
 
         var topWrap = '<div class="ticketRowTop"><div style="flex:1;min-width:180px">' + titleHtml + '</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' + actionHtml + '</div></div>';
 
-        // أزرار سريعة مباشرة تحت كل طبق لإضافة ملاحظات بعد أخذ الطلب بلمسة واحدة
+        // شريط الخيارات السريعة تحت الطبق (لتغيير الكولا العادي/زيرو، الغازوز سادة/برتقال، حجم البيتزا، السكر، أو الملاحظات بضغطة واحدة)
         var inlineBar = '';
         if (!it.isPaid) {
           var foundDef = findMenuItemById(it.id);
-          var quickList = (foundDef && foundDef.item.customNotes && foundDef.item.customNotes.length > 0)
-            ? foundDef.item.customNotes
-            : [N_NO_ONION, N_NO_GPEP, N_NO_SPICE];
-          var curParts = it.note ? it.note.split(", ") : [];
           var chipsHtml = '';
+
+          // 1. أزرار الخيارات والأنواع (مثل Normal / Zero أو Sade / Portakal أو KUCUK / ORTA)
+          if (foundDef && foundDef.item.variants && foundDef.item.variants.length > 0) {
+            var vList = foundDef.item.variants;
+            for (var v = 0; v < vList.length; v++) {
+              var isVarActive = (it.optLabel || "").split(" - ")[0] === vList[v].tr;
+              chipsHtml += '<button type="button" class="inlineVarChip' + (isVarActive ? ' on' : '') + '" onclick="setInlineVariant(' + idx + ', ' + v + ')">🔹 ' + vList[v].tr + ' (₺' + vList[v].price + ')</button>';
+            }
+          }
+
+          // 2. أزرار السكر أو درجة الشاي (مثل Sade / Orta / Şekerli أو Açık / Demli)
+          if (foundDef && foundDef.item.subOptions && foundDef.item.subOptions.length > 0) {
+            var sList = foundDef.item.subOptions;
+            for (var s = 0; s < sList.length; s++) {
+              var cleanS = sList[s].split("(")[0].trim();
+              var isSubActive = (it.optLabel || "").indexOf(cleanS) !== -1;
+              chipsHtml += '<button type="button" class="inlineSubChip' + (isSubActive ? ' on' : '') + '" onclick="setInlineSubOption(' + idx + ', \'' + cleanS.replace(/'/g, "\\'") + '\')">🔸 ' + cleanS + '</button>';
+            }
+          }
+
+          // 3. أزرار الملاحظات السريعة الخاصة بالصنف
+          var quickList = [];
+          if (foundDef && foundDef.item.customNotes !== undefined) {
+            quickList = foundDef.item.customNotes;
+          } else if (foundDef && foundDef.type === "cold_drink") {
+            quickList = DEFAULT_COLD_DRINK_NOTES;
+          } else if (foundDef && foundDef.type === "hot_drink") {
+            quickList = DEFAULT_HOT_COFFEE_NOTES;
+          } else {
+            quickList = [N_NO_ONION, N_NO_GPEP, N_NO_SPICE];
+          }
+
+          var curParts = it.note ? it.note.split(", ") : [];
           for (var q = 0; q < Math.min(quickList.length, 5); q++) {
             var qn = quickList[q];
             var isOn = curParts.indexOf(qn.tr) !== -1;
             chipsHtml += '<button type="button" class="inlineChip' + (isOn ? ' on' : '') + '" onclick="toggleInlineQuickNote(' + idx + ', \'' + qn.tr.replace(/'/g, "\\'") + '\')">+ ' + qn.tr + '</button>';
           }
-          inlineBar = '<div class="inlineQuickBar">' + chipsHtml + '</div>';
+
+          if (chipsHtml) {
+            inlineBar = '<div class="inlineQuickBar">' + chipsHtml + '</div>';
+          }
         }
 
         row.innerHTML = topWrap + inlineBar;
@@ -935,321 +1061,4 @@ function renderDailyLogList() {
       var iLines = [];
       for (var k = 0; k < at.items.length; k++) {
         var it = at.items[k];
-        iLines.push("<div>• <span class='timeTag'>🕒 " + (it.orderTime || at.time) + "</span> <b>" + it.qty + "x " + it.tr + "</b> (" + (it.optLabel || "Normal") + ")" + (it.note ? " — <i style='color:#b45309'>Not: " + it.note + "</i>" : "") + "</div>");
-      }
-      activeHtml += '<div class="logCard" style="border-left-color:var(--orange);background:#fffbeb"><div class="logHead"><span>🟢 [AÇIK] ' + at.dept + ' - Masa ' + at.table + ' (#' + at.adisyonNo + ')</span><span style="color:#b45309">₺' + atSum.toFixed(2) + '</span></div><div style="font-size:11.5px;color:#64748b;margin-bottom:6px">Açılış: ' + at.time + ' • Süre: ' + formatElapsed(at.timestamp) + '</div><div class="logItems">' + iLines.join("") + '</div></div>';
-    }
-  }
-  for (var i = 0; i < dailyLog.length; i++) {
-    var entry = dailyLog[i]; totalRev += (entry.totalAmount || 0);
-    var itemLines = [];
-    for (var j = 0; j < entry.items.length; j++) {
-      var item = entry.items[j];
-      itemLines.push("<div>• <span class='timeTag'>🕒 " + (item.orderTime || entry.openTime) + "</span> <b>" + item.qty + "x " + item.tr + "</b> (" + (item.optLabel || "Normal") + ") — ₺" + (item.price * item.qty).toFixed(0) + (item.note ? " <span style='color:#b45309'>[Not: " + item.note + "]</span>" : "") + "</div>");
-    }
-    closedHtml += '<div class="logCard"><div class="logHead"><span>☑️ [KAPANDI] ' + entry.dept + ' - Masa ' + entry.table + ' (#' + entry.adisyonNo + ')</span><span style="color:var(--green)">₺' + (entry.totalAmount || 0).toFixed(2) + '</span></div><div style="font-size:11.5px;color:#64748b;margin-bottom:6px">Açılış: ' + entry.openTime + ' ➔ Kapanış: ' + entry.closeTime + ' (' + entry.duration + ')</div><div class="logItems">' + itemLines.join("") + '</div></div>';
-  }
-  document.getElementById("dailyTotalRevenue").textContent = "₺" + totalRev.toFixed(2);
-  box.innerHTML = (activeHtml || closedHtml) ? (activeHtml + closedHtml) : '<div style="padding:20px;text-align:center;color:#64748b;font-weight:700">Bugün henüz kayıtlı sipariş yok.</div>';
-}
-
-function clearDailyHistoryLog() { if (!confirm("Günlük kayıtlar silinsin mi?")) return; dailyLog = []; saveDailyLog(); renderDailyLogList(); }
-
-function openPhrasesModal() { renderPhraseTabs(); renderPhrasesList(); document.getElementById("phrasesModal").classList.add("open"); }
-function renderPhraseTabs() {
-  var tBox = document.getElementById("phraseCatTabs"); tBox.innerHTML = "";
-  for (var i = 0; i < PHRASE_CATEGORIES.length; i++) {
-    (function(catObj) {
-      var btn = document.createElement("button"); btn.type = "button";
-      btn.className = "phraseCatBtn" + (catObj.id === activePhraseCat ? " active" : "");
-      btn.textContent = catObj.label;
-      btn.onclick = function() { activePhraseCat = catObj.id; renderPhraseTabs(); renderPhrasesList(); };
-      tBox.appendChild(btn);
-    })(PHRASE_CATEGORIES[i]);
-  }
-}
-function renderPhrasesList() {
-  var box = document.getElementById("phrasesContainer"); box.innerHTML = "";
-  for (var i = 0; i < RESTAURANT_PHRASES.length; i++) {
-    var p = RESTAURANT_PHRASES[i];
-    if (activePhraseCat !== "all" && p.cat !== activePhraseCat) continue;
-    var div = document.createElement("div"); div.className = "phraseCardItem";
-    div.innerHTML = '<div class="phraseAr">💬 ' + p.ar + '</div><div class="phraseTr">🇹🇷 ' + p.tr + '</div><div class="phraseEn">🇬🇧 ' + p.en + '</div>';
-    box.appendChild(div);
-  }
-}
-
-function openSplitAndPayModal() {
-  var tObj = tablesData[currentTable]; if (!tObj || tObj.items.length === 0) { alert("Masada ürün yok!"); return; }
-  equalSplitCount = tObj.guests > 1 ? tObj.guests : 2; selectedSplitQtys = {};
-  renderSplitModalContent(); document.getElementById("splitPayModal").classList.add("open");
-}
-function closeSplitAndPayModal() { document.getElementById("splitPayModal").classList.remove("open"); renderAdisyonView(); }
-function applyTableDiscount(type, val) { var tObj = tablesData[currentTable]; if (!tObj) return; tObj.discountType = type; tObj.discountVal = val; saveAllTables(); renderSplitModalContent(); renderAdisyonView(); }
-function promptCustomDiscount() {
-  var input = prompt("İndirim (%) veya TL girin (Örn: 25% veya 100):", "10%"); if (!input) return;
-  if (input.indexOf("%") !== -1) applyTableDiscount("percent", parseFloat(input.replace("%", "")) || 0);
-  else applyTableDiscount("amount", parseFloat(input) || 0);
-}
-function setEqualSplitCount(n) { equalSplitCount = n; renderSplitModalContent(); }
-function promptCustomSplitCount() { var c = prompt("Kaç kişiye bölünsün?", equalSplitCount); if (c) { equalSplitCount = parseInt(c, 10) || 2; renderSplitModalContent(); } }
-function adjustSplitItemQty(idx, delta) {
-  var tObj = tablesData[currentTable]; if (!tObj || !tObj.items[idx] || tObj.items[idx].isPaid) return;
-  var next = (selectedSplitQtys[idx] || 0) + delta;
-  selectedSplitQtys[idx] = Math.max(0, Math.min(tObj.items[idx].qty, next));
-  renderSplitModalContent();
-}
-function resetSelectedSplitItems() { selectedSplitQtys = {}; renderSplitModalContent(); }
-
-function renderSplitModalContent() {
-  var tObj = tablesData[currentTable]; if (!tObj) return;
-  var totals = calcTableTotals(tObj);
-  document.getElementById("splitModalNetTotal").textContent = "₺" + totals.netTotal.toFixed(2);
-  document.getElementById("lblEqualPeople").textContent = equalSplitCount;
-  document.getElementById("lblEqualPerPerson").textContent = "₺" + (totals.netTotal / (equalSplitCount || 1)).toFixed(2) + " / Kişi";
-
-  var box = document.getElementById("splitItemsContainer"); box.innerHTML = "";
-  var selectedRawSum = 0;
-  for (var i = 0; i < tObj.items.length; i++) {
-    (function(idx) {
-      var it = tObj.items[idx]; if (it.isPaid) return;
-      var selQty = selectedSplitQtys[idx] || 0, lineSelSum = selQty * it.price;
-      selectedRawSum += lineSelSum;
-      var row = document.createElement("div"); row.className = "splitItemRow";
-      row.innerHTML = '<div style="flex:1"><div>' + it.tr + ' <small>(' + (it.optLabel || 'Normal') + ')</small></div><div style="font-size:11.5px;color:#64748b">₺' + it.price + ' • Kalan: <b>' + it.qty + '</b></div></div><div style="display:flex;align-items:center;gap:8px"><button class="tQtyBtn" type="button" onclick="adjustSplitItemQty(' + idx + ', -1)">−</button><span style="min-width:22px;text-align:center;font-weight:900;color:var(--red)">' + selQty + '</span><button class="tQtyBtn" type="button" onclick="adjustSplitItemQty(' + idx + ', 1)">+</button><span style="min-width:55px;text-align:right;font-weight:900">₺' + lineSelSum.toFixed(0) + '</span></div>';
-      box.appendChild(row);
-    })(i);
-  }
-  var finalSel = (tObj.discountType === "percent" && tObj.discountVal > 0) ? selectedRawSum * (1 - tObj.discountVal / 100) : selectedRawSum;
-  document.getElementById("lblSelectedItemsTotal").textContent = "₺" + finalSel.toFixed(2);
-}
-
-function markSelectedItemsAsPaid() {
-  var tObj = tablesData[currentTable]; if (!tObj) return;
-  var any = false; for (var k in selectedSplitQtys) if (selectedSplitQtys[k] > 0) any = true;
-  if (!any) { alert("Önce (+) ile ürün seçin!"); return; }
-  var newItems = [];
-  for (var i = 0; i < tObj.items.length; i++) {
-    var it = tObj.items[i];
-    if (it.isPaid) { newItems.push(it); continue; }
-    var sel = selectedSplitQtys[i] || 0;
-    if (sel > 0) {
-      if (sel < it.qty) { var rem = JSON.parse(JSON.stringify(it)); rem.qty = it.qty - sel; newItems.push(rem); }
-      var pd = JSON.parse(JSON.stringify(it)); pd.qty = sel; pd.isPaid = true; newItems.push(pd);
-    } else newItems.push(it);
-  }
-  tObj.items = newItems; selectedSplitQtys = {}; saveAllTables(); renderSplitModalContent(); renderAdisyonView();
-}
-
-function openMenuForCurrentTable() { renderPosCategories(); renderProductsGrid(); updateMenuBottomSummary(); showView("viewMenu"); }
-function renderPosCategories() {
-  var col = document.getElementById("posCatsCol"); col.innerHTML = "";
-  for (var i = 0; i < POS_MENU.length; i++) {
-    (function(idx) {
-      var cat = POS_MENU[idx], btn = document.createElement("button");
-      btn.type = "button"; btn.className = "catPosBtn" + (idx === activeCatIdx ? " active" : "");
-      btn.innerHTML = cat.catTr + "<small>" + cat.catEn + "</small>";
-      btn.onclick = function() { activeCatIdx = idx; document.getElementById("prodSearchInput").value = ""; renderPosCategories(); renderProductsGrid(); };
-      col.appendChild(btn);
-    })(i);
-  }
-}
-
-function renderProductsGrid() {
-  var grid = document.getElementById("posProductsGrid"); grid.innerHTML = "";
-  var q = (document.getElementById("prodSearchInput").value || "").toLowerCase().trim(), list = [];
-  if (q) {
-    for (var c = 0; c < POS_MENU.length; c++) {
-      for (var j = 0; j < POS_MENU[c].items.length; j++) {
-        var it = POS_MENU[c].items[j];
-        if ((it.tr + " " + it.en + " " + (it.descTr || "")).toLowerCase().indexOf(q) !== -1) list.push({ item: it, type: POS_MENU[c].type });
-      }
-    }
-  } else {
-    for (var k = 0; k < POS_MENU[activeCatIdx].items.length; k++) list.push({ item: POS_MENU[activeCatIdx].items[k], type: POS_MENU[activeCatIdx].type });
-  }
-  for (var m = 0; m < list.length; m++) {
-    (function(entry) {
-      var item = entry.item, box = document.createElement("div"); box.className = "prodBox";
-      box.innerHTML = '<div><div class="prodTitleTr">' + item.tr + '</div><div class="prodTitleEn">' + item.en + '</div></div><div class="prodBottom"><span class="prodPrice">[' + item.price.toFixed(1) + ']</span>' + (item.descTr ? '<button type="button" class="infoBtn">ℹ️ Detay</button>' : '') + '</div>';
-      box.onclick = function(e) {
-        if (e.target && e.target.classList.contains("infoBtn")) { e.stopPropagation(); showItemDetails(item); return; }
-        editingCartItemIndex = null; openItemOptionModal(item, entry.type, null);
-      };
-      grid.appendChild(box);
-    })(list[m]);
-  }
-}
-
-function showItemDetails(item) {
-  document.getElementById("detModalTitle").textContent = item.en + " / " + item.tr;
-  document.getElementById("detModalEn").textContent = "🇬🇧 Ingredients: " + (item.descEn || "-");
-  document.getElementById("detModalTr").textContent = "🇹🇷 İçindekiler: " + (item.descTr || "-");
-  document.getElementById("detailsModal").classList.add("open");
-}
-
-function openItemOptionModal(item, cType, existingCartItem) {
-  pendingItem = item; pendingCatType = cType; selectedVariantIdx = 0;
-  selectedSubOpt = (item.subOptions && item.subOptions.length > 0) ? item.subOptions[0] : "";
-  var existingNote = existingCartItem ? (existingCartItem.note || "").replace(" (İKRAM)", "").replace("İKRAM (Ücretsiz)", "").trim() : "";
-  document.getElementById("customItemNoteInput").value = existingNote;
-  document.getElementById("optModalTitle").textContent = existingCartItem ? ("✏️ Düzenle: " + item.tr) : (item.tr + " (" + item.en + ")");
-  document.getElementById("btnConfirmModalMain").textContent = existingCartItem ? "💾 KAYDET (SAVE)" : "✅ SİPARİŞE EKLE";
-
-  var varSec = document.getElementById("variantSection"), varBox = document.getElementById("variantBtnsBox"); varBox.innerHTML = "";
-  if (item.variants && item.variants.length > 0) {
-    varSec.style.display = "block";
-    for (var i = 0; i < item.variants.length; i++) {
-      (function(vIdx) {
-        var v = item.variants[vIdx], b = document.createElement("button"); b.type = "button";
-        b.className = "optBtn" + (vIdx === selectedVariantIdx ? " selected" : "");
-        b.innerHTML = v.label + "<br><small>₺" + v.price + "</small>";
-        b.onclick = function() { selectedVariantIdx = vIdx; var all = varBox.querySelectorAll(".optBtn"); for (var x = 0; x < all.length; x++) all[x].classList.remove("selected"); b.classList.add("selected"); };
-        varBox.appendChild(b);
-      })(i);
-    }
-  } else varSec.style.display = "none";
-
-  var subSec = document.getElementById("subOptionSection"), subBox = document.getElementById("subOptionBtnsBox"); subBox.innerHTML = "";
-  if (item.subOptions && item.subOptions.length > 0) {
-    subSec.style.display = "block";
-    document.getElementById("subOptionTitle").textContent = item.subOptionTitle || "Seçenek";
-    for (var s = 0; s < item.subOptions.length; s++) {
-      (function(sVal) {
-        var sb = document.createElement("button"); sb.type = "button";
-        sb.className = "optBtn" + (sVal === selectedSubOpt ? " selected" : ""); sb.textContent = sVal;
-        sb.onclick = function() { selectedSubOpt = sVal; var allS = subBox.querySelectorAll(".optBtn"); for (var y = 0; y < allS.length; y++) allS[y].classList.remove("selected"); sb.classList.add("selected"); };
-        subBox.appendChild(sb);
-      })(item.subOptions[s]);
-    }
-  } else subSec.style.display = "none";
-
-  var notesSec = document.getElementById("quickNotesSection"), notesBox = document.getElementById("quickNotesBtnsBox"); notesBox.innerHTML = "";
-  var dishNotes = item.customNotes !== undefined ? item.customNotes : (cType === "cold_drink" ? DEFAULT_COLD_DRINK_NOTES : (cType === "hot_drink" ? DEFAULT_HOT_COFFEE_NOTES : []));
-  if (dishNotes && dishNotes.length > 0) {
-    notesSec.style.display = "block";
-    var currentParts = existingNote ? existingNote.split(", ") : [];
-    for (var n = 0; n < dishNotes.length; n++) {
-      (function(noteObj) {
-        var nb = document.createElement("button"); nb.type = "button";
-        nb.className = "noteTagBtn" + (currentParts.indexOf(noteObj.tr) !== -1 ? " activeTag" : "");
-        nb.innerHTML = "<b>" + noteObj.en + "</b> (" + noteObj.tr + ")";
-        nb.onclick = function() {
-          var inp = document.getElementById("customItemNoteInput"), cur = inp.value.trim(), parts = cur ? cur.split(", ") : [], idx = parts.indexOf(noteObj.tr);
-          if (idx !== -1) { parts.splice(idx, 1); nb.classList.remove("activeTag"); }
-          else { parts.push(noteObj.tr); nb.classList.add("activeTag"); }
-          inp.value = parts.join(", ");
-        };
-        notesBox.appendChild(nb);
-      })(dishNotes[n]);
-    }
-  } else notesSec.style.display = "none";
-
-  document.getElementById("itemOptionModal").classList.add("open");
-}
-
-function closeOptionModal() { editingCartItemIndex = null; document.getElementById("itemOptionModal").classList.remove("open"); }
-
-function confirmAddItem(isIkram) {
-  if (!pendingItem || !currentTable) return;
-  var tObj = tablesData[currentTable], unitPrice = isIkram ? 0 : pendingItem.price, optParts = [];
-  if (pendingItem.variants && pendingItem.variants[selectedVariantIdx]) {
-    if (!isIkram) unitPrice = pendingItem.variants[selectedVariantIdx].price;
-    optParts.push(pendingItem.variants[selectedVariantIdx].tr);
-  }
-  if (selectedSubOpt) optParts.push(selectedSubOpt.split("(")[0].trim());
-  var finalOptLabel = optParts.length > 0 ? optParts.join(" - ") : "Normal";
-  var noteVal = document.getElementById("customItemNoteInput").value.trim();
-  if (isIkram && noteVal.indexOf("İKRAM") === -1) noteVal = noteVal ? (noteVal + " (İKRAM)") : "İKRAM (Ücretsiz)";
-
-  if (editingCartItemIndex !== null && tObj.items[editingCartItemIndex]) {
-    var target = tObj.items[editingCartItemIndex];
-    target.optLabel = finalOptLabel; target.price = unitPrice; target.note = noteVal; target.isIkram = !!isIkram;
-    saveAllTables(); renderAdisyonView(); updateMenuBottomSummary(); closeOptionModal(); return;
-  }
-
-  var curMin = nowTimeStr(), merged = false;
-  for (var i = 0; i < tObj.items.length; i++) {
-    var ex = tObj.items[i];
-    if (ex.id === pendingItem.id && ex.optLabel === finalOptLabel && ex.note === noteVal && !!ex.isIkram === !!isIkram && !ex.isPaid && ex.orderTime === curMin) {
-      ex.qty += 1; merged = true; break;
-    }
-  }
-  if (!merged) {
-    tObj.items.push({ id: pendingItem.id, tr: pendingItem.tr, en: pendingItem.en, optLabel: finalOptLabel, price: unitPrice, qty: 1, note: noteVal, isIkram: !!isIkram, isPaid: false, orderTime: curMin, addedTimestamp: Date.now() });
-  }
-  saveAllTables(); updateMenuBottomSummary(); closeOptionModal();
-}
-
-function updateMenuBottomSummary() {
-  var tObj = tablesData[currentTable], count = 0;
-  if (tObj && tObj.items) for (var i = 0; i < tObj.items.length; i++) if (!tObj.items[i].isPaid) count += tObj.items[i].qty;
-  var totals = calcTableTotals(tObj);
-  document.getElementById("menuCartCount").textContent = count;
-  document.getElementById("menuCartTotal").textContent = totals.netTotal.toFixed(0) + " ₺";
-}
-
-function openThermalPreview() {
-  var tObj = tablesData[currentTable]; if (!tObj || tObj.items.length === 0) { alert("Masada ürün yok!"); return; }
-  var totals = calcTableTotals(tObj), lines = [];
-  lines.push("<div style='text-align:center;font-weight:900;font-size:16px'>....... ONION .......</div>");
-  lines.push("Kisi Sayisi " + tObj.guests + " | Masa: " + tObj.table);
-  lines.push("Tarih:" + nowFullDateStr() + " | Adisyon:" + tObj.adisyonNo);
-  lines.push("--------------------------------");
-  for (var i = 0; i < tObj.items.length; i++) {
-    var it = tObj.items[i], sub = it.price * it.qty;
-    var optDot = (it.optLabel && it.optLabel !== "Normal") ? ("." + it.optLabel) : "";
-    var paidMark = it.isPaid ? " (ODENDI)" : (it.isIkram ? " (IKRAM)" : "");
-    lines.push("<div style='display:flex;justify-content:space-between;font-weight:700'><span>- [" + (it.orderTime || "--:--") + "] " + it.qty + " " + it.tr + optDot + paidMark + "</span><span>" + sub.toFixed(2) + "</span></div>");
-    if (it.note) lines.push("<div style='font-size:11px;padding-left:14px'>* Not: " + it.note + "</div>");
-  }
-  lines.push("================================");
-  lines.push("<div style='display:flex;justify-content:space-between;font-weight:900;font-size:16px'><span>Kalan Toplam:</span><span>" + totals.netTotal.toFixed(2) + "</span></div>");
-  document.getElementById("thermalPaperContent").innerHTML = lines.join("<br>");
-  document.getElementById("thermalModal").classList.add("open");
-}
-
-function sendWhatsAppText() {
-  var tObj = tablesData[currentTable]; if (!tObj || tObj.items.length === 0) { alert("Önce ürün ekleyin!"); return; }
-  var lines = ["SİPARİŞ FİŞİ (ONION)", "BÖLÜM: " + tObj.dept + " | MASA: " + tObj.table, "ADİSYON: " + tObj.adisyonNo + " | KİŞİ: " + tObj.guests, "GARSON: Azzam", "------------------------------"];
-  for (var i = 0; i < tObj.items.length; i++) {
-    var it = tObj.items[i];
-    lines.push("- [" + (it.orderTime || "--:--") + "] " + it.qty + " x " + it.tr + (it.optLabel !== "Normal" ? " (" + it.optLabel + ")" : "") + (it.isIkram ? " [İKRAM]" : ""));
-    if (it.note) lines.push("   ↳ Not: " + it.note);
-  }
-  if (tObj.generalNote) lines.push("------------------------------\nGENEL NOT: " + tObj.generalNote);
-  window.open("https://wa.me/?text=" + encodeURIComponent(lines.join("\n")), "_blank");
-}
-
-function sendWhatsAppImage() {
-  var tObj = tablesData[currentTable]; if (!tObj || tObj.items.length === 0) { alert("Önce ürün ekleyin!"); return; }
-  var canvas = document.getElementById("receiptCanvas"), ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#fffef8"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#000"; ctx.font = "bold 34px monospace"; ctx.fillText("========== ONION ==========", 70, 70);
-  ctx.font = "bold 24px monospace";
-  ctx.fillText("Bolum: " + tObj.dept + "   Masa: " + tObj.table + "   Kisi: " + tObj.guests, 45, 130);
-  ctx.fillText("Tarih: " + nowFullDateStr() + "   No: " + tObj.adisyonNo, 45, 170);
-  ctx.fillText("------------------------------------", 45, 210);
-  var y = 255; ctx.font = "bold 24px monospace";
-  for (var i = 0; i < tObj.items.length; i++) {
-    var it = tObj.items[i];
-    ctx.fillStyle = "#000";
-    ctx.fillText("- [" + (it.orderTime || "--:--") + "] " + it.qty + "x " + it.tr + (it.optLabel !== "Normal" ? "." + it.optLabel : ""), 45, y);
-    y += 36;
-    if (it.note) { ctx.fillStyle = "#b45309"; ctx.fillText("   ↳ Not: " + it.note, 45, y); y += 34; }
-  }
-  canvas.toBlob(function(blob) {
-    if (!blob) return;
-    var file = new File([blob], "masa_" + tObj.table + ".png", { type: "image/png" });
-    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
-      navigator.share({ title: "Masa " + tObj.table, files: [file] }).catch(function() {});
-    } else {
-      window.open("https://wa.me/?text=" + encodeURIComponent("Masa " + tObj.table + " fişi."), "_blank");
-    }
-  }, "image/png");
-}
-
-openDepartment("SALON");
-</script>
-</body>
-</html>
+        iLines.push("<div>• <span class='timeTag'>🕒 " + (it.order
