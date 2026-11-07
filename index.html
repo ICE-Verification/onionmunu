@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <meta name="theme-color" content="#cc0000" />
+  <meta name="theme-color" content="#6b1426" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>ONION POS - Salon Sipariş & Hesap Sistemi</title>
   <link rel="manifest" href="manifest.json">
   <style>
     :root {
-      --red: #cc0000;
-      --red-dark: #990000;
+      --red: #6b1426;       /* لون خمري / أحمر غامق فاخر */
+      --red-dark: #4a0d1a;  /* خمري أغمق عند الضغط */
       --orange: #ee9900;
       --green: #16a34a;
       --blue: #2563eb;
@@ -49,7 +49,7 @@
     .logo {
       font-weight: 900;
       font-size: 19px;
-      color: #334155;
+      color: var(--red);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -71,14 +71,14 @@
       background: #e2e8f0;
       color: #1e293b;
       border: 1px solid #cbd5e1;
-      padding: 7px 12px;
+      padding: 7px 11px;
       border-radius: 6px;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12.5px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
     .zoneTabBtn.active {
       background: var(--red);
@@ -139,7 +139,7 @@
     }
     .tableBox .tName { font-size: 17px; font-weight: 900; color: #1e293b; }
     .tableBox .tSub { font-size: 11.5px; font-weight: 800; color: #475569; margin-top: 3px; }
-    .tableBox .tTimer { font-size: 11px; font-weight: 900; color: #991b1b; background: rgba(255,255,255,0.65); padding: 1px 6px; border-radius: 4px; margin-top: 3px; }
+    .tableBox .tTimer { font-size: 11px; font-weight: 900; color: var(--red); background: rgba(255,255,255,0.7); padding: 1px 6px; border-radius: 4px; margin-top: 3px; }
     .tableBox.occupied {
       background: var(--orange);
       border-color: #c27800;
@@ -171,7 +171,7 @@
       font-weight: 800;
       text-align: center;
       cursor: pointer;
-      border-radius: 2px;
+      border-radius: 3px;
       line-height: 1.2;
     }
     .catPosBtn small {
@@ -203,14 +203,15 @@
       background: var(--red);
       color: #fff;
       min-height: 92px;
-      border-radius: 4px;
+      border-radius: 5px;
       padding: 8px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       cursor: pointer;
       position: relative;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .prodBox:active { background: var(--red-dark); }
     .prodTitleTr { font-size: 12.5px; font-weight: 900; line-height: 1.2; }
@@ -221,7 +222,7 @@
       align-items: center;
       margin-top: 6px;
     }
-    .prodPrice { font-size: 12px; font-weight: 900; background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 4px; }
+    .prodPrice { font-size: 12px; font-weight: 900; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
     .infoBtn {
       background: rgba(255,255,255,0.2);
       color: #fff;
@@ -281,7 +282,7 @@
       font-weight: 800;
       font-size: 13px;
       cursor: pointer;
-      border-radius: 3px;
+      border-radius: 4px;
       text-align: center;
     }
     .sideActionBtn.highlight { background: var(--orange); color: #000; border-color: #b87300; }
@@ -329,22 +330,42 @@
       justify-content: space-between;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .ticketRow.isPaid {
       background: #dcfce7;
       border-color: #86efac;
     }
-    .tItemTitle { font-weight: 800; font-size: 13.5px; color: #0f172a; }
+    .tItemTitle { font-weight: 800; font-size: 13.5px; color: #0f172a; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .ticketRow.isPaid .tItemTitle { color: #166534; text-decoration: line-through; }
     .tItemTitle span.optSpan { color: #2563eb; font-weight: 700; }
-    .tItemNote { font-size: 11.5px; color: #d97706; font-weight: 700; margin-top: 2px; }
-    .tQtyCtrl { display: flex; align-items: center; gap: 6px; }
+    .timeTag {
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+    }
+    .tItemNote { font-size: 11.5px; color: #b45309; font-weight: 800; margin-top: 3px; }
+    .tQtyCtrl { display: flex; align-items: center; gap: 5px; }
     .tQtyBtn {
       width: 28px; height: 28px;
       border: 1px solid #94a3b8;
       background: #fff;
       font-weight: 900;
       border-radius: 4px;
+      cursor: pointer;
+    }
+    .editItemBtn {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #93c5fd;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
       cursor: pointer;
     }
     .ticketFooterSummary {
@@ -392,7 +413,7 @@
       flex-direction: column;
     }
     .modalHead {
-      background: var(--dark-cat);
+      background: var(--red);
       color: #fff;
       padding: 12px 16px;
       font-weight: 900;
@@ -415,7 +436,7 @@
       cursor: pointer;
       text-align: center;
     }
-    .optBtn.selected { border-color: var(--red); background: #fef2f2; color: var(--red); }
+    .optBtn.selected { border-color: var(--red); background: #fdf2f4; color: var(--red); }
 
     .noteTagBtn {
       padding: 7px 10px;
@@ -426,9 +447,9 @@
       font-weight: 700;
       cursor: pointer;
     }
-    .noteTagBtn b { color: #b91c1c; }
+    .noteTagBtn b { color: var(--red); }
     .noteTagBtn.activeTag {
-      background: #fef2f2;
+      background: #fdf2f4;
       border-color: var(--red);
       color: var(--red);
     }
@@ -463,7 +484,7 @@
       color: #1e3a8a;
     }
 
-    /* PHRASES GUIDE STYLES */
+    /* PHRASES & DAILY LOG STYLES */
     .phraseCatTabs {
       display: flex;
       gap: 6px;
@@ -482,14 +503,14 @@
       color: #1e293b;
     }
     .phraseCatBtn.active {
-      background: #0284c7;
+      background: var(--red);
       color: #fff;
-      border-color: #0369a1;
+      border-color: var(--red-dark);
     }
     .phraseCardItem {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
-      border-left: 4px solid #0284c7;
+      border-left: 4px solid var(--red);
       border-radius: 8px;
       padding: 10px 12px;
       margin-bottom: 8px;
@@ -497,6 +518,26 @@
     .phraseAr { font-size: 12px; font-weight: 800; color: #b45309; margin-bottom: 4px; direction: rtl; text-align: right; }
     .phraseTr { font-size: 14px; font-weight: 900; color: #0f172a; margin-bottom: 3px; }
     .phraseEn { font-size: 13.5px; font-weight: 800; color: #2563eb; }
+
+    .logCard {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid var(--green);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .logHead {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 900;
+      font-size: 13.5px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+    }
+    .logItems { font-size: 12.5px; color: #334155; line-height: 1.45; }
 
     .thermalPaper {
       background: #fffef8;
@@ -538,8 +579,11 @@
       <span>BAHÇE</span>
       <span class="deptCountBadge" id="badge_BAHÇE">0</span>
     </button>
+    <button class="zoneTabBtn" type="button" style="background:#0f766e;color:#fff;border-color:#115e59" onclick="openDailyLogModal()">
+      📋 Günlük Kayıt (<span id="dailyLogCountBadge">0</span>)
+    </button>
     <button class="zoneTabBtn" type="button" style="background:#0284c7;color:#fff;border-color:#0369a1" onclick="openPhrasesModal()">
-      📖 Cümleler (TR/EN)
+      📖 Cümleler
     </button>
     <span class="zoneTabBtn" id="topTableLabel" style="background:#fde047;color:#000;border-color:#ca8a04;display:none">-</span>
   </div>
@@ -557,7 +601,7 @@
 </section>
 
 <!-- ======================================================================
-     VIEW 2: ADİSYON (WITH LIVE TABLE TIMER)
+     VIEW 2: ADİSYON (CHRONOLOGICAL ITEMS + EDIT AFTER ORDER)
      ====================================================================== -->
 <section class="viewSec" id="viewAdisyon">
   <div class="adisyonLayout">
@@ -569,14 +613,14 @@
       <button class="sideActionBtn" type="button" onclick="openGeneralNoteModal()">📝 Adisyon Notu</button>
       <button class="sideActionBtn" type="button" onclick="openThermalPreview()">🧾 Hesap Yaz (Fiş)</button>
       <button class="sideActionBtn" type="button" onclick="changeTableNumber()">🔄 Masa Değiştir</button>
-      <button class="sideActionBtn" type="button" style="background:#ef4444;color:#fff" onclick="clearCurrentTable()">🗑️ Masayı Kapat/Boşalt</button>
+      <button class="sideActionBtn" type="button" style="background:var(--red);color:#fff" onclick="clearCurrentTable()">🗑️ Masayı Kapat/Boşalt</button>
     </div>
 
     <div class="adisyonContent">
       <div>
         <div class="ticketHeaderBar">
           <span id="adisyonTableTitle">MASA: -</span>
-          <span id="tableTimerBadge" style="background:#dc2626;color:#fff;padding:3px 9px;border-radius:4px;font-size:12px;font-weight:900">⏱️ 00:00</span>
+          <span id="tableTimerBadge" style="background:var(--red);color:#fff;padding:3px 9px;border-radius:4px;font-size:12px;font-weight:900">⏱️ 00:00</span>
           <span id="adisyonNoTitle">Adisyon No: -</span>
         </div>
         <div class="ticketSubBar">
@@ -584,6 +628,9 @@
           <span id="adisyonTimeText">--:--</span>
         </div>
         <div id="adisyonGeneralNoteBox" style="background:#fef3c7;color:#92400e;padding:6px 10px;font-size:12px;font-weight:800;display:none"></div>
+        <div style="font-size:11px;color:#475569;padding:4px 6px;font-weight:700;background:#e2e8f0;margin-top:4px;border-radius:4px">
+          🕒 Siparişler eskiden yeniye (sırayla) listelenir. Ürüne not eklemek veya düzenlemek için <b>"✏️ Not/Düzenle"</b> butonuna basın.
+        </div>
         <div class="ticketItemsList" id="ticketItemsList"></div>
       </div>
 
@@ -597,7 +644,7 @@
             <span>Ödenen Tutar (Paid):</span>
             <span id="adisyonPaidAmount">-₺0.00</span>
           </div>
-          <div class="sumLine" id="rowDiscount" style="display:none;color:#dc2626">
+          <div class="sumLine" id="rowDiscount" style="display:none;color:var(--red)">
             <span id="lblDiscountDesc">İndirim:</span>
             <span id="adisyonDiscountAmount">-₺0.00</span>
           </div>
@@ -644,7 +691,7 @@
 </section>
 
 <!-- ======================================================================
-     MODAL 1: ITEM OPTIONS
+     MODAL 1: ITEM OPTIONS (SUPPORTS BOTH NEW ADD & EDIT EXISTING ITEM)
      ====================================================================== -->
 <div class="modalBackdrop" id="itemOptionModal">
   <div class="modalCard">
@@ -674,7 +721,7 @@
       </div>
 
       <div style="display:flex;gap:8px">
-        <button class="barBtnGreen" type="button" style="flex:1;border-radius:8px;padding:14px;font-size:15px" onclick="confirmAddItem(false)">
+        <button class="barBtnGreen" id="btnConfirmModalMain" type="button" style="flex:1;border-radius:8px;padding:14px;font-size:15px" onclick="confirmAddItem(false)">
           ✅ SİPARİŞE EKLE (ADD)
         </button>
         <button class="optBtn" type="button" style="background:#d97706;color:#fff;border-color:#b45309;flex:0 0 auto" onclick="confirmAddItem(true)" title="İkram / Ücretsiz Yap">
@@ -732,7 +779,7 @@
         </div>
         <div id="splitItemsContainer" style="max-height:210px;overflow-y:auto"></div>
 
-        <div class="splitHighlight" style="margin-top:8px;background:#fef2f2;border-color:var(--red);color:#991b1b">
+        <div class="splitHighlight" style="margin-top:8px;background:#fdf2f4;border-color:var(--red);color:var(--red)">
           <span>Seçilen Ödeme Tutarı:</span>
           <span id="lblSelectedItemsTotal">₺0.00</span>
         </div>
@@ -781,7 +828,28 @@
 </div>
 
 <!-- ======================================================================
-     MODAL 5: THERMAL RECEIPT & DIRECT WHATSAPP IMAGE SHARE
+     MODAL 5: DAILY ORDER HISTORY LOG (GÜNLÜK SİPARİŞ KAYITLARI)
+     ====================================================================== -->
+<div class="modalBackdrop" id="dailyLogModal">
+  <div class="modalCard" style="max-width:660px">
+    <div class="modalHead">
+      <span>📋 Günlük Sipariş & Kapanan Masalar Kaydı</span>
+      <button class="infoBtn" type="button" onclick="document.getElementById('dailyLogModal').classList.remove('open')">✕ Kapat</button>
+    </div>
+    <div class="modalBody" style="max-height:82vh">
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#f1f5f9;padding:10px;border-radius:8px;flex-wrap:wrap;gap:8px">
+        <div style="font-weight:900;font-size:14px">
+          Bugün Toplam Ciro: <span id="dailyTotalRevenue" style="color:var(--green);font-size:16px">₺0.00</span>
+        </div>
+        <button class="infoBtn" type="button" style="background:var(--red);color:#fff;padding:6px 10px" onclick="clearDailyHistoryLog()">🗑️ Günlük Kaydı Sıfırla</button>
+      </div>
+      <div id="dailyLogListContainer" style="overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================================
+     MODAL 6: THERMAL RECEIPT & DIRECT WHATSAPP IMAGE SHARE
      ====================================================================== -->
 <div class="modalBackdrop" id="thermalModal">
   <div class="modalCard">
@@ -802,7 +870,7 @@
 
 <script>
 /* ============================================================================
-   CLEAR STALE SERVICE WORKER CACHE AUTOMATICALLY SO UPDATES ALWAYS APPEAR
+   CLEAR STALE SERVICE WORKER CACHE AUTOMATICALLY
    ============================================================================ */
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(function(regs) {
@@ -850,13 +918,11 @@ var PHRASE_CATEGORIES = [
 ];
 
 var RESTAURANT_PHRASES = [
-  // Welcome & Table
   { cat: "welcome", ar: "أهلاً بكم! كم شخصاً أنتم؟", tr: "Hoş geldiniz! Kaç kişisiniz?", en: "Welcome! How many people are in your party?" },
   { cat: "welcome", ar: "هل هذه الطاولة مناسبة لكم؟", tr: "Bu masa sizin için uygun mu?", en: "Is this table good for you?" },
   { cat: "welcome", ar: "يمكنني ضم طاولة أخرى لكم إذا رغبتم.", tr: "İsterseniz yan masayı birleştirebilirim.", en: "I can join another table for you if you'd like." },
   { cat: "welcome", ar: "هل تفضلون الجلوس في الصالة أم في الحديقة أم الطابق العلوي؟", tr: "İçeride mi, bahçede mi yoksa üst katta mı oturmak istersiniz?", en: "Would you prefer to sit inside, in the garden, or upstairs?" },
 
-  // Drinks
   { cat: "drinks", ar: "هل أحضر المشروبات الآن أم مع الطعام؟", tr: "İçeceklerinizi şimdi mi getireyim, yoksa yemekle birlikte mi?", en: "Would you like your drinks now, or with the meal?" },
   { cat: "drinks", ar: "هل أفتح المشروب الآن؟", tr: "İçeceğinizi şimdi açayım mı?", en: "Shall I open your drink now?" },
   { cat: "drinks", ar: "هل ترغبون بكأس مع ثلج أو شرائح ليمون؟", tr: "Buzlu bardak veya limon dilimi ister misiniz?", en: "Would you like a glass with ice or lemon slices?" },
@@ -864,7 +930,6 @@ var RESTAURANT_PHRASES = [
   { cat: "drinks", ar: "كيف تحبون الشاي؟ (خفيف/فاتح، عادي، أم ثقيل/غامق؟)", tr: "Çayınız nasıl olsun? Açık, normal veya demli?", en: "How would you like your tea? Light, regular, or strong?" },
   { cat: "drinks", ar: "هذا الشاي ضيافة منا لكم.", tr: "Çaylar bizden size ikram.", en: "The tea is on the house for you." },
 
-  // Order & Menu
   { cat: "order", ar: "هل أنتم جاهزون للطلب أم تحتاجون لبعض الوقت؟", tr: "Sipariş vermeye hazır mısınız, yoksa biraz daha zaman ister misiniz?", en: "Are you ready to order, or do you need a few more minutes?" },
   { cat: "order", ar: "البيتزا لدينا بحجمين: صغيرة (23 سم) ووسط (30 سم)، أي حجم تفضلون؟", tr: "Pizzalarımız küçük (23 cm) ve orta (30 cm) boydur. Hangisini tercih edersiniz?", en: "Our pizzas come in small (23 cm) and medium (30 cm). Which size would you prefer?" },
   { cat: "order", ar: "هل تفضلون البطاطا عادية أم ويدجز (تقطيع تفاح)؟", tr: "Patatesiniz normal mi olsun, yoksa elma dilim mi?", en: "Would you like regular fries or potato wedges?" },
@@ -874,14 +939,12 @@ var RESTAURANT_PHRASES = [
   { cat: "order", ar: "هذا الطبق حار قليلاً، هل تودون أن نجعله بدون حر؟", tr: "Bu yemek biraz acılıdır, acısız yapmamızı ister misiniz?", en: "This dish is a bit spicy. Would you like us to make it non-spicy?" },
   { cat: "order", ar: "كيف تفضلون درجة استواء اللحم؟ (وسط أم مطبوخ جيداً؟)", tr: "Etiniz nasıl pişsin? Orta mı, iyi pişmiş mi?", en: "How would you like your beef cooked? Medium or well done?" },
 
-  // Service & Clearing Plates
   { cat: "service", ar: "هل أسحب الأطباق الفارغة؟", tr: "Boş tabakları alabilir miyim?", en: "May I clear the empty plates?" },
   { cat: "service", ar: "هل انتهيتم من هذا الطبق؟", tr: "Devam ediyor musunuz, alabilir miyim?", en: "Are you still working on this, or may I take it?" },
   { cat: "service", ar: "بالهناء والشفاء! هل كل شيء على ما يرام؟", tr: "Afiyet olsun! Her şey yolunda mı, bir isteğiniz var mı?", en: "Enjoy your meal! Is everything good, or do you need anything else?" },
   { cat: "service", ar: "طلبكم في الفرن وسيكون جاهزاً خلال دقائق قليلة.", tr: "Siparişiniz hazırlanıyor, birkaç dakika içinde masanızda olacak.", en: "Your order is being prepared and will be at your table in just a few minutes." },
   { cat: "service", ar: "هل ترغبون بإلقاء نظرة على قائمة الحلويات أو القهوة؟", tr: "Tatlı veya kahve almak ister misiniz?", en: "Would you care for any dessert or coffee?" },
 
-  // Bill & Goodbye
   { cat: "bill", ar: "هل تدفعون الحساب معاً أم كل شخص على حدة؟", tr: "Hesabı birlikte mi alacaksınız, yoksa ayrı ayrı mı?", en: "Would you like to pay together or separately?" },
   { cat: "bill", ar: "هل الدفع نقداً أم بالبطاقة؟", tr: "Ödeme nakit mi olacak, kredi kartı mı?", en: "Will you be paying by cash or card?" },
   { cat: "bill", ar: "شكراً لزيارتكم، نتمنى رؤيتكم مرة أخرى!", tr: "Teşekkür ederiz, ayağınıza sağlık! Yine bekleriz.", en: "Thank you for visiting! Have a great day, we hope to see you again." }
@@ -1115,15 +1178,17 @@ var POS_MENU = [
 ];
 
 /* ============================================================================
-   STATE MANAGEMENT & TIMERS
+   STATE MANAGEMENT, DAILY LOG & TIMERS
    ============================================================================ */
-var STORAGE_TABLES_KEY = "onion_pos_tables_v8";
-var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v8";
+var STORAGE_TABLES_KEY = "onion_pos_tables_v9";
+var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v9";
+var STORAGE_DAILY_LOG  = "onion_pos_daily_log_v9";
 
 var tablesData = {};
-try {
-  tablesData = JSON.parse(sGet(STORAGE_TABLES_KEY, "{}")) || {};
-} catch(e) { tablesData = {}; }
+try { tablesData = JSON.parse(sGet(STORAGE_TABLES_KEY, "{}")) || {}; } catch(e) { tablesData = {}; }
+
+var dailyLog = [];
+try { dailyLog = JSON.parse(sGet(STORAGE_DAILY_LOG, "[]")) || []; } catch(e) { dailyLog = []; }
 
 var currentDept = "SALON";
 var currentTable = null;
@@ -1133,6 +1198,7 @@ var pendingItem = null;
 var pendingCatType = "food";
 var selectedVariantIdx = 0;
 var selectedSubOpt = "";
+var editingCartItemIndex = null; // null when adding new, index when editing existing
 
 var equalSplitCount = 2;
 var selectedSplitQtys = {};
@@ -1141,6 +1207,12 @@ var timerInterval = null;
 function saveAllTables() {
   sSet(STORAGE_TABLES_KEY, JSON.stringify(tablesData));
   updateDeptBadges();
+}
+
+function saveDailyLog() {
+  sSet(STORAGE_DAILY_LOG, JSON.stringify(dailyLog));
+  var b = document.getElementById("dailyLogCountBadge");
+  if (b) b.textContent = dailyLog.length;
 }
 
 function nextAdisyonNo() {
@@ -1182,13 +1254,27 @@ function startTableTimer(tObj) {
     if (!badge) return;
     var diffMins = Math.floor((Date.now() - tObj.timestamp) / 60000);
     badge.textContent = "⏱️ Süre: " + formatElapsed(tObj.timestamp);
-    if (diffMins >= 30) badge.style.background = "#991b1b";
+    if (diffMins >= 30) badge.style.background = "#6b1426";
     else if (diffMins >= 15) badge.style.background = "#d97706";
     else badge.style.background = "#16a34a";
   }
 
   updateTimerDisplay();
   timerInterval = setInterval(updateTimerDisplay, 1000);
+}
+
+/* ============================================================================
+   FIND MENU ITEM DEFINITION FOR EDITING
+   ============================================================================ */
+function findMenuItemById(id) {
+  for (var c = 0; c < POS_MENU.length; c++) {
+    for (var j = 0; j < POS_MENU[c].items.length; j++) {
+      if (POS_MENU[c].items[j].id === id) {
+        return { item: POS_MENU[c].items[j], type: POS_MENU[c].type };
+      }
+    }
+  }
+  return null;
 }
 
 /* ============================================================================
@@ -1262,6 +1348,8 @@ function updateDeptBadges() {
       else tabEl.classList.remove("active");
     }
   }
+  var logBadge = document.getElementById("dailyLogCountBadge");
+  if (logBadge) logBadge.textContent = dailyLog.length;
 }
 
 function openDepartment(deptName) {
@@ -1323,6 +1411,7 @@ function selectTable(tName) {
 
   if (tablesData[tName].items.length === 0) {
     tablesData[tName].timestamp = Date.now();
+    tablesData[tName].time = nowTimeStr();
     saveAllTables();
     openMenuForCurrentTable();
   } else {
@@ -1332,11 +1421,16 @@ function selectTable(tName) {
 }
 
 /* ============================================================================
-   ADİSYON VIEW & ACTIONS
+   ADİSYON VIEW & ACTIONS (SORTED CHRONOLOGICALLY OLDEST -> NEWEST)
    ============================================================================ */
 function renderAdisyonView() {
   var tObj = tablesData[currentTable];
   if (!tObj) return;
+
+  // Ensure chronological order from oldest to newest
+  tObj.items.sort(function(a, b) {
+    return (a.addedTimestamp || 0) - (b.addedTimestamp || 0);
+  });
 
   document.getElementById("adisyonTableTitle").textContent = tObj.dept + " - MASA " + tObj.table;
   document.getElementById("adisyonNoTitle").textContent = "Adisyon No: " + tObj.adisyonNo;
@@ -1364,29 +1458,39 @@ function renderAdisyonView() {
       (function(idx) {
         var it = tObj.items[idx];
         var lineTotal = it.price * it.qty;
+        var itemTime = it.orderTime || tObj.time || "--:--";
 
         var row = document.createElement("div");
         row.className = "ticketRow" + (it.isPaid ? " isPaid" : "");
         
-        var titleHtml = '<div class="tItemTitle">' + it.qty + ' X ' + it.tr + ' <span class="optSpan">' + (it.optLabel || 'Normal') + '</span>';
+        var titleHtml =
+          '<div class="tItemTitle">' +
+            '<span class="timeTag">🕒 ' + itemTime + '</span>' +
+            '<span>' + it.qty + ' X ' + it.tr + '</span>' +
+            '<span class="optSpan">(' + (it.optLabel || 'Normal') + ')</span>';
+
         if (it.isPaid) titleHtml += ' <b style="color:#15803d">(ÖDENDİ ✅)</b>';
         if (it.isIkram) titleHtml += ' <b style="color:#b45309">(İKRAM 🎁)</b>';
         titleHtml += '</div>';
-        if (it.note) titleHtml += '<div class="tItemNote">↳ Not: ' + it.note + '</div>';
+
+        if (it.note) {
+          titleHtml += '<div class="tItemNote">↳ Not: ' + it.note + '</div>';
+        }
 
         var actionHtml = '';
         if (it.isPaid) {
           actionHtml = '<button class="tQtyBtn" type="button" style="width:auto;padding:0 8px;font-size:11px;color:#15803d;background:#dcfce7" onclick="undoItemPaid(' + idx + ')">↩️ Geri Al</button>';
         } else {
           actionHtml = 
-            '<span style="font-weight:900;font-size:14px">₺' + lineTotal.toFixed(2) + '</span>' +
+            '<button class="editItemBtn" type="button" onclick="editExistingCartItem(' + idx + ')">✏️ Not/Düzenle</button>' +
+            '<span style="font-weight:900;font-size:14px">₺' + lineTotal.toFixed(0) + '</span>' +
             '<div class="tQtyCtrl">' +
               '<button class="tQtyBtn" type="button" onclick="changeItemQty(' + idx + ', -1)">−</button>' +
               '<button class="tQtyBtn" type="button" onclick="changeItemQty(' + idx + ', 1)">+</button>' +
             '</div>';
         }
 
-        row.innerHTML = '<div>' + titleHtml + '</div><div style="display:flex;align-items:center;gap:12px">' + actionHtml + '</div>';
+        row.innerHTML = '<div style="flex:1;min-width:180px">' + titleHtml + '</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' + actionHtml + '</div>';
         listEl.appendChild(row);
       })(i);
     }
@@ -1416,6 +1520,25 @@ function renderAdisyonView() {
   }
 
   document.getElementById("adisyonTotalAmount").textContent = "₺" + totals.netTotal.toFixed(2);
+}
+
+function editExistingCartItem(idx) {
+  var tObj = tablesData[currentTable];
+  if (!tObj || !tObj.items[idx]) return;
+  var cartIt = tObj.items[idx];
+  var found = findMenuItemById(cartIt.id);
+  if (!found) {
+    // Fallback simple prompt if item definition not found
+    var newNote = prompt("Ürün Notunu Düzenle (" + cartIt.tr + "):", cartIt.note || "");
+    if (newNote !== null) {
+      cartIt.note = newNote.trim();
+      saveAllTables();
+      renderAdisyonView();
+    }
+    return;
+  }
+  editingCartItemIndex = idx;
+  openItemOptionModal(found.item, found.type, cartIt);
 }
 
 function changeItemQty(idx, delta) {
@@ -1480,11 +1603,137 @@ function changeTableNumber() {
   renderAdisyonView();
 }
 
+/* ============================================================================
+   ARCHIVE TO DAILY LOG WHEN TABLE IS CLOSED/CLEARED
+   ============================================================================ */
+function archiveTableToDailyLog(tObj) {
+  if (!tObj || !tObj.items || tObj.items.length === 0) return;
+  var totals = calcTableTotals(tObj);
+  var finalRevenue = totals.paidTotal + totals.netTotal;
+
+  var logEntry = {
+    adisyonNo: tObj.adisyonNo,
+    dept: tObj.dept,
+    table: tObj.table,
+    guests: tObj.guests,
+    openTime: tObj.time || "--:--",
+    closeTime: nowTimeStr(),
+    dateStr: nowFullDateStr(),
+    duration: formatElapsed(tObj.timestamp),
+    totalAmount: finalRevenue,
+    discountLabel: totals.discLabel,
+    discountAmt: totals.discountAmt,
+    generalNote: tObj.generalNote || "",
+    items: JSON.parse(JSON.stringify(tObj.items))
+  };
+
+  dailyLog.unshift(logEntry); // Add newest closed table at top of log
+  saveDailyLog();
+}
+
 function clearCurrentTable() {
-  if (!confirm("Masa " + currentTable + " hesabı kapatılıp boşaltılsın mı?")) return;
+  var tObj = tablesData[currentTable];
+  if (!tObj) return;
+  var hasItems = tObj.items && tObj.items.length > 0;
+  var msg = hasItems
+    ? ("Masa " + currentTable + " kapatılıp Günlük Kayıt'a (Arşive) eklensin mi?")
+    : ("Masa " + currentTable + " boşaltılsın mı?");
+
+  if (!confirm(msg)) return;
+
+  if (hasItems) {
+    archiveTableToDailyLog(tObj);
+  }
   delete tablesData[currentTable];
   saveAllTables();
   openDepartment(currentDept);
+}
+
+/* ============================================================================
+   DAILY ORDER LOG MODAL (GÜNLÜK SİPARİŞ KAYITLARI)
+   ============================================================================ */
+function openDailyLogModal() {
+  renderDailyLogList();
+  document.getElementById("dailyLogModal").classList.add("open");
+}
+
+function renderDailyLogList() {
+  var box = document.getElementById("dailyLogListContainer");
+  box.innerHTML = "";
+  var totalRev = 0;
+
+  // Also show currently active tables at top if any
+  var activeKeys = Object.keys(tablesData);
+  var activeHtml = "";
+  for (var a = 0; a < activeKeys.length; a++) {
+    var at = tablesData[activeKeys[a]];
+    if (at && at.items && at.items.length > 0) {
+      var atTotals = calcTableTotals(at);
+      var atSum = atTotals.paidTotal + atTotals.netTotal;
+      totalRev += atSum;
+
+      var iLines = [];
+      for (var k = 0; k < at.items.length; k++) {
+        var it = at.items[k];
+        iLines.push("<div>• <span class='timeTag'>🕒 " + (it.orderTime || at.time) + "</span> <b>" + it.qty + "x " + it.tr + "</b> (" + (it.optLabel || "Normal") + ")" + (it.note ? " — <i style='color:#b45309'>Not: " + it.note + "</i>" : "") + "</div>");
+      }
+
+      activeHtml +=
+        '<div class="logCard" style="border-left-color:var(--orange);background:#fffbeb">' +
+          '<div class="logHead">' +
+            '<span>🟢 [AÇIK MASA] ' + at.dept + ' - Masa ' + at.table + ' (Adisyon #' + at.adisyonNo + ')</span>' +
+            '<span style="color:#b45309">₺' + atSum.toFixed(2) + '</span>' +
+          '</div>' +
+          '<div style="font-size:11.5px;color:#64748b;margin-bottom:6px">Açılış: ' + at.time + ' • Süre: ' + formatElapsed(at.timestamp) + ' • Kişi: ' + at.guests + '</div>' +
+          '<div class="logItems">' + iLines.join("") + '</div>' +
+        '</div>';
+    }
+  }
+
+  var closedHtml = "";
+  for (var i = 0; i < dailyLog.length; i++) {
+    var entry = dailyLog[i];
+    totalRev += (entry.totalAmount || 0);
+
+    var itemLines = [];
+    for (var j = 0; j < entry.items.length; j++) {
+      var item = entry.items[j];
+      itemLines.push(
+        "<div>• <span class='timeTag'>🕒 " + (item.orderTime || entry.openTime) + "</span> " +
+        "<b>" + item.qty + "x " + item.tr + "</b> (" + (item.optLabel || "Normal") + ") — ₺" + (item.price * item.qty).toFixed(0) +
+        (item.note ? " <span style='color:#b45309'>[Not: " + item.note + "]</span>" : "") +
+        "</div>"
+      );
+    }
+
+    closedHtml +=
+      '<div class="logCard">' +
+        '<div class="logHead">' +
+          '<span>☑️ [KAPANDI] ' + entry.dept + ' - Masa ' + entry.table + ' (Adisyon #' + entry.adisyonNo + ')</span>' +
+          '<span style="color:var(--green)">₺' + (entry.totalAmount || 0).toFixed(2) + '</span>' +
+        '</div>' +
+        '<div style="font-size:11.5px;color:#64748b;margin-bottom:6px">' +
+          'Açılış: ' + entry.openTime + ' ➔ Kapanış: ' + entry.closeTime + ' (Süre: ' + entry.duration + ') • Kişi: ' + entry.guests +
+        '</div>' +
+        (entry.generalNote ? '<div style="font-size:12px;color:#92400e;font-weight:700;margin-bottom:4px">📌 Genel Not: ' + entry.generalNote + '</div>' : '') +
+        '<div class="logItems">' + itemLines.join("") + '</div>' +
+      '</div>';
+  }
+
+  document.getElementById("dailyTotalRevenue").textContent = "₺" + totalRev.toFixed(2);
+
+  if (!activeHtml && !closedHtml) {
+    box.innerHTML = '<div style="padding:20px;text-align:center;color:#64748b;font-weight:700">Bugün henüz kayıtlı sipariş yok.</div>';
+  } else {
+    box.innerHTML = activeHtml + closedHtml;
+  }
+}
+
+function clearDailyHistoryLog() {
+  if (!confirm("Bugünün kapanan masa kayıtları tamamen silinsin mi?")) return;
+  dailyLog = [];
+  saveDailyLog();
+  renderDailyLogList();
 }
 
 /* ============================================================================
@@ -1610,7 +1859,7 @@ function renderSplitModalContent() {
       row.className = "splitItemRow";
       row.innerHTML =
         '<div style="flex:1">' +
-          '<div>' + it.tr + ' <small style="color:#2563eb">(' + (it.optLabel || 'Normal') + ')</small></div>' +
+          '<div><span class="timeTag">🕒 ' + (it.orderTime || '--:--') + '</span> ' + it.tr + ' <small style="color:#2563eb">(' + (it.optLabel || 'Normal') + ')</small></div>' +
           '<div style="font-size:11.5px;color:#64748b">Birim: ₺' + it.price + ' • Kalan: <b>' + it.qty + '</b> adet</div>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:8px">' +
@@ -1757,7 +2006,8 @@ function renderProductsGrid() {
           showItemDetails(item);
           return;
         }
-        openItemOptionModal(item, cType);
+        editingCartItemIndex = null;
+        openItemOptionModal(item, cType, null);
       };
 
       grid.appendChild(box);
@@ -1773,16 +2023,35 @@ function showItemDetails(item) {
 }
 
 /* ============================================================================
-   ITEM OPTIONS MODAL
+   ITEM OPTIONS MODAL (SUPPORTS NEW ADD OR EDITING EXISTING ITEM AFTER ORDER)
    ============================================================================ */
-function openItemOptionModal(item, cType) {
+function openItemOptionModal(item, cType, existingCartItem) {
   pendingItem = item;
   pendingCatType = cType;
   selectedVariantIdx = 0;
   selectedSubOpt = (item.subOptions && item.subOptions.length > 0) ? item.subOptions[0] : "";
-  document.getElementById("customItemNoteInput").value = "";
 
-  document.getElementById("optModalTitle").textContent = item.tr + " (" + item.en + ")";
+  var existingNote = existingCartItem ? (existingCartItem.note || "").replace(" (İKRAM)", "").replace("İKRAM (Ücretsiz)", "").trim() : "";
+  document.getElementById("customItemNoteInput").value = existingNote;
+
+  var mainBtn = document.getElementById("btnConfirmModalMain");
+  if (existingCartItem) {
+    document.getElementById("optModalTitle").textContent = "✏️ Düzenle: " + item.tr;
+    mainBtn.textContent = "💾 DEĞİŞİKLİKLERİ KAYDET (SAVE)";
+  } else {
+    document.getElementById("optModalTitle").textContent = item.tr + " (" + item.en + ")";
+    mainBtn.textContent = "✅ SİPARİŞE EKLE (ADD)";
+  }
+
+  // Match existing variant if editing
+  if (existingCartItem && item.variants && item.variants.length > 0) {
+    for (var vi = 0; vi < item.variants.length; vi++) {
+      if (existingCartItem.optLabel && existingCartItem.optLabel.indexOf(item.variants[vi].tr) !== -1) {
+        selectedVariantIdx = vi;
+        break;
+      }
+    }
+  }
 
   var varSec = document.getElementById("variantSection");
   var varBox = document.getElementById("variantBtnsBox");
@@ -1849,11 +2118,13 @@ function openItemOptionModal(item, cType) {
 
   if (dishNotes && dishNotes.length > 0) {
     notesSec.style.display = "block";
+    var currentParts = existingNote ? existingNote.split(", ") : [];
     for (var n = 0; n < dishNotes.length; n++) {
       (function(noteObj) {
         var nb = document.createElement("button");
         nb.type = "button";
-        nb.className = "noteTagBtn";
+        var isAlreadyActive = currentParts.indexOf(noteObj.tr) !== -1;
+        nb.className = "noteTagBtn" + (isAlreadyActive ? " activeTag" : "");
         nb.innerHTML = "<b>" + noteObj.en + "</b> (" + noteObj.tr + ")";
         nb.onclick = function() {
           var inp = document.getElementById("customItemNoteInput");
@@ -1880,6 +2151,7 @@ function openItemOptionModal(item, cType) {
 }
 
 function closeOptionModal() {
+  editingCartItemIndex = null;
   document.getElementById("itemOptionModal").classList.remove("open");
 }
 
@@ -1901,14 +2173,38 @@ function confirmAddItem(isIkram) {
 
   var finalOptLabel = optParts.length > 0 ? optParts.join(" - ") : "Normal";
   var noteVal = document.getElementById("customItemNoteInput").value.trim();
-  if (isIkram) {
+  if (isIkram && noteVal.indexOf("İKRAM") === -1) {
     noteVal = noteVal ? (noteVal + " (İKRAM)") : "İKRAM (Ücretsiz)";
   }
 
+  // Check if we are editing an existing item after order
+  if (editingCartItemIndex !== null && tObj.items[editingCartItemIndex]) {
+    var target = tObj.items[editingCartItemIndex];
+    target.optLabel = finalOptLabel;
+    target.price = unitPrice;
+    target.note = noteVal;
+    target.isIkram = !!isIkram;
+    saveAllTables();
+    renderAdisyonView();
+    updateMenuBottomSummary();
+    closeOptionModal();
+    return;
+  }
+
+  var currentOrderMinute = nowTimeStr();
+
+  // Only merge if identical AND ordered in the exact same minute (so later orders show their own timestamp chronologically!)
   var merged = false;
   for (var i = 0; i < tObj.items.length; i++) {
     var ex = tObj.items[i];
-    if (ex.id === pendingItem.id && ex.optLabel === finalOptLabel && ex.note === noteVal && !!ex.isIkram === !!isIkram && !ex.isPaid) {
+    if (
+      ex.id === pendingItem.id &&
+      ex.optLabel === finalOptLabel &&
+      ex.note === noteVal &&
+      !!ex.isIkram === !!isIkram &&
+      !ex.isPaid &&
+      ex.orderTime === currentOrderMinute
+    ) {
       ex.qty += 1;
       merged = true;
       break;
@@ -1925,7 +2221,9 @@ function confirmAddItem(isIkram) {
       qty: 1,
       note: noteVal,
       isIkram: !!isIkram,
-      isPaid: false
+      isPaid: false,
+      orderTime: currentOrderMinute,
+      addedTimestamp: Date.now()
     });
   }
 
@@ -1968,9 +2266,10 @@ function openThermalPreview() {
     var sub = it.price * it.qty;
     var optDot = (it.optLabel && it.optLabel !== "Normal") ? ("." + it.optLabel) : "";
     var paidMark = it.isPaid ? " (ODENDI)" : (it.isIkram ? " (IKRAM)" : "");
+    var tTag = it.orderTime ? ("[" + it.orderTime + "] ") : "";
     lines.push(
       "<div style='display:flex;justify-content:space-between;font-weight:700'>" +
-        "<span>- " + it.qty + " " + it.tr + optDot + paidMark + "</span>" +
+        "<span>- " + tTag + it.qty + " " + it.tr + optDot + paidMark + "</span>" +
         "<span>" + sub.toFixed(2) + "</span>" +
       "</div>"
     );
@@ -2016,7 +2315,8 @@ function sendWhatsAppText() {
     var it = tObj.items[i];
     var optStr = (it.optLabel && it.optLabel !== "Normal") ? (" (" + it.optLabel + ")") : "";
     var ikramStr = it.isIkram ? " [İKRAM]" : "";
-    lines.push("- " + it.qty + " x " + it.tr + optStr + ikramStr);
+    var timePrefix = it.orderTime ? ("[" + it.orderTime + "] ") : "";
+    lines.push("- " + timePrefix + it.qty + " x " + it.tr + optStr + ikramStr);
     if (it.note) lines.push("   ↳ Not: " + it.note);
   }
   lines.push("------------------------------");
@@ -2047,27 +2347,28 @@ function sendWhatsAppImage() {
   ctx.fillText("------------------------------------", 50, 285);
 
   var y = 335;
-  ctx.font = "bold 26px monospace";
+  ctx.font = "bold 25px monospace";
   for (var i = 0; i < tObj.items.length; i++) {
     var it = tObj.items[i];
     var optDot = (it.optLabel && it.optLabel !== "Normal") ? ("." + it.optLabel) : "";
     var mark = it.isPaid ? " (ODENDI)" : (it.isIkram ? " (IKRAM)" : "");
+    var tPre = it.orderTime ? ("[" + it.orderTime + "] ") : "";
     ctx.fillStyle = "#000";
-    ctx.fillText("- " + it.qty + " " + it.tr + optDot + mark, 50, y);
+    ctx.fillText("- " + tPre + it.qty + " " + it.tr + optDot + mark, 45, y);
     y += 38;
     if (it.note) {
       ctx.fillStyle = "#b45309";
       ctx.font = "bold 22px monospace";
-      ctx.fillText("   ↳ Not: " + it.note, 50, y);
-      ctx.font = "bold 26px monospace";
+      ctx.fillText("   ↳ Not: " + it.note, 45, y);
+      ctx.font = "bold 25px monospace";
       y += 34;
     }
   }
 
   ctx.fillStyle = "#000";
-  ctx.fillText("====================================", 50, y + 20);
+  ctx.fillText("====================================", 45, y + 20);
   if (tObj.generalNote) {
-    ctx.fillText("NOT: " + tObj.generalNote, 50, y + 65);
+    ctx.fillText("NOT: " + tObj.generalNote, 45, y + 65);
   }
 
   canvas.toBlob(function(blob) {
