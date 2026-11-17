@@ -9,10 +9,10 @@
   <meta name="theme-color" content="#6b1426" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>ONION POS - V13 Hızlı Sistem</title>
+  <title>ONION POS - V14 Tabldot & Hızlı Sistem</title>
   <script>
     (function() {
-      var VER = "onion_v13_instant";
+      var VER = "onion_v14_tabldot";
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(regs) {
           for (var i = 0; i < regs.length; i++) regs[i].unregister();
@@ -26,8 +26,8 @@
       try {
         if (localStorage.getItem("app_ver_check") !== VER) {
           localStorage.setItem("app_ver_check", VER);
-          if (location.search.indexOf("v=13") === -1) {
-            location.replace(location.pathname + "?v=13");
+          if (location.search.indexOf("v=14") === -1) {
+            location.replace(location.pathname + "?v=14");
           }
         }
       } catch(e) {}
@@ -49,7 +49,6 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* إشعار الإضافة السريعة */
     #toastBanner {
       position: fixed; top: 55px; left: 50%; transform: translateX(-50%);
       background: #15803d; color: #fff; padding: 7px 16px; border-radius: 99px;
@@ -88,11 +87,13 @@
     .catPosBtn.active { background: var(--red); color: #fff; }
     .productsCol { display: flex; flex-direction: column; background: var(--bg-light); overflow-y: auto; }
     .productsGrid { padding: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-content: start; }
-    .prodBox { background: var(--red); color: #fff; min-height: 90px; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.12); transition: transform 0.08s; }
+    .prodBox { background: var(--red); color: #fff; min-height: 92px; border-radius: 6px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.12); transition: transform 0.08s; }
+    .prodBox.tabldotSpecial { background: linear-gradient(135deg, #6b1426 0%, #991b1b 100%); border: 2px solid #fde047; }
     .prodBox:active { background: var(--red-dark); transform: scale(0.97); }
     .prodTitleTr { font-size: 12.5px; font-weight: 900; line-height: 1.2; }
     .prodTitleEn { font-size: 11px; font-weight: 600; color: #fde047; margin-top: 2px; line-height: 1.15; }
-    .prodBottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+    .prodSubSummary { font-size: 10.5px; color: #fff; background: rgba(0,0,0,0.28); padding: 3px 6px; border-radius: 4px; margin-top: 4px; font-weight: 700; line-height: 1.25; }
+    .prodBottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; gap: 4px; }
     .prodPrice { font-size: 12px; font-weight: 900; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
     .infoBtn { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; padding: 2px 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; }
 
@@ -100,7 +101,7 @@
     .barBtnGreen { background: var(--green); color: #fff; border: none; padding: 13px; font-size: 13.5px; font-weight: 900; cursor: pointer; }
     .barBtnRed { background: var(--red); color: #fff; border: none; padding: 13px; font-size: 13.5px; font-weight: 900; cursor: pointer; }
 
-    /* شاشة الأديسون (الفاتورة والطلبات المرتبة بالوقت) */
+    /* شاشة الأديسون */
     .adisyonLayout { display: grid; grid-template-columns: 200px 1fr; flex: 1; }
     .adisyonSidebar { background: #b8c6d4; padding: 6px; display: flex; flex-direction: column; gap: 6px; border-right: 1px solid var(--border); }
     .sideActionBtn { background: #9fb1c4; border: 1px solid #8ba0b6; color: #1e293b; padding: 12px 8px; font-weight: 800; font-size: 12.5px; cursor: pointer; border-radius: 4px; text-align: center; }
@@ -122,7 +123,6 @@
     .tQtyBtn { width: 28px; height: 28px; border: 1px solid #94a3b8; background: #fff; font-weight: 900; border-radius: 4px; cursor: pointer; }
     .editItemBtn { background: var(--red-light); color: var(--red); border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
 
-    /* أزرار تبديل الأحجام والخيارات والملاحظات السريعة داخل الفاتورة مباشرة */
     .inlineQuickBar { display: flex; gap: 4px; flex-wrap: wrap; padding-top: 5px; border-top: 1px dashed #cbd5e1; align-items: center; }
     .inlineVarChip { background: #eff6ff; border: 1.5px solid #93c5fd; color: #1e40af; font-size: 11px; font-weight: 900; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
     .inlineVarChip.activeVar { background: var(--blue); color: #fff; border-color: #1e3a8a; }
@@ -164,6 +164,9 @@
     .logItems { font-size: 12.5px; color: #334155; line-height: 1.45; }
     .thermalPaper { background: #fffef8; font-family: 'Courier New', Courier, monospace; padding: 18px; border: 1px dashed #94a3b8; color: #000; font-size: 13px; line-height: 1.4; }
 
+    .tabldotInput { width: 100%; padding: 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: 800; color: #0f172a; outline: none; }
+    .tabldotInput:focus { border-color: var(--red); background: var(--red-light); }
+
     @media (max-width: 700px) {
       .tablesGrid { grid-template-columns: repeat(3, 1fr); }
       .posMainSplit { grid-template-columns: 115px 1fr; }
@@ -191,6 +194,9 @@
     </button>
     <button class="zoneTabBtn" id="tab_BAHÇE" type="button" onclick="openDepartment('BAHÇE')">
       <span>BAHÇE</span><span class="deptCountBadge" id="badge_BAHÇE">0</span>
+    </button>
+    <button class="zoneTabBtn" type="button" style="background:#b45309;color:#fff;border-color:#92400e" onclick="openTabldotConfigModal()">
+      🍲 Günün Menüsü (Tabldot)
     </button>
     <button class="zoneTabBtn" type="button" style="background:var(--red);color:#fff;border-color:var(--red-dark)" onclick="openDailyLogModal()">
       📋 Günlük Kayıt (<span id="dailyLogCountBadge">0</span>)
@@ -297,7 +303,67 @@
   </div>
 </section>
 
-<!-- MODALS -->
+<!-- MODAL: TABLDOT / GÜNÜN MENÜSÜ EDITOR -->
+<div class="modalBackdrop" id="tabldotConfigModal">
+  <div class="modalCard" style="max-width:500px">
+    <div class="modalHead">
+      <span>🍲 Günün Menüsü (Tabldot) Düzenle</span>
+      <button class="infoBtn" type="button" onclick="document.getElementById('tabldotConfigModal').classList.remove('open')">✕ Kapat</button>
+    </div>
+    <div class="modalBody">
+      <div style="font-size:12px;color:#475569;font-weight:700;background:#fef3c7;padding:8px 10px;border-radius:6px;border-left:4px solid #d97706">
+        Burada kaydettiğiniz Günün Menüsü (Çorba + Ana Yemek + Yanında + Fiyat) siz tekrar değiştirene kadar hafızada sabit kalır ve <b>ANA YEMEKLER</b> içinde görünür.
+      </div>
+
+      <div>
+        <div class="optGroupTitle">1. Günün Çorbası (Soup of the Day)</div>
+        <input type="text" class="tabldotInput" id="inpTabldotSoup" placeholder="Örn: MERCİMEK ÇORBASI" />
+        <div class="optBtnsGrid" style="margin-top:5px">
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSoup').value='MERCİMEK ÇORBASI'">Mercimek Çorbası</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSoup').value='EZOGELİN ÇORBASI'">Ezogelin Çorbası</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSoup').value='DOMATES ÇORBASI'">Domates Çorbası</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSoup').value='YAYLA ÇORBASI'">Yayla Çorbası</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSoup').value='TAVUK SUYU ÇORBA'">Tavuk Suyu</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="optGroupTitle">2. Ana Yemek (Main Dish)</div>
+        <input type="text" class="tabldotInput" id="inpTabldotMain" placeholder="Örn: HASAN PAŞA KÖFTE" />
+        <div class="optBtnsGrid" style="margin-top:5px">
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotMain').value='HASAN PAŞA KÖFTE'">Hasan Paşa Köfte</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotMain').value='İZMİR KÖFTE'">İzmir Köfte</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotMain').value='TAVUK SOTE'">Tavuk Sote</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotMain').value='ORMAN KEBABI'">Orman Kebabı</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotMain').value='KÖRİ SOSLU TAVUK'">Köri Soslu Tavuk</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="optGroupTitle">3. Yanında / Yancı (Side Dish)</div>
+        <input type="text" class="tabldotInput" id="inpTabldotSide" placeholder="Örn: MEVSİM SALATASI" />
+        <div class="optBtnsGrid" style="margin-top:5px">
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSide').value='MEVSİM SALATASI'">Mevsim Salatası</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSide').value='PİRİNÇ PİLAVI'">Pirinç Pilavı</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSide').value='BULGUR PİLAVI'">Bulgur Pilavı</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSide').value='CACIK'">Cacık</button>
+          <button type="button" class="inlineChip" onclick="document.getElementById('inpTabldotSide').value='PİLAV + SALATA'">Pilav + Salata</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="optGroupTitle">4. Tabldot Paket Fiyatı (₺)</div>
+        <input type="number" class="tabldotInput" id="inpTabldotPrice" placeholder="395" inputmode="numeric" />
+      </div>
+
+      <button class="barBtnGreen" type="button" style="border-radius:8px;padding:14px;font-size:15px;width:100%" onclick="saveTabldotConfig()">
+        💾 TABLDOT MENÜYÜ KAYDET (SAVE)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- OTHER MODALS -->
 <div class="modalBackdrop" id="itemOptionModal">
   <div class="modalCard">
     <div class="modalHead"><span id="optModalTitle">Ürün Seçenekleri</span><button class="infoBtn" type="button" onclick="closeOptionModal()">✕ Kapat</button></div>
@@ -415,12 +481,25 @@ var DEPARTMENTS = {
   "BAHÇE": ["B1", "B2", "B3", "B4", "B5", "B6", "B1/2", "B2/2", "B3/2", "B4/2", "B5/2", "B6/2"]
 };
 
-var STORAGE_TABLES_KEY = "onion_pos_tables_v13";
-var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v13";
-var STORAGE_DAILY_LOG  = "onion_pos_daily_log_v13";
+var STORAGE_TABLES_KEY = "onion_pos_tables_v14";
+var STORAGE_ADISYON_NO = "onion_pos_adisyon_seq_v14";
+var STORAGE_DAILY_LOG  = "onion_pos_daily_log_v14";
+var STORAGE_TABLDOT_KEY= "onion_pos_tabldot_cfg_v14";
 
 var tablesData = {}; try { tablesData = JSON.parse(sGet(STORAGE_TABLES_KEY, "{}")) || {}; } catch(e) { tablesData = {}; }
 var dailyLog = []; try { dailyLog = JSON.parse(sGet(STORAGE_DAILY_LOG, "[]")) || []; } catch(e) { dailyLog = []; }
+
+// إعدادات التابلو (وجبة اليوم) الافتراضية من الصورة والقابلة للتعديل والحفظ الدائم
+var tabldotConfig = {
+  soup: "MERCİMEK ÇORBASI",
+  main: "HASAN PAŞA KÖFTE",
+  side: "MEVSİM SALATASI",
+  price: 395
+};
+try {
+  var savedTab = JSON.parse(sGet(STORAGE_TABLDOT_KEY, "null"));
+  if (savedTab && savedTab.main) tabldotConfig = savedTab;
+} catch(e) {}
 
 var currentDept = "SALON";
 var currentTable = null;
@@ -434,7 +513,7 @@ var equalSplitCount = 2;
 var selectedSplitQtys = {};
 var timerInterval = null;
 var activePhraseCat = "all";
-var autoJumpToAdisyon = true; // افتراضياً: يحول مباشرة إلى الفاتورة عند الضغط على أي صنف كما طلبت!
+var autoJumpToAdisyon = true;
 
 function toggleAutoJumpMode() {
   autoJumpToAdisyon = !autoJumpToAdisyon;
@@ -555,6 +634,16 @@ var POS_MENU = [
   {
     catTr: "ANA YEMEKLER", catEn: "Main Courses", type: "food",
     items: [
+      { id: "tabldot_gunun_menusu", isTabldot: true, tr: "TABLDOT (GÜNÜN MENÜSÜ)", en: "Daily Set Menu (Soup+Main+Side)", price: 395,
+        descTr: "Çorba + Ana Yemek + Yanında", descEn: "Daily Soup + Main Dish + Side",
+        customNotes: [
+          { en: "Soup First (Çorba Önce)", tr: "Çorba önden gelsin" },
+          { en: "All Together (Birlikte)", tr: "Hepsi birlikte gelsin" },
+          N_NO_ONION,
+          N_NO_GPEP,
+          N_NO_SPICE
+        ]
+      },
       { id: "izgara_tavuk_pir", tr: "IZGARA TAVUK PİR", en: "Grilled Chicken Chop", price: 465, descTr: "tavuk but, pilav, yeşillik", descEn: "Chicken, rice, greens", customNotes: [N_NO_ONION, N_NO_GPEP, N_NO_SPICE, N_RICE_FRY, N_SAL_RICE] },
       { id: "ev_yapimi_kofte", tr: "EV YAPIMI IZGARA KÖFTE", en: "Grilled Meatballs", price: 690, descTr: "köfte, pilav, ızgara domates ve yeşil biber", descEn: "Meatballs, rice, grilled tomato & green pepper", customNotes: [N_NO_GPEP, N_NO_ONION, N_WELL_DONE, N_RICE_FRY, N_SAL_RICE] },
       { id: "tavuk_sinitzel", tr: "TAVUK ŞİNİTZEL", en: "Chicken Schnitzel", price: 490, descTr: "tavuk göğüs, patates, coleslaw", descEn: "Chicken breast, fries, coleslaw", customNotes: [N_FRY_NOSP, N_COLE_SAL, { en: "Swap Fries ➔ Rice", tr: "Patates yerine pilav" }, { en: "With Lemon", tr: "Limonlu" }] },
@@ -651,6 +740,57 @@ var POS_MENU = [
   }
 ];
 
+/* ============================================================================
+   DYNAMIC TABLDOT SYNC & CONFIGURATION FUNCTIONS
+   ============================================================================ */
+function syncTabldotToMenu() {
+  var found = findMenuItemById("tabldot_gunun_menusu");
+  if (!found) return;
+  var it = found.item;
+  it.price = parseFloat(tabldotConfig.price) || 395;
+  var summaryText = tabldotConfig.soup + " + " + tabldotConfig.main + " + " + tabldotConfig.side;
+  it.descTr = summaryText;
+  it.descEn = "Daily Set: " + summaryText;
+  it.customNotes = [
+    { en: "Soup First (Çorba Önce)", tr: "Çorba önden gelsin" },
+    { en: "All Together (Birlikte)", tr: "Hepsi birlikte gelsin" },
+    { en: "No Soup", tr: "Çorbasız" },
+    { en: "No Side (" + tabldotConfig.side + " Olmasın)", tr: tabldotConfig.side + " olmasın" },
+    N_NO_ONION,
+    N_NO_GPEP,
+    N_NO_SPICE
+  ];
+}
+syncTabldotToMenu();
+
+function openTabldotConfigModal() {
+  document.getElementById("inpTabldotSoup").value = tabldotConfig.soup || "";
+  document.getElementById("inpTabldotMain").value = tabldotConfig.main || "";
+  document.getElementById("inpTabldotSide").value = tabldotConfig.side || "";
+  document.getElementById("inpTabldotPrice").value = tabldotConfig.price || 395;
+  document.getElementById("tabldotConfigModal").classList.add("open");
+}
+
+function saveTabldotConfig() {
+  var s = (document.getElementById("inpTabldotSoup").value || "").trim().toUpperCase();
+  var m = (document.getElementById("inpTabldotMain").value || "").trim().toUpperCase();
+  var y = (document.getElementById("inpTabldotSide").value || "").trim().toUpperCase();
+  var p = parseFloat(document.getElementById("inpTabldotPrice").value) || 395;
+
+  if (!m) { alert("Lütfen en azından Ana Yemek adını girin!"); return; }
+  tabldotConfig = {
+    soup: s || "GÜNÜN ÇORBASI",
+    main: m,
+    side: y || "MEVSİM SALATASI",
+    price: p
+  };
+  sSet(STORAGE_TABLDOT_KEY, JSON.stringify(tabldotConfig));
+  syncTabldotToMenu();
+  document.getElementById("tabldotConfigModal").classList.remove("open");
+  renderProductsGrid();
+  showToast("✅ Günün Menüsü (Tabldot) Güncellendi!");
+}
+
 var PHRASE_CATEGORIES = [
   { id: "all", label: "الكل (All)" },
   { id: "welcome", label: "الطاولة (Table)" },
@@ -669,6 +809,7 @@ var RESTAURANT_PHRASES = [
   { cat: "drinks", ar: "هل ترغبون بكأس مع ثلج أو شرائح ليمون؟", tr: "Buzlu bardak veya limon dilimi ister misiniz?", en: "Would you like a glass with ice or lemon slices?" },
   { cat: "drinks", ar: "كيف تحبون القهوة التركية؟ (سادة، وسط، حلوة؟)", tr: "Türk kahveniz nasıl olsun? Sade, orta, şekerli?", en: "How would you like your Turkish coffee? No sugar, medium, or sweet?" },
   { cat: "drinks", ar: "كيف تحبون الشاي؟ (فاتح، عادي، غامق؟)", tr: "Çayınız nasıl olsun? Açık, normal veya demli?", en: "How would you like your tea? Light, regular, or strong?" },
+  { cat: "order", ar: "لدينا اليوم وجبة تابلو خاصة (شوربة + طبق رئيسي + مقبلات)، هل تودون تجربتها؟", tr: "Bugün özel Günün Menüsü (Çorba + Ana Yemek + Yanında) var, denemek ister misiniz?", en: "We have a special Daily Set Menu today (Soup + Main Course + Side), would you like to try it?" },
   { cat: "order", ar: "هل أنتم جاهزون للطلب أم تحتاجون لبعض الوقت؟", tr: "Sipariş vermeye hazır mısınız, yoksa biraz daha zaman ister misiniz?", en: "Are you ready to order, or do you need a few more minutes?" },
   { cat: "order", ar: "هل تفضلون البطاطا عادية أم ويدجز؟", tr: "Patatesiniz normal mi olsun, yoksa elma dilim mi?", en: "Would you like regular fries or potato wedges?" },
   { cat: "order", ar: "يمكننا استبدال الأرز بالبطاطا أو السلطة إذا رغبتم.", tr: "İsterseniz pilav yerine patates veya salata verebiliriz.", en: "We can swap the rice for fries or salad if you prefer." },
@@ -802,10 +943,11 @@ function selectTable(tName) {
 }
 
 /* ============================================================================
-   DIRECT 1-TAP ADD FROM MENU & INLINE VARIANT/SUBOPTION SWITCHER IN ADİSYON
+   DIRECT 1-TAP ADD FROM MENU (INCLUDES TABLDOT DETAILS AUTOMATICALLY)
    ============================================================================ */
 function quickDirectAddItem(item) {
   if (!currentTable) return;
+  syncTabldotToMenu();
   var tObj = tablesData[currentTable];
   var unitPrice = item.price;
   var optParts = [];
@@ -819,12 +961,17 @@ function quickDirectAddItem(item) {
   }
 
   var finalOptLabel = optParts.length > 0 ? optParts.join(" - ") : "Normal";
+  var autoNote = "";
+  if (item.isTabldot) {
+    autoNote = tabldotConfig.soup + " + " + tabldotConfig.main + " + " + tabldotConfig.side;
+  }
+
   var curMin = nowTimeStr();
   var merged = false;
 
   for (var i = 0; i < tObj.items.length; i++) {
     var ex = tObj.items[i];
-    if (ex.id === item.id && ex.optLabel === finalOptLabel && !ex.note && !ex.isIkram && !ex.isPaid && ex.orderTime === curMin) {
+    if (ex.id === item.id && ex.optLabel === finalOptLabel && ex.note === autoNote && !ex.isIkram && !ex.isPaid && ex.orderTime === curMin) {
       ex.qty += 1;
       merged = true;
       break;
@@ -839,7 +986,7 @@ function quickDirectAddItem(item) {
       optLabel: finalOptLabel,
       price: unitPrice,
       qty: 1,
-      note: "",
+      note: autoNote,
       isIkram: false,
       isPaid: false,
       orderTime: curMin,
@@ -850,7 +997,6 @@ function quickDirectAddItem(item) {
   saveAllTables();
   updateMenuBottomSummary();
 
-  // إذا كان وضع التحويل المباشر للفاتورة مفعلاً، يحول فوراً لشاشة الفاتورة للتعديل عليها
   if (autoJumpToAdisyon) {
     renderAdisyonView();
     showView("viewAdisyon");
@@ -869,7 +1015,6 @@ function setInlineVariant(itemIdx, varIdx) {
   var chosenVar = found.item.variants[varIdx];
   if (!cartIt.isIkram) cartIt.price = chosenVar.price;
 
-  // Keep subOption if item also has subOptions (e.g. Turkish Coffee Tek/Double + Sade/Orta/Şekerli)
   var parts = (cartIt.optLabel || "").split(" - ");
   if (found.item.subOptions && found.item.subOptions.length > 0 && parts.length > 1) {
     cartIt.optLabel = chosenVar.tr + " - " + parts[1];
@@ -949,13 +1094,11 @@ function renderAdisyonView() {
 
         var topWrap = '<div class="ticketRowTop"><div style="flex:1;min-width:180px">' + titleHtml + '</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' + actionHtml + '</div></div>';
 
-        // شريط الخيارات والملاحظات السريعة تحت الطبق داخل الفاتورة مباشرة
         var inlineBar = '';
         if (!it.isPaid) {
           var foundDef = findMenuItemById(it.id);
           var chipsHtml = '';
 
-          // 1. أزرار تبديل الأحجام أو الأنواع (مثل Normal/Zero للكولا، Sade/Portakal للغازوز، Küçük/Orta للبيتزا)
           if (foundDef && foundDef.item.variants && foundDef.item.variants.length > 0) {
             for (var v = 0; v < foundDef.item.variants.length; v++) {
               var vr = foundDef.item.variants[v];
@@ -964,7 +1107,6 @@ function renderAdisyonView() {
             }
           }
 
-          // 2. أزرار تبديل السكر أو تخمير الشاي (Sade/Orta/Şekerli أو Açık/Normal/Demli)
           if (foundDef && foundDef.item.subOptions && foundDef.item.subOptions.length > 0) {
             for (var s = 0; s < foundDef.item.subOptions.length; s++) {
               var cleanS = foundDef.item.subOptions[s].split("(")[0].trim();
@@ -973,7 +1115,6 @@ function renderAdisyonView() {
             }
           }
 
-          // 3. أزرار الملاحظات السريعة
           var quickList = (foundDef && foundDef.item.customNotes !== undefined)
             ? foundDef.item.customNotes
             : (foundDef && foundDef.type === "cold_drink" ? DEFAULT_COLD_DRINK_NOTES : [N_NO_ONION, N_NO_GPEP]);
@@ -1196,7 +1337,7 @@ function markSelectedItemsAsPaid() {
   tObj.items = newItems; selectedSplitQtys = {}; saveAllTables(); renderSplitModalContent(); renderAdisyonView();
 }
 
-function openMenuForCurrentTable() { renderPosCategories(); renderProductsGrid(); updateMenuBottomSummary(); showView("viewMenu"); }
+function openMenuForCurrentTable() { syncTabldotToMenu(); renderPosCategories(); renderProductsGrid(); updateMenuBottomSummary(); showView("viewMenu"); }
 function renderPosCategories() {
   var col = document.getElementById("posCatsCol"); col.innerHTML = "";
   for (var i = 0; i < POS_MENU.length; i++) {
@@ -1211,6 +1352,7 @@ function renderPosCategories() {
 }
 
 function renderProductsGrid() {
+  syncTabldotToMenu();
   var grid = document.getElementById("posProductsGrid"); grid.innerHTML = "";
   var q = (document.getElementById("prodSearchInput").value || "").toLowerCase().trim(), list = [];
   if (q) {
@@ -1225,11 +1367,39 @@ function renderProductsGrid() {
   }
   for (var m = 0; m < list.length; m++) {
     (function(entry) {
-      var item = entry.item, box = document.createElement("div"); box.className = "prodBox";
-      box.innerHTML = '<div><div class="prodTitleTr">' + item.tr + '</div><div class="prodTitleEn">' + item.en + '</div></div><div class="prodBottom"><span class="prodPrice">[' + item.price.toFixed(1) + ']</span>' + (item.descTr ? '<button type="button" class="infoBtn">ℹ️ Detay</button>' : '') + '</div>';
+      var item = entry.item, box = document.createElement("div");
+      box.className = "prodBox" + (item.isTabldot ? " tabldotSpecial" : "");
+
+      var subSummaryHtml = item.isTabldot
+        ? '<div class="prodSubSummary">🍲 ' + tabldotConfig.soup + '<br>🍛 ' + tabldotConfig.main + '<br>🥗 ' + tabldotConfig.side + '</div>'
+        : '';
+
+      var actionBtnsHtml = item.isTabldot
+        ? '<button type="button" class="infoBtn" data-act="editTabldot" style="background:#fde047;color:#000;border-color:#ca8a04">⚙️ Değiştir</button>'
+        : (item.descTr ? '<button type="button" class="infoBtn" data-act="info">ℹ️ Detay</button>' : '');
+
+      box.innerHTML =
+        '<div>' +
+          '<div class="prodTitleTr">' + item.tr + '</div>' +
+          '<div class="prodTitleEn">' + item.en + '</div>' +
+          subSummaryHtml +
+        '</div>' +
+        '<div class="prodBottom">' +
+          '<span class="prodPrice">[' + item.price.toFixed(1) + ']</span>' +
+          actionBtnsHtml +
+        '</div>';
+
       box.onclick = function(e) {
-        if (e.target && e.target.classList.contains("infoBtn")) { e.stopPropagation(); showItemDetails(item); return; }
-        // عند الضغط على أي صنف في المنيو يُضاف مباشرة ويحول للفاتورة للتعديل عليه
+        if (e.target && e.target.getAttribute("data-act") === "editTabldot") {
+          e.stopPropagation();
+          openTabldotConfigModal();
+          return;
+        }
+        if (e.target && e.target.getAttribute("data-act") === "info") {
+          e.stopPropagation();
+          showItemDetails(item);
+          return;
+        }
         quickDirectAddItem(item);
       };
       grid.appendChild(box);
