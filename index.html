@@ -1731,6 +1731,61 @@ function sendWhatsAppImage() {
     }
   }, "image/png");
 }
+/* ============================================================================
+   ANDROID BACK BUTTON HANDLER (منع الخروج من التطبيق عند الضغط على زر الرجوع)
+   ============================================================================ */
+(function enableSmartAndroidBackButton() {
+  // تسجيل حالة مبدئية في سجل المتصفح
+  window.history.pushState({ page: "pos_active" }, "", window.location.href);
+
+  // اعتراض دالة showView لتسجيل كل تنقل في سجل الهاتف
+  var originalShowView = window.showView;
+  window.showView = function(viewId, skipPush) {
+    originalShowView(viewId);
+    if (!skipPush) {
+      window.history.pushState({ view: viewId }, "", window.location.href);
+    }
+  };
+
+  // ماذا يحدث عند سحب الشاشة للخلف أو ضغط زر الرجوع في الموبايل
+  window.addEventListener("popstate", function(e) {
+    // 1. إذا كانت أي نافذة منبثقة (Modal) مفتوحة، أغلقها أولاً ولا تخرج
+    var openModals = document.querySelectorAll(".modalBackdrop.open");
+    if (openModals.length > 0) {
+      for (var i = 0; i < openModals.length; i++) {
+        openModals[i].classList.remove("open");
+      }
+      editingCartItemIndex = null;
+      window.history.pushState({ page: "modal_closed" }, "", window.location.href);
+      return;
+    }
+
+    // 2. إذا كان في شاشة المنيو -> ارجع لشاشة الفاتورة (أو الطاولات إن كانت فارغة)
+    var menuSec = document.getElementById("viewMenu");
+    if (menuSec && menuSec.classList.contains("active")) {
+      var tObj = tablesData[currentTable];
+      if (tObj && tObj.items && tObj.items.length > 0) {
+        renderAdisyonView();
+        window.showView("viewAdisyon", true);
+      } else {
+        openDepartment(currentDept);
+      }
+      window.history.pushState({ page: "back_from_menu" }, "", window.location.href);
+      return;
+    }
+
+    // 3. إذا كان في شاشة الفاتورة (Adisyon) -> ارجع لشاشة الطاولات
+    var adisyonSec = document.getElementById("viewAdisyon");
+    if (adisyonSec && adisyonSec.classList.contains("active")) {
+      openDepartment(currentDept);
+      window.history.pushState({ page: "back_to_tables" }, "", window.location.href);
+      return;
+    }
+    // 4. إذا كان في شاشة الطاولات الرئيسية -> امنع الخروج العشوائي من التطبيق
+    window.history.pushState({ page: "stay_on_tables" }, "", window.location.href);
+  });
+})();
+
 
 openDepartment("SALON");
 </script>
